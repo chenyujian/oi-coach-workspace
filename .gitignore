@@ -1,0 +1,30 @@
+# Compiled C++ binaries & debug artifacts (Windows / macOS)
+*.exe
+*.out
+*.o
+*.obj
+*.pdb
+*.dSYM/
+a.out
+tempCodeRunnerFile.*
+
+# IDE & Editor caches
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local secrets & runtime caches
+.env
+.env.local
+*.secret
+__pycache__/
+*.pyc
+.dsh/cache/
+.dsh/logs/

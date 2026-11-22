@@ -1,0 +1,14 @@
+# 跨平台换行符规范：统一使用 LF，防止 Mac mini 与 Windows 产生无意义 diff
+* text=auto eol=lf
+
+# Windows 批处理脚本必须保持 CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# 二进制文件不做文本转换
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.pptx binary
+*.zip binary
