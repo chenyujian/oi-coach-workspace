@@ -41,5 +41,8 @@ git push -u origin main
 
 ### 4. Mac mini 后台定时任务（可选）
 Mac mini 常年开机，可配置 `cron` 或 `launchd` 每晚自动执行：
-1. `python3 scripts/fetch_atcoder.py --user <孩子AtCoderID>`（拉取当日公开提交）
-2. `./scripts/sync_mac.sh "chore: nightly OJ sync"`（同步到远程仓库）
+1. `python3 scripts/fetch_atcoder.py --user <孩子AtCoderID>`（拉取 AtCoder 公开提交）
+2. `python3 scripts/fetch_codeforces.py --handle <孩子CF用户名>`（拉取 Codeforces 公开提交与非 AC 高频标签）
+3. `./scripts/sync_mac.sh "chore: nightly OJ sync"`（同步到远程仓库）
+
+> 洛谷与机构内部 OJ 的训练代码放在 `training/luogu/` 与 `training/oj/`，孩子在工作台内复盘时由 `post-mortem` 技能自动归档到 `mistakes/`。
