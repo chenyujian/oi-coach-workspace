@@ -6,13 +6,16 @@
 
 | 目录 / 文件 | 主写端 | 作用 |
 | :--- | :--- | :--- |
-| `AGENTS.md` | 家长 | AI 教练核心铁律（苏格拉底启发、严禁直接给 AC 代码、反套话护栏） |
-| `.dsh/skills/` | 家长 | 按场景触发的 5 个专项教学与诊断技能 |
+| `GEMINI.md` / `.agents/` | 家长 | 家长端（Mac mini + Antigravity）架构师与运维规则、Git 方案 A 配置技能 |
+| `docs/ARCHITECTURE.md` | 家长 | 总体架构蓝图、双端隔离说明与方案 A 上线进度 Checklist |
+| `AGENTS.md` | 家长 | 孩子端（Windows + DeepSeek Harness）AI 教练核心铁律（严禁直接给 AC 代码） |
+| `.dsh/skills/` | 家长 | 孩子端与教研按场景触发的 5 个专项教学与诊断技能 |
+| `plugins/dsh-oi-coach/` | 家长 | DeepSeek Harness（`dsh`）标准插件包骨架（`dsh.bundle` + `cordis.patch.yml`） |
 | `courses/` | 家长 | 老师讲义原件（`raw/`）及提炼后的结构化笔记（`notes/`） |
-| `training/` | 孩子 | 日常 C++ 练习代码（按平台/比赛建子目录）及自动拉取的 OJ 日志 |
+| `training/` | 孩子 | 日常 C++ 练习代码（`atcoder/`、`codeforces/`、`luogu/`、`oj/`）及同步日志 |
 | `mistakes/` | 孩子（AI 自动写） | 一题一档的结构化错题卡（按四维根因打标） |
 | `profile/` | 双方协作 | 孩子档案、能力状态表、高频习惯/犯错库、家长周期诊断报告 |
-| `scripts/` | 家长维护 | Windows/Mac 一键同步脚本、AtCoder 提交记录拉取脚本 |
+| `scripts/` | 家长维护 | Windows/Mac 一键同步脚本、AtCoder/Codeforces 提交记录拉取脚本 |
 
 ## 方案 A 快速上线步骤
 

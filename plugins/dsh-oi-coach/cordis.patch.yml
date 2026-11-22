@@ -1,0 +1,15 @@
+# DeepSeek Harness (Cordis) 插件补丁骨架
+# 当需要从“纯 Workspace Skills”升级为“可安装的 DSH 运行时插件”时，在此挂载插件服务、权限策略或同步钩子。
+
+- insert:
+    - id: oi-coach-plugin
+      name: "dsh-oi-coach"
+      config:
+        # 严禁自动修改孩子源码目录的保护声明（占位配置，待按具体 DSH 版本实现）
+        protectedPaths:
+          - "AGENTS.md"
+          - ".dsh/skills"
+          - "courses/raw"
+        studentCodePaths:
+          - "training"
+        autoSyncOnSessionEnd: false
