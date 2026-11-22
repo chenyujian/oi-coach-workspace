@@ -59,7 +59,7 @@
 - [x] 跨平台配置（`.gitignore`、`.gitattributes`、Mac/Windows 同步脚本、AtCoder/Codeforces 抓取脚本）
 - [x] 双端规则隔离（`GEMINI.md` 家长端架构师模式 vs `AGENTS.md` 孩子端严格教练模式）与 DSH 插件骨架
 - [x] 本地 Git 仓库初始化（`main` 分支）
-- [ ] **待完成**：在 Gitee 或 GitHub 创建私有远程仓库，并在 Mac mini 上绑定 `origin` 完成首次 `git push`
+- [x] 已在 GitHub 创建私有远程仓库（`git@github.com:chenyujian/oi-coach-workspace.git`），并在 Mac mini 上绑定 `origin` 完成首次 `git push`
 - [ ] **待完成**：在孩子 Windows 电脑完成 `git clone`、桌面放置“学习同步”快捷方式，并用 DeepSeek Harness 桌面版实测一轮对话
 - [ ] **待完成**：（可选）在 `profile/student_profile.md` 填入平台账号，并在 Mac mini 上配置 `launchd` / `cron` 定时拉取 AtCoder / Codeforces 并自动同步
 - [ ] **待完成**：（按需）基于实际体验完善 `plugins/dsh-oi-coach/` 插件功能（如自动同步钩子、权限护栏或面板）
