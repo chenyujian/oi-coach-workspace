@@ -310,6 +310,56 @@ window.__ModuleLoader__.load({
         line-height: 0;
         font-weight: 700;
       }
+      .oi-frac {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        vertical-align: middle;
+        margin: 0 3px;
+        line-height: 1.15;
+        font-size: 0.88em;
+      }
+      .oi-frac-num {
+        padding: 0 3px 1px;
+        border-bottom: 1.5px solid currentColor;
+      }
+      .oi-frac-den {
+        padding: 1px 3px 0;
+      }
+      .oi-quote {
+        margin: 6px 0;
+        padding: 6px 11px;
+        border-left: 3px solid var(--dsw-alias-brand-primary);
+        background: color-mix(in srgb, var(--dsw-alias-brand-primary) 6%, transparent);
+        border-radius: 0 6px 6px 0;
+      }
+      .oi-md-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 8px 0;
+        font-size: 13px;
+      }
+      .oi-md-table th, .oi-md-table td {
+        border: 1px solid var(--dsw-alias-border-l1);
+        padding: 6px 9px;
+        text-align: left;
+      }
+      .oi-md-table th {
+        background: var(--dsw-alias-bg-layer-2);
+        font-weight: 700;
+      }
+      .oi-details {
+        margin: 8px 0;
+        padding: 8px 12px;
+        border: 1px dashed var(--dsw-alias-border-l1);
+        border-radius: 8px;
+        background: var(--dsw-alias-bg-layer-2);
+      }
+      .oi-details summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--dsw-alias-brand-primary);
+      }
       .oi-code-inline {
         display: inline-block;
         padding: 0 5px;
@@ -1214,14 +1264,6 @@ window.__ModuleLoader__.load({
       for (let i = 0; i < 3; i++) {
         s = s.replace(/\\(?:text|mathrm|mathbf|mathit|operatorname|mathsf)\{([^{}]*)\}/g, '$1')
       }
-      // Convert \frac{a}{b} -> (a) / (b) (omit parens for simple tokens)
-      for (let i = 0; i < 3; i++) {
-        s = s.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, (_m, num, den) => {
-          const n = /^[a-zA-Z0-9._]+$/.test(num.trim()) ? num.trim() : `(${num.trim()})`
-          const d = /^[a-zA-Z0-9._]+$/.test(den.trim()) ? den.trim() : `(${den.trim()})`
-          return `${n} / ${d}`
-        })
-      }
       // Convert \sqrt{a}
       s = s.replace(/\\sqrt\{([^{}]+)\}/g, (_m, inner) =>
         /^[a-zA-Z0-9]$/.test(inner.trim()) ? `√${inner.trim()}` : `√(${inner.trim()})`,
@@ -1265,8 +1307,35 @@ window.__ModuleLoader__.load({
       return s.replace(/\s{2,}/g, ' ').trim()
     }
 
-    function renderMathNodes(raw, keyPrefix) {
-      const norm = normalizeMathLatex(raw)
+    function renderMathNodes(raw, keyPrefix, depth = 0) {
+      const norm = depth === 0 ? normalizeMathLatex(raw) : String(raw || '').trim()
+      // First handle \frac{num}{den} as true textbook stacked fraction
+      if (depth < 3 && norm.includes('\\frac{')) {
+        const out = []
+        const fracRe = /\\frac\{([^{}]+)\}\{([^{}]+)\}/g
+        let last = 0
+        let idx = 0
+        let m
+        while ((m = fracRe.exec(norm)) !== null) {
+          if (m.index > last) {
+            out.push(...renderMathNodes(norm.slice(last, m.index), `${keyPrefix}-fp-${idx}`, depth + 1))
+          }
+          out.push(
+            h(
+              'span',
+              { key: `${keyPrefix}-fr-${idx}`, className: 'oi-frac' },
+              h('span', { className: 'oi-frac-num' }, ...renderMathNodes(m[1], `${keyPrefix}-fn-${idx}`, depth + 1)),
+              h('span', { className: 'oi-frac-den' }, ...renderMathNodes(m[2], `${keyPrefix}-fd-${idx}`, depth + 1)),
+            ),
+          )
+          idx++
+          last = fracRe.lastIndex
+        }
+        if (last < norm.length) {
+          out.push(...renderMathNodes(norm.slice(last), `${keyPrefix}-ft`, depth + 1))
+        }
+        if (out.length) return out
+      }
       const nodes = []
       const scriptRe = /(\^|_)(?:\{([^{}]+)\}|([a-zA-Z0-9+-]))/g
       let last = 0
@@ -1322,8 +1391,37 @@ window.__ModuleLoader__.load({
       return out.length ? out : ['']
     }
 
-    function renderRichMessage(text) {
+    function renderRichMessage(text, keyBase = 'r') {
       const raw = String(text || '')
+      // 0. Split out <details><summary>...</summary>...</details> spoiler blocks
+      const detRe = /<details>\s*<summary>([\s\S]*?)<\/summary>([\s\S]*?)<\/details>/gi
+      if (detRe.test(raw)) {
+        detRe.lastIndex = 0
+        const parts = []
+        let last = 0
+        let dm
+        let idx = 0
+        while ((dm = detRe.exec(raw)) !== null) {
+          if (dm.index > last) {
+            parts.push(...renderRichMessage(raw.slice(last, dm.index), `${keyBase}-pre-${idx}`))
+          }
+          parts.push(
+            h(
+              'details',
+              { key: `${keyBase}-det-${idx}`, className: 'oi-details' },
+              h('summary', null, ...renderInlineRich(dm[1].trim(), `${keyBase}-sum-${idx}`)),
+              h('div', { style: { marginTop: 8 } }, ...renderRichMessage(dm[2].trim(), `${keyBase}-body-${idx}`)),
+            ),
+          )
+          idx++
+          last = detRe.lastIndex
+        }
+        if (last < raw.length) {
+          parts.push(...renderRichMessage(raw.slice(last), `${keyBase}-tail`))
+        }
+        return parts
+      }
+
       // 1. Split out fenced code blocks ```...```
       const codeSplitRe = /```([a-zA-Z0-9_+-]*)\n?([\s\S]*?)```/g
       const blocks = []
@@ -1339,7 +1437,7 @@ window.__ModuleLoader__.load({
       const elements = []
       blocks.forEach((blk, bIdx) => {
         if (blk.type === 'code') {
-          elements.push(h('pre', { key: `cb-${bIdx}`, className: 'oi-code-block' }, blk.text))
+          elements.push(h('pre', { key: `${keyBase}-cb-${bIdx}`, className: 'oi-code-block' }, blk.text))
           return
         }
         // 2. Split out display math blocks $$...$$ or \[...\]
@@ -1349,27 +1447,91 @@ window.__ModuleLoader__.load({
         let segIdx = 0
         const pushLines = (chunk) => {
           const lines = chunk.split('\n')
-          lines.forEach((ln, lIdx) => {
+          let i = 0
+          while (i < lines.length) {
+            const ln = lines[i]
             const trimmed = ln.trim()
-            if (/^#{1,4}\s+/.test(trimmed)) {
+            // Markdown table detection
+            if (trimmed.startsWith('|') && i + 1 < lines.length && /^\|[\s:|-]+\|?$/.test(lines[i + 1].trim())) {
+              const parseRow = (row) =>
+                row
+                  .trim()
+                  .replace(/^\|/, '')
+                  .replace(/\|$/, '')
+                  .split('|')
+                  .map((c) => c.trim())
+              const headers = parseRow(ln)
+              i += 2
+              const rows = []
+              while (i < lines.length && lines[i].trim().startsWith('|')) {
+                rows.push(parseRow(lines[i]))
+                i++
+              }
+              elements.push(
+                h(
+                  'table',
+                  { key: `${keyBase}-tbl-${bIdx}-${segIdx}-${i}`, className: 'oi-md-table' },
+                  h(
+                    'thead',
+                    null,
+                    h(
+                      'tr',
+                      null,
+                      ...headers.map((cell, ci) =>
+                        h('th', { key: ci }, ...renderInlineRich(cell, `${keyBase}-th-${bIdx}-${i}-${ci}`)),
+                      ),
+                    ),
+                  ),
+                  h(
+                    'tbody',
+                    null,
+                    ...rows.map((r, ri) =>
+                      h(
+                        'tr',
+                        { key: ri },
+                        ...r.map((cell, ci) =>
+                          h('td', { key: ci }, ...renderInlineRich(cell, `${keyBase}-td-${bIdx}-${i}-${ri}-${ci}`)),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+              continue
+            }
+            if (/^---+$/.test(trimmed)) {
+              elements.push(
+                h('hr', { key: `${keyBase}-hr-${bIdx}-${segIdx}-${i}`, style: { border: 'none', borderTop: `1px solid ${C.border}`, margin: '10px 0' } }),
+              )
+            } else if (/^>\s?/.test(trimmed)) {
+              const qText = trimmed.replace(/^>\s?/, '')
+              elements.push(
+                h(
+                  'div',
+                  { key: `${keyBase}-q-${bIdx}-${segIdx}-${i}`, className: 'oi-quote' },
+                  ...renderInlineRich(qText, `${keyBase}-qi-${bIdx}-${segIdx}-${i}`),
+                ),
+              )
+            } else if (/^#{1,4}\s+/.test(trimmed)) {
               const titleText = trimmed.replace(/^#{1,4}\s+/, '')
               elements.push(
                 h(
                   'div',
-                  { key: `h-${bIdx}-${segIdx}-${lIdx}`, style: { fontWeight: 800, fontSize: 14.5, margin: '6px 0 3px' } },
-                  ...renderInlineRich(titleText, `hi-${bIdx}-${segIdx}-${lIdx}`),
+                  { key: `${keyBase}-h-${bIdx}-${segIdx}-${i}`, style: { fontWeight: 800, fontSize: 14.5, margin: '8px 0 4px' } },
+                  ...renderInlineRich(titleText, `${keyBase}-hi-${bIdx}-${segIdx}-${i}`),
                 ),
               )
             } else {
               elements.push(
                 h(
                   'div',
-                  { key: `l-${bIdx}-${segIdx}-${lIdx}`, style: { minHeight: trimmed ? undefined : 6 } },
-                  ...renderInlineRich(ln, `li-${bIdx}-${segIdx}-${lIdx}`),
+                  { key: `${keyBase}-l-${bIdx}-${segIdx}-${i}`, style: { minHeight: trimmed ? undefined : 6 } },
+                  ...renderInlineRich(ln, `${keyBase}-li-${bIdx}-${segIdx}-${i}`),
                 ),
               )
             }
-          })
+            i++
+          }
         }
         while ((dm = dispRe.exec(blk.text)) !== null) {
           if (dm.index > dLast) {
@@ -1380,8 +1542,8 @@ window.__ModuleLoader__.load({
           elements.push(
             h(
               'div',
-              { key: `dm-${bIdx}-${segIdx++}`, className: 'oi-math-block' },
-              ...renderMathNodes(expr, `dmn-${bIdx}-${segIdx}`),
+              { key: `${keyBase}-dm-${bIdx}-${segIdx++}`, className: 'oi-math-block' },
+              ...renderMathNodes(expr, `${keyBase}-dmn-${bIdx}-${segIdx}`),
             ),
           )
           dLast = dispRe.lastIndex
@@ -1600,7 +1762,13 @@ window.__ModuleLoader__.load({
     }
 
     function DocModal({ modal }) {
+      const [rawView, setRawView] = React.useState(false)
+      React.useEffect(() => {
+        setRawView(false)
+      }, [modal?.path])
       if (!modal) return null
+      const isMd = /\.md$/i.test(String(modal.path || ''))
+      const showRich = isMd && !rawView
       return h(
         'div',
         { className: 'oi-modal-bg', onClick: () => setState({ docModal: null }) },
@@ -1616,10 +1784,26 @@ window.__ModuleLoader__.load({
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
+                gap: 8,
               },
             },
             h('div', { style: { fontWeight: 700, fontSize: 14 } }, `${modal.title}（${modal.path}）`),
-            h('button', { type: 'button', className: 'oi-btn', onClick: () => setState({ docModal: null }) }, '关闭'),
+            h(
+              'div',
+              { style: { display: 'flex', gap: 6, alignItems: 'center' } },
+              isMd
+                ? h(
+                    'button',
+                    {
+                      type: 'button',
+                      className: 'oi-btn',
+                      onClick: () => setRawView((v) => !v),
+                    },
+                    rawView ? '📖 易读数学排版' : '📄 查看原文',
+                  )
+                : null,
+              h('button', { type: 'button', className: 'oi-btn', onClick: () => setState({ docModal: null }) }, '关闭'),
+            ),
           ),
           h(
             'div',
@@ -1628,20 +1812,26 @@ window.__ModuleLoader__.load({
               ? h('div', { style: { color: C.sub } }, '加载中…')
               : modal.error
                 ? h('div', { style: { color: C.err } }, modal.error)
-                : h(
-                    'pre',
-                    {
-                      style: {
-                        margin: 0,
-                        whiteSpace: 'pre-wrap',
-                        wordBreak: 'break-word',
-                        fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-                        fontSize: 12.5,
-                        lineHeight: 1.65,
+                : showRich
+                  ? h(
+                      'div',
+                      { style: { fontSize: 13.5, lineHeight: 1.75, wordBreak: 'break-word' } },
+                      ...renderRichMessage(modal.content, 'doc'),
+                    )
+                  : h(
+                      'pre',
+                      {
+                        style: {
+                          margin: 0,
+                          whiteSpace: 'pre-wrap',
+                          wordBreak: 'break-word',
+                          fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                          fontSize: 12.5,
+                          lineHeight: 1.65,
+                        },
                       },
-                    },
-                    modal.content,
-                  ),
+                      modal.content,
+                    ),
           ),
         ),
       )
