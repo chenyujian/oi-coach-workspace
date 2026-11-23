@@ -549,48 +549,32 @@
       </div>
     </section>
 
-    <!-- 2. 4-Stage Roadmap -->
-    <section class="roadmap no-print" aria-label="四大关卡路线图">
-      <div class="pillar active">
-        <span class="pillar-tag">第 1 关 · 正在闯关（3 课）</span>
+    <!-- 2. 4-Stage Roadmap (Stage 1 & Stage 2 interactive!) -->
+    <section class="roadmap no-print" id="roadmapGrid" aria-label="四大关卡路线图">
+      <div class="pillar active" data-stage="1" style="cursor:pointer;">
+        <span class="pillar-tag">第 1 关 · 已开放（3 课）</span>
         <h3>1. 用字母和式子说话</h3>
-        <p>从真实 OI 题面剥故事起字母、玩转多字母/含参方程，用不等式和“划相同块”证贪心。</p>
+        <p>剥故事起字母、多字母展开与合并、含参方程与不等式比较证明。</p>
       </div>
-      <div class="pillar locked">
-        <span class="pillar-tag">第 2 关 · 即将解锁</span>
+      <div class="pillar" data-stage="2" style="cursor:pointer;">
+        <span class="pillar-tag" style="background:#059669;color:#fff;">第 2 关 · 新开放（3 课）</span>
         <h3>2. 看穿题目的“真面目”</h3>
-        <p>认出序列、树图和规律，搞定整数上下取整、差 1 陷阱和一直不变的量。</p>
+        <p>看 N 定生死与 4 类数学对象、整数上下取整“减 1”除法、差 1 与不变量。</p>
       </div>
       <div class="pillar locked">
         <span class="pillar-tag">第 3 关 · 后续解锁</span>
         <h3>3. 换个角度把难题变简单</h3>
-        <p>正面不好算就反着算，枚举太慢就换主角算贡献，把陌生题变成老熟人。</p>
+        <p>拆方向与抄前一步、最优化转猜答案判定、正难则反与换主角算贡献。</p>
       </div>
       <div class="pillar locked">
         <span class="pillar-tag">第 4 关 · 后续解锁</span>
-        <h3>4. 像侦探一样查错和证明</h3>
-        <p>从小例子猜规律，用反例一秒抓虫，写代码前先估清复杂度和 64 位溢出。</p>
+        <h3>4. 像侦探一样计数与盲练</h3>
+        <p>组合计数四大模型、极小归纳验毒与无标签综合盲练舱。</p>
       </div>
     </section>
 
-    <!-- 3. Lesson tabs -->
-    <nav class="lesson-tabs no-print" id="lessonTabs" aria-label="第 1 关课程选择">
-      <button class="lesson-tab active" data-lesson="l1" type="button">
-        <div class="lt-num">第 1 关 · 第 1 课</div>
-        <div class="lt-title">剥故事起字母：多字母展开与合并</div>
-        <div class="lt-desc">真实 OI 题剥故事 · 拆三项括号与合并同类项 · 数学 = vs C++ ==</div>
-      </button>
-      <button class="lesson-tab" data-lesson="l2" type="button">
-        <div class="lt-num">第 1 关 · 第 2 课</div>
-        <div class="lt-title">升级解方程：双边 x、负项与全字母倒推</div>
-        <div class="lt-desc">跳过幼稚算术题 · 氢气球理解负项 · 纯字母公式与二元含参消元</div>
-      </button>
-      <button class="lesson-tab" data-lesson="l3" type="button">
-        <div class="lt-num">第 1 关 · 第 3 课</div>
-        <div class="lt-title">不等式翻号 & 完整 5 步贪心证明</div>
-        <div class="lt-desc">数轴翻号接取负反转 · 小数字→盒子→手拆→划相同块→冒泡桥与 C++ cmp</div>
-      </button>
-    </nav>
+    <!-- 3. Lesson tabs (rendered dynamically for activeStage) -->
+    <nav class="lesson-tabs no-print" id="lessonTabs" aria-label="当前关卡课程选择"></nav>
 
     <div id="lessonHost"></div>
   </main>
@@ -601,6 +585,7 @@
 
       // ---------- State ----------
       const state = {
+        activeStage: 1,
         activeLesson: 'l1',
         protocolOpen: true,
         // L1
@@ -625,22 +610,51 @@
         l3B: 5,
         l3History: '初始状态：2 < 5（2 在 5 的左边）。点下面按钮观察两点怎么动！',
         l3Flipped: false,
-        // L3 5-step greedy proof (corrected bottom-up ladder: numbers -> box -> expand step by step -> cancel -> bubble + cmp!)
-        l3Step: 1, // 1..5
+        // L3 5-step greedy proof
+        l3Step: 1,
         l3P: 0,
         l3T1: 3,
         l3W1: 4,
         l3T2: 2,
         l3W2: 5,
         l3BoxBuilt: false,
-        l3Expand1: false, // expand (P+t1)*w1 and (P+t2)*w2
-        l3Expand2: false, // expand (P+t1+t2)*w2 and (P+t2+t1)*w1
+        l3Expand1: false,
+        l3Expand2: false,
         l3Canceled: { pw1: false, pw2: false, t1w1: false, t2w2: false },
+        // Stage 2 · L4 (Story Stripper + N Complexity Radar)
+        l4Card: 0,
+        l4Picks: {}, // { cardIdx: chosenType }
+        l4NIdx: 5, // index into L4_N_LEVELS
+        // Stage 2 · L5 (Integer Division, Ceil & Cut-Wood)
+        l5Mode: 'box', // 'box' | 'cut'
+        l5Stage: 0, // 0..3 (num, box, letter, cpp)
+        l5A: 10,
+        l5B: 5,
+        // Stage 2 · L6 (Off-by-one Ruler + Modulo Clock + Invariant Board)
+        l6L: 3,
+        l6R: 7,
+        l6M: 7,
+        l6X: -3,
+        l6Board: [1, 2, 4],
+        l6BoardOps: 0,
         // Quizzes (locked on first click!)
         quizAnswers: {},
-        // Parent answer unlock per lesson (requires code 2015 or quick parent check)
-        parentUnlocked: { l1: false, l2: false, l3: false },
-        parentLockErr: { l1: '', l2: '', l3: '' },
+        // Parent answer unlock per lesson
+        parentUnlocked: { l1: false, l2: false, l3: false, l4: false, l5: false, l6: false },
+        parentLockErr: { l1: '', l2: '', l3: '', l4: '', l5: '', l6: '' },
+      };
+
+      const STAGE_LESSONS = {
+        1: [
+          { id: 'l1', num: '第 1 关 · 第 1 课', title: '剥故事起字母：多字母展开与合并', desc: '真实 OI 题剥故事 · 拆三项括号与合并同类项 · 数学 = vs C++ ==' },
+          { id: 'l2', num: '第 1 关 · 第 2 课', title: '升级解方程：双边 x、负项与全字母倒推', desc: '双边 x 氢气球 · 全字母倒推公式 · 二元含参消元与无解边界' },
+          { id: 'l3', num: '第 1 关 · 第 3 课', title: '不等式翻号 & 完整 5 步贪心证明', desc: '数轴翻号接取负反转 · 小数→盒子→手拆→划相同块→冒泡桥与 cmp' },
+        ],
+        2: [
+          { id: 'l4', num: '第 2 关 · 第 4 课', title: '剥故事 + 看 N 定生死（建模入口）', desc: '4 类底层数学对象识别 · 1 秒算力雷达防 TLE · 防爆 int 预判' },
+          { id: 'l5', num: '第 2 关 · 第 5 课', title: '整数除法、上下取整与“减 1”公式', desc: '装盒进一 (a+b-1)/b · 切木头防多算 (a-1)/x · 整除边界验毒' },
+          { id: 'l6', num: '第 2 关 · 第 6 课', title: '差 1 陷阱、时钟取模与操作不变量', desc: '数轴点段差 1 · 负数取模转盘 · 奇偶不变量一秒判无解' },
+        ],
       };
 
       // ---------- L1 Scenarios (including real OI story stripping + intermediate ∑ step + 3-term distributive!) ----------
@@ -1113,6 +1127,168 @@
             rubric: '家长听懂要点：A 整除丢精度(WA)、B 爆 int 溢出(WA)、D sort 写 <= 破坏严格弱序(可能 RE)。',
           },
         ],
+        l4: [
+          {
+            q: '1. 看到一道新题的数据范围是 N ≤ 300，时限 1 秒。在“剥故事 + 看 N 定生死”这一步，最靠谱的第一反应是？',
+            options: [
+              'A. N 只有 300，O(N³) 约 2.7×10⁷ 次都能稳过，先想最直接好写的暴力，别盲目追求复杂算法',
+              'B. 无论 N 多小都必须设计 O(N log N) 算法，否则一定会超时',
+              'C. N = 300 时 O(N²) 已经超过 10⁸，所以必须直接放弃枚举',
+              'D. 只有 N ≤ 20 才能写双重循环，N = 300 必须写树状数组',
+            ],
+            ans: 0,
+            explain: '1 秒大约能跑 10⁸ 次简单运算！N=300 时 N²=9×10⁴、N³=2.7×10⁷，暴力稳过。看 N 定生死既能防超时，也能防止“杀鸡用牛刀”把简单题想太复杂！',
+            oral: '请口算给家长听：当 N = 300 时，O(N²) 大约多少次？那换成 N = 2×10⁵ 时，O(N²) 又是多少次？',
+            rubric: '家长听懂要点：N=300 时 9 万次随便过；N=2×10⁵ 时 4×10¹⁰ 次远超 10⁸，必 TLE。',
+          },
+          {
+            q: '2. 题目说“有 N 座城市，每座城市里有一个固定传送门把你送到下一座城市 A_i，问走 K = 10¹⁸ 步后在哪”。剥掉故事外壳，它属于哪种数学对象？',
+            options: [
+              'A. 连续区间滑动窗口',
+              'B. 每个状态只有唯一出口的功能图（必进入尾链 + 循环节）',
+              'C. 任意两点间都有多条路径的网格迷宫',
+              'D. 二分答案单调判定问题',
+            ],
+            ans: 1,
+            explain: '每座城市只指向唯一的下一座城市，且城市总数只有 N 个——最多走 N+1 步必然遇到重复点，进入“尾链 + 环”！看到 K=10¹⁸，第一步立刻枪毙直接循环模拟。',
+            oral: '用大白话给爸爸/妈妈讲讲：为什么只有 N 座城市，走超过 N 步就“绝对不可能每步都到新城市”？',
+            rubric: '家长听懂要点：类似鸽巢原理——一共就 N 座城市，走 N+1 个位置肯定至少有 1 座重复踩到，从此以后就绕圈了。',
+          },
+          {
+            q: '3. 题目说“有 N ≤ 10⁵ 个点，要算任意两个不同点之间的某种得分总和，每对点得分最高 10⁷”。还没写代码前，看一眼 N 和得分上限，下面哪两个预警必须立刻拉响？',
+            options: [
+              'A. 只需要防空间爆内存，时间 O(N²) 和 int 都够用',
+              'B. 时间 O(N²) 稳过，但答案需要开 long long',
+              'C. ① 枚举所有点对 O(N²) ≈ 5×10⁹ 必 TLE；② 答案上限约 5×10¹⁶ 必爆 int（必须用 long long）',
+              'D. 只需要开 double 浮点数就能同时解决时间和溢出',
+            ],
+            ans: 2,
+            explain: '两两配对数约 N(N-1)/2 ≈ 5×10⁹，直接两层循环必超时；再乘 10⁷ 达 5×10¹⁶，远超 32 位 int 上限（2.1×10⁹），必须在乘法前就进入 long long！',
+            oral: '请报出 32 位 int 大约能装到多大（约 2×10⁹）和 64 位 long long 大约能装到多大（约 9×10¹⁸）？',
+            rubric: '家长听懂要点：记住两个锚点：int 约 2×10⁹，long long 约 9×10¹⁸；看到 10⁵×10⁵ 就立刻条件反射开 long long。',
+          },
+          {
+            q: '4. 遇到一段 200 字的长故事题（比如农夫、奶牛、传送带、糖果盒），用读题五步法“剥故事”时，最核心的是抓哪 3 样东西？',
+            options: [
+              'A. 故事主角的名字、时间地点和背景年代',
+              'B. 输入是什么数学对象、允许做什么操作/约束、最后要算什么目标（加数据范围 N）',
+              'C. 题面里一共有几组样例、样例有多长',
+              'D. 猜测出题人平时最喜欢考哪种数据结构模板',
+            ],
+            ans: 1,
+            explain: '不管故事外壳怎么换，剥干净后永远只剩“对象 + 操作/约束 + 目标 + 数据范围 N”。抓稳这 4 项，200 字长题立刻变成 2 行清晰数学题！',
+            oral: '选你最近做过的一道题（如多彩糖果或切木头），试着不用故事词、用 1 句话口头“剥故事”给家长听！',
+            rubric: '家长听懂要点：能去掉“糖果/木头”等外壳词，说出“给一个序列/若干正整数，要求……”即可满分。',
+          },
+        ],
+        l5: [
+          {
+            q: '1. 有 a 颗糖，每个盒子最多装 b 颗（a, b 为正整数），问至少需要几个盒子。把向上取整写成纯整数公式 (a + b - 1) / b，为什么分子是加 b - 1 而不是加 b？',
+            options: [
+              'A. 如果加 b，当 a 刚好被 b 整除（如 a=10, b=5）时会算出 (10+5)/5 = 3 盒，平白多算 1 盒！',
+              'B. 因为 C++ 语法规定除法分子里不能出现相同的字母 b',
+              'C. 加 b 和加 b - 1 算出来的结果永远完全一样',
+              'D. 因为余数最大可以达到 b + 1，所以要减 1 补回来',
+            ],
+            ans: 0,
+            explain: '除以 b 的非零余数只有 1, 2, …, b-1！加 b-1 刚好能让余数 ≥ 1 的全都“冲过下一格进 1”，同时让余数 = 0（刚好整除）的只加了 b-1，冲不过去，一盒都不多算！',
+            oral: '拿 b = 5 举两个具体数（a = 10 和 a = 11）讲给爸爸/妈妈听：加 4 为什么刚好一个不进位、一个进位？',
+            rubric: '家长听懂要点：10+4=14，14/5=2 刚好；11+4=15，15/5=3 进 1 盒。若加 5，10+5=15 就会多算成 3 盒。',
+          },
+          {
+            q: '2. 把一根长 a 的木头切成每段不超过 x 的若干段，最少需要切几刀（分成 m 段只需切 m-1 刀）？下面哪个纯整数公式在【刚好整除】和【不能整除】时都 100% 正确？',
+            options: [
+              'A. a / x',
+              'B. (a - 1) / x',
+              'C. a / x - 1',
+              'D. (a + x) / x',
+            ],
+            ans: 1,
+            explain: '需要 ⌈a/x⌉ 段，刀数 = ⌈a/x⌉ - 1 = ⌊(a+x-1)/x⌋ - 1 = ⌊(a-1)/x⌋！代 a=10, x=5 验毒：(10-1)/5 = 1 刀（对！），而 A 错算出 2 刀；代 a=11, x=5：(11-1)/5 = 2 刀（对！），而 C 错算出 1 刀！',
+            oral: '请当场口算两组验毒数据：(a=10, x=5) 和 (a=11, x=5)，分别戳穿选项 A 和选项 C 的漏洞！',
+            rubric: '家长听懂要点：整除(10,5)戳穿 A（算成 2 刀，实际 1 刀）；非整除(11,5)戳穿 C（算成 1 刀，实际要 2 刀）。',
+          },
+          {
+            q: '3. 在 C++ 代码里写 int ans = (a + b - 1) / b;，如果题目里 a 和 b 最大都可达 2×10⁹（都在 int 范围内），这行代码暗藏什么风险？',
+            options: [
+              'A. 没有任何风险，因为结果 ans 一定不超过 2×10⁹',
+              'B. 会发生除以 0 的运行时错误',
+              'C. 分子 a + b - 1 最大接近 4×10⁹，做除法前就先爆 32 位 int 溢出了！',
+              'D. 会自动变成浮点数导致输出小数点',
+            ],
+            ans: 2,
+            explain: '哪怕最终商很小，中间结果 a + b - 1 也会先在 32 位 int 里相加溢出成负数！防坑写法：直接把 a, b 开成 long long，或者写成 (1LL * a + b - 1) / b（更省心的是正整数时写成 (a - 1) / b + 1，绝不超 a！）。',
+            oral: '顺手学个超酷的小技巧：为什么 (a - 1) / b + 1（a ≥ 1 时）和 (a + b - 1) / b 等价，而且永远不会在分子相加时溢出？',
+            rubric: '家长听懂要点：因为 a-1 比 a 还小，不可能溢出！但注意前提是 a ≥ 1（a = 0 时不行）。',
+          },
+          {
+            q: '4. 已知正整数 a 除以 b 的商是 q、余数是 r（0 ≤ r < b），把它们写成等式是 a = q·b + r。如果题目告诉你 a = 29、q = 4、r = 5，能倒推出除数 b 等于几？',
+            options: [
+              'A. 5',
+              'B. 7',
+              'C. 8',
+              'D. 6',
+            ],
+            ans: 3,
+            explain: '套用带余除法等式 29 = 4·b + 5 → 两边同减 5 得 4·b = 24 → b = 6！并且别忘验毒检查余数条件：r = 5 < b = 6，完全合法！',
+            oral: '如果把刚才题目里的 r 改成 6（29 = 4·b + 6），除数 b 还能是整数吗？顺便说说带余除法里余数 r 必须小于谁？',
+            rubric: '家长听懂要点：29-6=23 不能被 4 整除；而且余数 r 必须严格满足 0 ≤ r < b。',
+          },
+        ],
+        l6: [
+          {
+            q: '1. 书本从第 L 页看到第 R 页（两端都看），一共看了几页？滑动窗口长 K，当前刚滑入下标 right（0-based），需要移出窗口左边的那个旧元素下标是？',
+            options: [
+              'A. 看了 R - L + 1 页；移出下标 right - K',
+              'B. 看了 R - L 页；移出下标 right - K + 1',
+              'C. 看了 R - L + 1 页；移出下标 right - K + 1',
+              'D. 看了 R - L - 1 页；移出下标 right - K - 1',
+            ],
+            ans: 0,
+            explain: '用极小数字验毒最稳！从第 3 页看到第 5 页：3、4、5 共 5-3+1 = 3 页！窗口长 K=3，当 right=3 时窗口应保留 [1,2,3]，刚被挤出去的是下标 3-3 = 0（即 right - K）！',
+            oral: '请用 L=3, R=5 和 K=3, right=3 口算给家长看：怎么在 3 秒内用极小例子验出“+1 还是 -1”，从此不靠死记硬背？',
+            rubric: '家长听懂要点：能用极小具体数直接数出来验证公式，而不是靠猜。',
+          },
+          {
+            q: '2. 在 C++ 里算 (-3) % 7，计算机输出的是 -3 而不是钟面上的 4！为了让任何整数（正数或负数）对正数 M 取模都稳稳落在 0 ~ M-1 之间，标准写法是？',
+            options: [
+              'A. abs(x) % M',
+              'B. (x % M + M) % M',
+              'C. (x + M) % M',
+              'D. x % M + M',
+            ],
+            ans: 1,
+            explain: 'A 把 -3 变 3 算错钟面位置（倒退 3 格到 4 不是 3！）；C 在 x = -100 时加一次 M=7 还是负的；D 在 x 正数时会超过 M-1！只有 (x % M + M) % M 先把余数压进 (-M, M)，加 M 变正，再 % M 完美落进 [0, M-1]！',
+            oral: '拿 x = -10、M = 7 给家长演示一下：为什么选项 C 的 (-10 + 7) % 7 还是错的，而选项 B 算出来是多少？',
+            rubric: '家长听懂要点：C 算出 -3 还是负的；B 先算 -10%7 = -3，加 7 得 4，再 %7 得 4！',
+          },
+          {
+            q: '3. 黑板上有 3 个数 [1, 2, 4]，每次操作允许你挑任意两个数同时 +1。问：经过若干次操作后，能不能让这 3 个数全部变成相等的【偶数】？',
+            options: [
+              'A. 可以，只要操作次数足够多就能凑平',
+              'B. 可以，先给 1 和 2 不断加 1 追上 4，再一起加',
+              'C. 绝对不可能！因为每次总和 +2，总和永远保持奇数，而 3 个偶数之和必为偶数',
+              'D. 取决于第一次选哪两个数，选对了就能做到',
+            ],
+            ans: 2,
+            explain: '这就是“操作不变量”的秒杀威力！初始总和 1+2+4 = 7（奇数），每次选两数各 +1 总和净增 2，奇偶性死活不变（永远是奇数）；而目标“3 个偶数之和”必为偶数，奇数永远不可能变成偶数，一秒判无解！',
+            oral: '顺手思考一步：如果目标改成“全部变成相等的【奇数】”，按奇偶不变量还有矛盾吗？能做到吗（举个操作步骤）？',
+            rubric: '家长听懂要点：3 个奇数之和是奇数，奇偶不矛盾！具体做法：(1,2,4)→(2,3,4)→(3,4,4)→(4,4,5)→(5,5,5)，4 步做到！',
+          },
+          {
+            q: '4. 一个传送轨道先走一段长度 s = 2 的尾链，再进入长度 L = 3 的圆环（下标 0,1 在尾链，下标 2,3,4 在环里）。走 K = 10 步后所在下标怎么算最准确？',
+            options: [
+              'A. 10 % 5 = 0',
+              'B. 10 % 3 = 1',
+              'C. 2 + 10 % 3 = 3',
+              'D. 2 + (10 - 2) % 3 = 4',
+            ],
+            ans: 3,
+            explain: '不能把尾链和环混在一起取模！必须先扣掉入环前走掉的 s = 2 步（剩下 10 - 2 = 8 步都在环里绕），再对环长 L = 3 取余得 8 % 3 = 2，最后加上入环起点下标 2，位置就是 2 + 2 = 4！',
+            oral: '请用手指点着轨迹 0→1→2→3→4→2→3→4→2→3→4 走 10 步验证，说明为什么 C 选项忘了减 2 会算错！',
+            rubric: '家长听懂要点：走完前 2 步刚到入环点 2，剩下的步数只有 K - s = 8 步，C 忘了扣尾链等于把前 2 步也当环里算了。',
+          },
+        ],
       };
 
       // ---------- Worksheets (Strictly tuned to fit 1 PAGE A4, zero duplicate text, aligned 5-slot cancel grid, from-scratch variable naming!) ----------
@@ -1238,6 +1414,116 @@
             <strong>题 1：</strong>依次为 <code>&lt;</code>（同加不变）、<code>&gt;</code>（同乘 -1 翻号）、<code>&gt;</code>（同乘 -3 翻号，再加 2 不变）。<br/>
             <strong>题 2：</strong>甲 5 格：<code>P·w₁</code>、<code>t₁·w₁</code>、<code>P·w₂</code>、<code>t₁·w₂</code>、<code>t₂·w₂</code>；乙 5 格：<code>P·w₂</code>、<code>t₂·w₂</code>、<code>P·w₁</code>、<code>t₂·w₁</code>、<code>t₁·w₁</code>。划掉 4 项公共块后剩：<code>t₁·w₂ &lt; t₂·w₁</code>；C++ 写法：<code>1LL * a.t * b.w &lt; 1LL * b.t * a.w</code>（注意不是 <code>&lt;=</code>）。<br/>
             <strong>题 3（满足 t₁ &lt; t₂ 且 t₁·w₂ &gt; t₂·w₁ 均对）：</strong>例 <code>(2, 1)</code> 与 <code>(3, 10)</code>，先 1 后 2 罚 <code>2×1+5×10=52</code>，先 2 后 1 罚 <code>3×10+5×1=35</code>。
+          `,
+        },
+        l4: {
+          title: '第 2 关 · 第 4 课手写闯关单：剥故事 + 看 N 定生死',
+          goal: '拿到陌生题先去掉故事词，认出数学对象，再 10 秒内通过 N 锁定允许的复杂度和数据类型。',
+          tasksHtml: `
+            <div class="ws-task">
+              <h4>题 1 · 剥故事训练（去掉故事外壳，用 1 句话写清数学对象与目标）</h4>
+              <table class="ws-table">
+                <tr><th style="width:44%;">带故事的题面</th><th style="width:20%;">数学对象</th><th style="width:36%;">剥壳后的 1 句纯数学描述</th></tr>
+                <tr><td style="text-align:left;">有 N 颗糖排一排，必须拿走连续 K 颗，求不同颜色种数最大值。</td><td></td><td></td></tr>
+                <tr><td style="text-align:left;">N 个岛由 N-1 座双向桥连通，求任意两岛唯一路径上最大桥费之和。</td><td></td><td></td></tr>
+                <tr><td style="text-align:left;">N 根木头至多切 K 刀，让最长一段尽量短，输出向上取整值。</td><td></td><td></td></tr>
+              </table>
+            </div>
+            <div class="ws-task">
+              <h4>题 2 · 看 N 定生死（1 秒红线 = 10⁸ 次运算，int 上限 ≈ 2×10⁹）</h4>
+              <table class="ws-table">
+                <tr><th style="width:18%;">数据范围 N</th><th style="width:24%;">O(N²) 约几次？过吗？</th><th style="width:28%;">应该瞄准什么复杂度？</th><th style="width:30%;">若求 1+2+…+N 要开 long long 吗？</th></tr>
+                <tr><td><code>N ≤ 400</code></td><td style="height:26px;"></td><td></td><td></td></tr>
+                <tr><td><code>N ≤ 5000</code></td><td style="height:26px;"></td><td></td><td></td></tr>
+                <tr><td><code>N ≤ 2×10⁵</code></td><td style="height:26px;"></td><td></td><td></td></tr>
+                <tr><td><code>N ≤ 10¹⁸</code></td><td style="height:26px;"></td><td></td><td></td></tr>
+              </table>
+            </div>
+            <div class="ws-task">
+              <h4>题 3 · 自主起题并剥壳（从你最近做过或卡过的 1 道题里任选 1 题）</h4>
+              <div class="write-box" style="min-height:66px;">
+                题名/题号：__________________ ｜ 最大 N = ________ ｜ 暴力 O(N²) 过得了吗？______<br/>
+                剥掉故事后的 1 句话模型：_____________________________________________________
+              </div>
+            </div>
+          `,
+          parentAnsHtml: `
+            <strong>题 1：</strong>① 序列/定长区间（求长 K 子数组最多不同值个数）；② 无向树（求所有点对路径最大边权之和）；③ 离散整数最优化（至多 K 次分割最小化最大值上界）。<br/>
+            <strong>题 2：</strong><code>N=400</code>：1.6×10⁵ 稳过 / O(N²)或O(N³) / int 够（和约 8×10⁴）；<code>N=5000</code>：2.5×10⁷ 稳过 / O(N²) / int 够（和约 1.25×10⁷）；<code>N=2×10⁵</code>：4×10¹⁰ 必 TLE / O(N log N)或O(N) / 必须 long long（和约 2×10¹⁰）；<code>N=10¹⁸</code>：必 TLE / O(log N)或O(1)或找环 / 必须 long long（甚至防乘溢出）。<br/>
+            <strong>题 3：</strong>开放题，能用 1 句话去掉故事外壳并正确判断 N 的复杂度即满分。
+          `,
+        },
+        l5: {
+          title: '第 2 关 · 第 5 课手写闯关单：整数除法、上下取整与“减 1”公式',
+          goal: '亲手用整除与非整除两组数验证上下取整公式，推导减 1 恒等式，并写出防溢出 C++ 表达式。',
+          tasksHtml: `
+            <div class="ws-task">
+              <h4>题 1 · 整除 vs 非整除挑刺表（手算真实结果，再对比两个公式！）</h4>
+              <table class="ws-table">
+                <tr><th>木头长 a</th><th>每段上限 x</th><th>真实至少分几段</th><th>真实最少切几刀</th><th>直接算 a/x 对吗？</th><th>算 (a-1)/x 等于几</th></tr>
+                <tr><td>10</td><td>5</td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>11</td><td>5</td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>15</td><td>5</td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>16</td><td>5</td><td></td><td></td><td></td><td></td></tr>
+              </table>
+            </div>
+            <div class="ws-task">
+              <h4>题 2 · 亲手推导“为什么 ⌈a/x⌉ - 1 = ⌊(a-1)/x⌋”</h4>
+              <p>提示：把已知的向上取整公式 <code>⌈a / x⌉ = ⌊(a + x - 1) / x⌋</code> 两边同时减 1，把 <code>- 1</code> 放进分子变成 <code>- x</code>：</p>
+              <div class="write-box" style="min-height:48px;">
+                推导步骤：<code>⌊(a + x - 1) / x⌋ - 1 = ⌊(__________________) / x⌋ = ⌊________ / x⌋</code><br/>
+                一句话说明为什么向上取整只能加 <code>x - 1</code> 不能加 <code>x</code>：______________________________
+              </div>
+            </div>
+            <div class="ws-task">
+              <h4>题 3 · 自主起字母 + 防溢出 C++ 写法（自己决定变量名！）</h4>
+              <p><strong>故事：</strong>一批货物总重很大（可达 10⁹ 公斤），每辆货车最多载重可达 10⁹ 公斤，问至少派几辆车？请自己给两个量起字母，写出<strong>分子绝不会爆 int 溢出</strong>的两种 C++ 写法：</p>
+              <div class="write-box" style="min-height:54px;">
+                我起的字母：__________________________ ｜ 写法 1（long long）：_______________________<br/>
+                写法 2（不相加防溢出，正整数适用）：_______________________ ｜ 代 1 组整除数验毒：____________
+              </div>
+            </div>
+          `,
+          parentAnsHtml: `
+            <strong>题 1：</strong>(10,5)：2段/1刀/a/x=2错/(a-1)/x=1；(11,5)：3段/2刀/a/x=2对/(a-1)/x=2；(15,5)：3段/2刀/a/x=3错/(a-1)/x=2；(16,5)：4段/3刀/a/x=3对/(a-1)/x=3。<br/>
+            <strong>题 2：</strong><code>⌊(a + x - 1 - x) / x⌋ = ⌊(a - 1) / x⌋</code>；加 x 会让原本整除（余数 0）的数多进 1，加 x-1 刚好只让余数 1..x-1 进 1。<br/>
+            <strong>题 3：</strong>如设总重 <code>a</code>、载重 <code>b</code>；写法 1：<code>(1LL * a + b - 1) / b</code>；写法 2：<code>(a - 1) / b + 1</code>（要求 a≥1）。
+          `,
+        },
+        l6: {
+          title: '第 2 关 · 第 6 课手写闯关单：差 1 陷阱、时钟取模与操作不变量',
+          goal: '掌握用极小例子秒杀差 1 Bug、写出负数取模与尾链扣环式子，并学会找“操作中一直不变的量”。',
+          tasksHtml: `
+            <div class="ws-task">
+              <h4>题 1 · 差 1 侦探表（先拿极小数字手数，再写出通用字母式！）</h4>
+              <table class="ws-table">
+                <tr><th style="width:42%;">场景</th><th style="width:28%;">用极小例子手数</th><th style="width:30%;">通用字母公式</th></tr>
+                <tr><td style="text-align:left;">从第 L 页看到第 R 页，一共看了几页？</td><td>L=3, R=5 → ___ 页</td><td></td></tr>
+                <tr><td style="text-align:left;">数轴上坐标 L 到 R 之间，有几段长 1 的格子？</td><td>L=3, R=5 → ___ 段</td><td></td></tr>
+                <tr><td style="text-align:left;">0-based 滑动窗口长 K，刚加进 right，移出谁？</td><td>K=3, right=3 → 移出 ___</td><td></td></tr>
+              </table>
+            </div>
+            <div class="ws-task">
+              <h4>题 2 · 负数取模与尾链扣环</h4>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;font-size:12.5px;margin-top:4px;">
+                <div>（1）钟面长 <code>M = 7</code>，计算 <code>(-10 % 7 + 7) % 7 =</code><div class="write-line"></div></div>
+                <div>（2）尾链长 <code>s = 3</code>、环长 <code>L = 4</code>，走 <code>K = 100</code> 步下标：<div class="write-line"></div></div>
+              </div>
+            </div>
+            <div class="ws-task">
+              <h4>题 3 · 操作不变量判“能不能做到”（先写出一直不变的量！）</h4>
+              <p><strong>谜题：</strong>桌上 4 张牌写着 <code>[2, 3, 5, 7]</code>。每次可以任选 2 张牌，一张 <code>+1</code>、另一张 <code>+3</code>。经过若干次操作后，能不能让 4 张牌全部变成一样的数？</p>
+              <div class="write-box" style="min-height:66px;">
+                ① 初始 4 张牌的总和 = ______（奇数还是偶数？______）<br/>
+                ② 每次操作总和增加 ______，所以总和的奇偶性一直保持 ______（这就是不变量！）<br/>
+                ③ 目标“4 张一样的数（4k）”总和一定是 ______ 数，和 ② 矛盾吗？结论：____________
+              </div>
+            </div>
+          `,
+          parentAnsHtml: `
+            <strong>题 1：</strong>① 3 页，<code>R - L + 1</code>；② 2 段，<code>R - L</code>；③ 移出下标 0，<code>right - K</code>。<br/>
+            <strong>题 2：</strong>(1) <code>(-3 + 7) % 7 = 4</code>；(2) <code>3 + (100 - 3) % 4 = 3 + 97 % 4 = 3 + 1 = 4</code>。<br/>
+            <strong>题 3：</strong>① 初始总和 <code>2+3+5+7 = 17</code>（奇数）；② 每次总和 <code>+4</code>（偶数），所以总和<strong>永远是奇数</strong>；③ 4 张一样的数总和为 <code>4k</code> 必为<strong>偶数</strong>，奇数永远不可能变成偶数 → <strong>绝对不可能做到！</strong>
           `,
         },
       };
@@ -1839,6 +2125,406 @@
         `;
       }
 
+      // ---------- Stage 2 Data & Builders (L4 / L5 / L6) ----------
+      const L4_CARDS = [
+        {
+          story: '【故事 1】有 N ≤ 3×10⁵ 颗糖排成一排，第 i 颗颜色编号为 c_i（可达 10⁹），必须拿走连续的、恰好 K 颗糖，求不同颜色种数的最大值。',
+          ans: 'seq',
+          stripped: '【剥壳】给一个长 N 的序列，求所有长度为 K 的连续子区间中，不同元素个数的最大值。',
+          complexity: 'N ≤ 3×10⁵ → O(N²) 必 TLE，需要定长滑动窗口 O(N log K) 或 O(N)！',
+        },
+        {
+          story: '【故事 2】N ≤ 2×10⁵ 座城市，城市 i 里的传送门会把你送到唯一指定的城市 A_i。从城市 1 出发，恰好传送 K ≤ 10¹⁸ 次后你在哪？',
+          ans: 'state',
+          stripped: '【剥壳】有限状态集合（N 个点），每个状态只有唯一后继，求走 K 步后的终点。',
+          complexity: 'K ≤ 10¹⁸ → 直接模拟必死！因为最多 N+1 步必重复，用“尾链 + 循环节取余”O(N) 秒杀！',
+        },
+        {
+          story: '【故事 3】N ≤ 10⁵ 座岛之间修了 N-1 座双向桥使所有岛连通，每座桥有通行费 w_i。求任意两岛唯一路径上“最贵那座桥”的费用总和。',
+          ans: 'graph',
+          stripped: '【剥壳】给一棵 N 结点的带边权无向树，求所有无序点对路径上最大边权之和。',
+          complexity: 'N ≤ 10⁵ → 枚举点对 O(N²) 必 TLE，且总和达 5×10¹⁶ 必爆 int（需 long long + 算贡献）！',
+        },
+        {
+          story: '【故事 4】有 N ≤ 2×10⁵ 根木头，至多切 K ≤ 10⁹ 刀（可非整数切），让所有木段里最长的一段尽量短，输出向上取整的整数。',
+          ans: 'intopt',
+          stripped: '【剥壳】最小化最大值（离散整数上界）：找最小整数 x，使每根切到 ≤x 的总刀数 ≤K。',
+          complexity: 'N ≤ 2×10⁵, A_i ≤ 10⁹ → 暴力试每个 x 必死，利用单调性二分上界 O(N log maxA)！',
+        },
+      ];
+
+      const L4_N_LEVELS = [
+        { label: 'N = 20', n: 20, logN: 4.3, tip: 'N 极小！指数级 O(2^N) ≈ 10⁶、DFS 暴搜全排列都能跑！' },
+        { label: 'N = 100', n: 100, logN: 6.6, tip: 'N 很小！O(N³) ≈ 10⁶ 轻松过，直接写最好懂的暴力别想太复杂！' },
+        { label: 'N = 400', n: 400, logN: 8.6, tip: 'O(N³) ≈ 6.4×10⁷ 擦线能过，O(N²) ≈ 1.6×10⁵ 闭着眼稳过！' },
+        { label: 'N = 2,000', n: 2000, logN: 11, tip: 'O(N³) 必死（8×10⁹）！O(N²) ≈ 4×10⁶ 非常稳！' },
+        { label: 'N = 5,000', n: 5000, logN: 12.3, tip: 'O(N²) ≈ 2.5×10⁷ 还能稳过，O(N³) 彻底没戏！' },
+        { label: 'N = 10⁵', n: 100000, logN: 16.6, tip: 'OI 最经典红线！O(N²) = 10¹⁰ 必 TLE！立刻锁死 O(N log N) 或 O(N)，且 N(N-1)/2 必爆 int！' },
+        { label: 'N = 3×10⁵', n: 300000, logN: 18.2, tip: 'O(N²) ≈ 9×10¹⁰ 必 TLE！必须 O(N log N) / O(N)，注意常数与关闭 cin 同步！' },
+        { label: 'N = 10⁷', n: 10000000, logN: 23.3, tip: '连 O(N log N) ≈ 2.3×10⁸ 都很悬！必须纯线性 O(N)（如欧拉筛、桶扫描）！' },
+        { label: 'N = 10¹⁸', n: 1e18, logN: 60, tip: '连 O(N) 都跑不完！必须 O(log N)（二分/快速幂/倍增）或 O(1) 数学公式/循环节！' },
+      ];
+
+      function fmtOps(val) {
+        if (val < 1e4) return String(Math.round(val));
+        const exp = Math.floor(Math.log10(val));
+        const mant = (val / Math.pow(10, exp)).toFixed(1);
+        return `${mant}×10^${exp}`;
+      }
+
+      function updateL4RadarDOM() {
+        const item = L4_N_LEVELS[state.l4NIdx];
+        const pill = document.getElementById('pill-l4N');
+        if (pill) pill.textContent = item.label;
+        const box = document.getElementById('l4-radar-body');
+        if (!box) return;
+        const rows = [
+          { name: 'O(log N) 二分/倍增', ops: Math.max(1, item.logN) },
+          { name: 'O(N) 线性扫描', ops: item.n },
+          { name: 'O(N log N) 排序/二分/并查集', ops: item.n * item.logN },
+          { name: 'O(N²) 两层循环枚举', ops: item.n * item.n },
+          { name: 'O(N³) 三层循环', ops: item.n * item.n * item.n },
+        ];
+        const pairs = item.n * (item.n - 1) / 2;
+        const intOverflow = pairs > 2.14e9;
+        box.innerHTML = `
+          <div style="display:grid;gap:7px;">
+            ${rows.map((r) => {
+              const pass = r.ops <= 1e8;
+              const edge = r.ops > 1e8 && r.ops <= 3e8;
+              const pct = Math.min(100, Math.max(4, (Math.log10(Math.max(10, r.ops)) / 10) * 100));
+              const col = pass ? '#059669' : edge ? '#d97706' : '#dc2626';
+              const tag = pass ? '✅ 稳过 (<10⁸)' : edge ? '⚠️ 擦线 (卡常)' : '❌ 必 TLE (>10⁸)';
+              return `
+                <div style="background:#fff;border:1px solid #dbe3f0;border-radius:8px;padding:7px 11px;">
+                  <div style="display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;margin-bottom:4px;">
+                    <span>${r.name}</span>
+                    <span style="color:${col};">约 ${fmtOps(r.ops)} 次 · ${tag}</span>
+                  </div>
+                  <div style="height:7px;background:#e2e8f0;border-radius:999px;overflow:hidden;">
+                    <div style="width:${pct}%;height:100%;background:${col};border-radius:999px;"></div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <div class="feedback-bar ${intOverflow ? 'fb-warn' : 'fb-info'}" style="margin-top:10px;">
+            💡 <strong>判读：</strong>${item.tip}<br/>
+            🔢 <strong>防溢出预警：</strong>两两配对数 N(N-1)/2 ≈ <strong>${fmtOps(pairs)}</strong> → ${intOverflow ? '⚠️ 超过 32 位 int 上限（2.1×10⁹），<strong>必须开 long long！</strong>' : '✅ 还在 int 范围内。'}
+          </div>
+        `;
+      }
+
+      function buildL5VisualSVG(a, b, mode) {
+        if (mode === 'box') {
+          const fullBoxes = Math.floor(a / b);
+          const rem = a % b;
+          const totalBoxes = Math.ceil(a / b);
+          const boxW = Math.min(72, Math.floor(480 / Math.max(1, totalBoxes)) - 10);
+          const startX = 24;
+          let boxesHtml = '';
+          for (let i = 0; i < totalBoxes; i++) {
+            const x = startX + i * (boxW + 10);
+            const isRem = i === fullBoxes && rem > 0;
+            const cnt = isRem ? rem : b;
+            boxesHtml += `
+              <rect x="${x}" y="28" width="${boxW}" height="58" rx="8" fill="${isRem ? '#fef3c7' : '#dbeafe'}" stroke="${isRem ? '#d97706' : '#2563eb'}" stroke-width="2"/>
+              <text x="${x + boxW / 2}" y="53" text-anchor="middle" font-size="13.5" font-weight="800" fill="${isRem ? '#92400e' : '#1e40af'}">${cnt}/${b}</text>
+              <text x="${x + boxW / 2}" y="74" text-anchor="middle" font-size="10.5" fill="#475569">${isRem ? '余数盒' : `第${i + 1}盒`}</text>
+            `;
+          }
+          return `
+            <svg viewBox="0 0 560 118" style="width:100%;max-width:580px;display:block;margin:0 auto;">
+              ${boxesHtml}
+              <text x="280" y="108" text-anchor="middle" font-size="13" font-weight="800" fill="${rem === 0 ? '#059669' : '#1d4ed8'}">
+                总数 a=${a}、每盒 b=${b}：直接 a/b = ${fullBoxes}（${rem === 0 ? '刚好整除无余数' : `漏掉了余数 ${rem} 颗！`}）｜ 真实需要 ${totalBoxes} 盒 = (${a}+${b}-1)/${b}
+              </text>
+            </svg>
+          `;
+        } else {
+          const segs = Math.ceil(a / b);
+          const cuts = segs - 1;
+          const exact = a % b === 0;
+          const barX = 36, barW = 488, barY = 36, barH = 38;
+          let cutsHtml = '';
+          for (let i = 1; i < segs; i++) {
+            const cx = barX + (barW * i) / segs;
+            cutsHtml += `<line x1="${cx}" y1="${barY - 10}" x2="${cx}" y2="${barY + barH + 10}" stroke="#dc2626" stroke-width="3" stroke-dasharray="5,3"/>`;
+            cutsHtml += `<text x="${cx}" y="${barY - 14}" text-anchor="middle" font-size="11" font-weight="800" fill="#dc2626">第${i}刀</text>`;
+          }
+          const eachLen = (a / segs).toFixed(a % segs === 0 ? 0 : 1);
+          return `
+            <svg viewBox="0 0 560 118" style="width:100%;max-width:580px;display:block;margin:0 auto;">
+              <rect x="${barX}" y="${barY}" width="${barW}" height="${barH}" rx="7" fill="#fef3c7" stroke="#b45309" stroke-width="2.5"/>
+              ${cutsHtml}
+              <text x="${barX + barW / 2}" y="${barY + 24}" text-anchor="middle" font-size="13.5" font-weight="800" fill="#78350f">长 a=${a} → 均分 ${segs} 段（每段 ${eachLen} ≤ ${b}），只需切 ${cuts} 刀</text>
+              <text x="280" y="106" text-anchor="middle" font-size="13" font-weight="800" fill="${exact ? '#dc2626' : '#059669'}">
+                ${exact ? `⚡ 刚好整除！直接算 a/x = ${Math.floor(a / b)} 会多切 1 刀！用 (a-1)/x = ${Math.floor((a - 1) / b)} 刚好对！` : `不能整除：a/x = ${Math.floor(a / b)}，(a-1)/x = ${Math.floor((a - 1) / b)}（都对，但只有 (a-1)/x 永远不踩整除坑！）`}
+              </text>
+            </svg>
+          `;
+        }
+      }
+
+      function updateL5DivDOM() {
+        const a = state.l5A, b = state.l5B, mode = state.l5Mode, stage = state.l5Stage;
+        const pA = document.getElementById('pill-l5A');
+        const pB = document.getElementById('pill-l5B');
+        if (pA) pA.textContent = String(a);
+        if (pB) pB.textContent = String(b);
+        const svgBox = document.getElementById('l5-visual-svg');
+        if (svgBox) svgBox.innerHTML = buildL5VisualSVG(a, b, mode);
+
+        const fEl = document.getElementById('l5-stage-formula');
+        const nEl = document.getElementById('l5-stage-note');
+        if (!fEl || !nEl) return;
+        if (mode === 'box') {
+          const ans = Math.floor((a + b - 1) / b);
+          if (stage === 0) { fEl.innerHTML = `(${a} + ${b} - 1) ÷ ${b} 向下取整 = ${ans} 盒`; nEl.textContent = '具体数字：余数最大只到 b-1，所以加 b-1 刚好让非零余数进 1，整除时不进位！'; }
+          else if (stage === 1) { fEl.innerHTML = `(<span class="box-chip chip-a">[总数]</span> + <span class="box-chip chip-b">[每盒容量]</span> - 1) ÷ <span class="box-chip chip-b">[每盒容量]</span>`; nEl.textContent = '中文盒子：记住核心口诀“向上取整加除数减 1”。'; }
+          else if (stage === 2) { fEl.innerHTML = `⌈a / b⌉ = ⌊(a + b - 1) / b⌋`; nEl.textContent = '字母公式：纯整数运算，完全不需要用容易出错的浮点 ceil()！'; }
+          else { fEl.innerHTML = `(1LL * a + b - 1) / b   // 或 a≥1 时 (a - 1) / b + 1`; nEl.textContent = 'C++ 防坑：a+b-1 可能爆 int，记得 1LL 或用 (a-1)/b + 1！'; }
+        } else {
+          const ans = Math.floor((a - 1) / b);
+          if (stage === 0) { fEl.innerHTML = `(${a} - 1) ÷ ${b} 向下取整 = ${ans} 刀`; nEl.textContent = '具体数字：把 a 调成 10、上限 x 调成 5 试试，亲眼看 (10-1)/5 = 1 刀！'; }
+          else if (stage === 1) { fEl.innerHTML = `(<span class="box-chip chip-a">[木头长]</span> - 1) ÷ <span class="box-chip chip-b">[每段上限]</span>`; nEl.textContent = '中文盒子：因为分成 m 段只需要切 m - 1 刀，把 1 减进去就消掉了 +x！'; }
+          else if (stage === 2) { fEl.innerHTML = `⌈a / x⌉ - 1 = ⌊(a - 1) / x⌋`; nEl.textContent = '字母公式：这正是普及组训练赛《切木头》的核心判定公式！'; }
+          else { fEl.innerHTML = `cuts += (a[i] - 1) / limit;  // cuts 用 long long`; nEl.textContent = 'C++ 极简 1 行：零浮点误差、零整除多算坑！'; }
+        }
+      }
+
+      function buildL6RulerSVG(L, R) {
+        const pad = 34, w = 560, minV = 1, maxV = 14;
+        const mapX = (v) => pad + ((v - minV) / (maxV - minV)) * (w - pad * 2);
+        let pts = '';
+        for (let v = minV; v <= maxV; v++) {
+          const x = mapX(v);
+          const inRange = v >= L && v <= R;
+          pts += `<circle cx="${x}" cy="52" r="${inRange ? 7.5 : 4.5}" fill="${inRange ? '#2563eb' : '#cbd5e1'}"/>`;
+          pts += `<text x="${x}" y="76" text-anchor="middle" font-size="11.5" font-weight="${inRange ? '800' : '400'}" fill="${inRange ? '#1e40af' : '#64748b'}">${v}</text>`;
+        }
+        const xL = mapX(L), xR = mapX(R);
+        return `
+          <svg viewBox="0 0 ${w} 112" style="width:100%;max-width:580px;display:block;margin:0 auto;">
+            <line x1="${pad}" y1="52" x2="${w - pad}" y2="52" stroke="#cbd5e1" stroke-width="3"/>
+            <line x1="${xL}" y1="52" x2="${xR}" y2="52" stroke="#f59e0b" stroke-width="6" stroke-linecap="round"/>
+            ${pts}
+            <text x="${w / 2}" y="24" text-anchor="middle" font-size="13" font-weight="800" fill="#b45309">黄色线段（长度/间隔）= R - L = ${R} - ${L} = ${R - L} 段</text>
+            <text x="${w / 2}" y="102" text-anchor="middle" font-size="13" font-weight="800" fill="#1d4ed8">蓝色圆点（闭区间个数，含 L 和 R）= R - L + 1 = ${R} - ${L} + 1 = ${R - L + 1} 个点</text>
+          </svg>
+        `;
+      }
+
+      function buildL6ClockSVG(M, X) {
+        const cx = 100, cy = 94, r = 68;
+        const cppMod = X % M;
+        const trueMod = ((X % M) + M) % M;
+        let nodes = '';
+        for (let i = 0; i < M; i++) {
+          const ang = -Math.PI / 2 + (2 * Math.PI * i) / M;
+          const x = cx + r * Math.cos(ang), y = cy + r * Math.sin(ang);
+          const active = i === trueMod;
+          nodes += `<circle cx="${x}" cy="${y}" r="${active ? 15 : 12}" fill="${active ? '#2563eb' : '#f1f5f9'}" stroke="${active ? '#1e3a8a' : '#94a3b8'}" stroke-width="2"/>`;
+          nodes += `<text x="${x}" y="${y + 4.5}" text-anchor="middle" font-size="12" font-weight="800" fill="${active ? '#fff' : '#334155'}">${i}</text>`;
+        }
+        return `
+          <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:center;">
+            <svg viewBox="0 0 200 188" style="width:190px;height:180px;flex-shrink:0;">
+              <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4,3"/>
+              ${nodes}
+              <text x="${cx}" y="${cy + 4}" text-anchor="middle" font-size="12" font-weight="800" fill="#475569">mod ${M}</text>
+            </svg>
+            <div style="flex:1 1 240px;background:#fff;border:1px solid #dbe3f0;border-radius:10px;padding:12px 14px;font-size:13.5px;line-height:1.8;">
+              <div>当前步数：<strong>x = ${X}</strong>（正数顺时针，负数逆时针）</div>
+              <div>C++ 直接算 <code>x % ${M}</code> = <strong style="color:${cppMod < 0 ? '#dc2626' : '#059669'};">${cppMod}</strong> ${cppMod < 0 ? '❌（负数不在钟面上！）' : '✅'}</div>
+              <div>安全公式 <code>(x % ${M} + ${M}) % ${M}</code> = <strong style="color:#2563eb;font-size:16px;">${trueMod}</strong> ✅</div>
+            </div>
+          </div>
+        `;
+      }
+
+      function updateL6RulerDOM() {
+        if (state.l6L > state.l6R) state.l6R = state.l6L;
+        const pL = document.getElementById('pill-l6L');
+        const pR = document.getElementById('pill-l6R');
+        const sR = document.querySelector('input[data-slider="l6R"]');
+        if (pL) pL.textContent = String(state.l6L);
+        if (pR) pR.textContent = String(state.l6R);
+        if (sR) sR.value = String(state.l6R);
+        const box = document.getElementById('l6-ruler-svg');
+        if (box) box.innerHTML = buildL6RulerSVG(state.l6L, state.l6R);
+      }
+
+      function updateL6ClockDOM() {
+        const pM = document.getElementById('pill-l6M');
+        if (pM) pM.textContent = String(state.l6M);
+        const box = document.getElementById('l6-clock-svg');
+        if (box) box.innerHTML = buildL6ClockSVG(state.l6M, state.l6X);
+      }
+
+      function renderL4() {
+        const card = L4_CARDS[state.l4Card];
+        const picked = state.l4Picks[state.l4Card];
+        const objTypes = [
+          ['seq', '① 序列 / 区间'],
+          ['state', '② 功能图 / 状态转移'],
+          ['graph', '③ 树 / 关系网'],
+          ['intopt', '④ 整数最优化 / 判定'],
+        ];
+        return `
+          <section class="card no-print">
+            <span class="section-badge badge-blue">第 2 关 · 第 4 课 · 动手实验</span>
+            <h2>第 4 课：剥故事 + 看 N 定生死（建模的第一道大门）</h2>
+            <p class="lead">美国 USACO 和中国 NOI 顶级选手读完一道陌生新题，动笔前最先做两件事：<strong>① 把故事剥成 4 类数学对象；② 瞄一眼数据范围 N，10 秒锁定能过的复杂度与是否爆 int！</strong></p>
+
+            <div class="lab-box">
+              <div class="lab-title">
+                <span>🔍 实验 A：真实 OI 故事“剥壳机”（选出剥掉故事后的真面目）</span>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  ${L4_CARDS.map((_, i) => `<button class="btn btn-sm ${state.l4Card === i ? 'btn-active' : ''}" type="button" data-l4-card="${i}">故事 ${i + 1}</button>`).join('')}
+                </div>
+              </div>
+              <div style="background:#fff;border:1px solid #dbe3f0;border-radius:10px;padding:12px 14px;font-size:14px;margin-bottom:10px;">${card.story}</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                ${objTypes.map(([k, lbl]) => {
+                  let cls = 'btn btn-sm';
+                  if (picked) {
+                    if (k === card.ans) cls += ' btn-green';
+                    else if (k === picked) cls += ' btn-amber';
+                  }
+                  return `<button class="${cls}" type="button" data-l4-pick="${k}">${lbl}</button>`;
+                }).join('')}
+              </div>
+              ${picked ? `
+                <div class="feedback-bar ${picked === card.ans ? 'fb-ok' : 'fb-warn'}">
+                  ${picked === card.ans ? '✅ 一眼看穿！' : '💡 再看清它的核心结构：'} ${card.stripped}<br/>
+                  ⚡ ${card.complexity}
+                </div>
+              ` : '<div class="feedback-bar fb-info">点击上方 1 个数学对象按钮，看看剥完故事后的真面目！</div>'}
+            </div>
+
+            <div class="lab-box">
+              <div class="lab-title">
+                <span>📡 实验 B：计算机算力雷达（拖滑块改变 N，1 秒看懂哪种复杂度必 TLE！）</span>
+              </div>
+              <div class="controls-row">
+                <label class="slider-item" style="flex:1;min-width:260px;">
+                  数据范围：
+                  <input type="range" min="0" max="${L4_N_LEVELS.length - 1}" value="${state.l4NIdx}" data-slider="l4NIdx" style="flex:1;"/>
+                  <span class="val-pill" id="pill-l4N" style="min-width:86px;">${L4_N_LEVELS[state.l4NIdx].label}</span>
+                </label>
+              </div>
+              <div id="l4-radar-body"></div>
+            </div>
+          </section>
+          ${renderQuizSection('l4')}
+          ${renderWorksheetSection('l4')}
+        `;
+      }
+
+      function renderL5() {
+        return `
+          <section class="card no-print">
+            <span class="section-badge badge-blue">第 2 关 · 第 5 课 · 动手实验</span>
+            <h2>第 5 课：整数除法、上下取整与“减 1”神公式</h2>
+            <p class="lead">计算机做整数除法会把小数直接砍掉（向下取整）。怎么只用整数、不碰容易有精度误差的小数，就能稳稳算出<strong>“至少要几个盒子”</strong>和<strong>“木头最少切几刀”</strong>？</p>
+
+            <div class="lab-box">
+              <div class="lab-title">
+                <span>📦 / 🪵 互动实验室：装盒向上取整 vs 切木头减 1 公式</span>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  <button class="btn btn-sm ${state.l5Mode === 'box' ? 'btn-active' : ''}" type="button" data-l5-mode="box">📦 模式 1：装盒进一</button>
+                  <button class="btn btn-sm ${state.l5Mode === 'cut' ? 'btn-active' : ''}" type="button" data-l5-mode="cut">🪵 模式 2：切木头刀数</button>
+                </div>
+              </div>
+              <div class="controls-row">
+                <label class="slider-item">${state.l5Mode === 'box' ? '总数 a' : '木头长 a'} = <input type="range" min="1" max="24" value="${state.l5A}" data-slider="l5A"/><span class="val-pill" id="pill-l5A">${state.l5A}</span></label>
+                <label class="slider-item">${state.l5Mode === 'box' ? '每盒装 b' : '每段上限 x'} = <input type="range" min="1" max="8" value="${state.l5B}" data-slider="l5B"/><span class="val-pill" id="pill-l5B">${state.l5B}</span></label>
+                <button class="btn btn-sm btn-amber" type="button" id="btnL5Exact">🎯 一键测整除坑 (10, 5)</button>
+                <button class="btn btn-sm" type="button" id="btnL5NonExact">🔎 测非整除 (11, 5)</button>
+              </div>
+              <div id="l5-visual-svg"></div>
+
+              <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0 6px;">
+                ${['① 造小世界（数字）', '② 中文盒子', '③ 字母公式', '④ 译成 C++'].map((lbl, i) =>
+                  `<button class="btn btn-sm ${state.l5Stage === i ? 'btn-active' : ''}" type="button" data-l5-stage="${i}">${lbl}</button>`
+                ).join('')}
+              </div>
+              <div class="stage-display">
+                <div class="stage-formula" id="l5-stage-formula"></div>
+                <div class="stage-note" id="l5-stage-note"></div>
+              </div>
+            </div>
+          </section>
+          ${renderQuizSection('l5')}
+          ${renderWorksheetSection('l5')}
+        `;
+      }
+
+      function renderL6() {
+        const b = state.l6Board;
+        const sum = b[0] + b[1] + b[2];
+        const allEq = b[0] === b[1] && b[1] === b[2];
+        return `
+          <section class="card no-print">
+            <span class="section-badge badge-blue">第 2 关 · 第 6 课 · 动手实验</span>
+            <h2>第 6 课：差 1 陷阱、时钟取模与操作不变量</h2>
+            <p class="lead">这一课专治 OI 里最让人抓狂的三类离散小坑：<strong>下标老差 1、负数取模算出负号、以及看起来能凑出来但其实死活无解的操作题！</strong></p>
+
+            <!-- Lab 6A: Off-by-one ruler -->
+            <div class="lab-box">
+              <div class="lab-title"><span>📏 实验 A：数轴尺子——3 秒分清“点数 (R-L+1)”和“段数 (R-L)”</span></div>
+              <div class="controls-row">
+                <label class="slider-item">左端点 L = <input type="range" min="1" max="12" value="${state.l6L}" data-slider="l6L"/><span class="val-pill" id="pill-l6L">${state.l6L}</span></label>
+                <label class="slider-item">右端点 R = <input type="range" min="1" max="14" value="${state.l6R}" data-slider="l6R"/><span class="val-pill" id="pill-l6R">${state.l6R}</span></label>
+              </div>
+              <div id="l6-ruler-svg"></div>
+            </div>
+
+            <!-- Lab 6B: Modulo clock -->
+            <div class="lab-box">
+              <div class="lab-title">
+                <span>🕒 实验 B：时钟取模转盘——为什么 C++ 负数取模要写 (x % M + M) % M？</span>
+                <label class="slider-item" style="padding:4px 9px;">钟面格数 M = <input type="range" min="5" max="12" value="${state.l6M}" data-slider="l6M"/><span class="val-pill" id="pill-l6M">${state.l6M}</span></label>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:10px;">
+                <button class="btn btn-sm" type="button" data-l6-step="-5">⬅ 倒退 5 格 (-5)</button>
+                <button class="btn btn-sm" type="button" data-l6-step="-1">⬅ 倒退 1 格 (-1)</button>
+                <button class="btn btn-sm" type="button" data-l6-step="1">➡ 前进 1 格 (+1)</button>
+                <button class="btn btn-sm" type="button" data-l6-step="5">➡ 前进 5 格 (+5)</button>
+                <button class="btn btn-sm btn-amber" type="button" data-l6-set="-3">⚡ 试 x = -3</button>
+              </div>
+              <div id="l6-clock-svg"></div>
+            </div>
+
+            <!-- Lab 6C: Invariant blackboard -->
+            <div class="lab-box">
+              <div class="lab-title">
+                <span>🧲 实验 C：操作不变量挑战——试着把 [1, 2, 4] 全变成相等的【偶数】！</span>
+                <button class="btn btn-sm" type="button" id="btnL6ResetBoard">↺ 重置为 [1, 2, 4]</button>
+              </div>
+              <p style="margin:0 0 10px;font-size:13.5px;color:#334155;">规则：每次必须选<strong>任意两个数同时 +1</strong>。点下面按钮随便操作，看看你能不能打破“总和奇偶性”！</p>
+              <div style="display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:10px;">
+                ${b.map((v, i) => `<div style="background:#fff;border:2px solid #2563eb;border-radius:12px;padding:10px 22px;font-size:22px;font-weight:900;color:#1e3a8a;">${v}<div style="font-size:11px;color:#64748b;font-weight:600;text-align:center;">第${i + 1}个数</div></div>`).join('')}
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:10px;">
+                <button class="btn btn-sm btn-primary" type="button" data-l6-pair="0,1">第 1 & 第 2 个数各 +1</button>
+                <button class="btn btn-sm btn-primary" type="button" data-l6-pair="0,2">第 1 & 第 3 个数各 +1</button>
+                <button class="btn btn-sm btn-primary" type="button" data-l6-pair="1,2">第 2 & 第 3 个数各 +1</button>
+              </div>
+              <div class="feedback-bar ${allEq ? 'fb-ok' : 'fb-warn'}">
+                已操作 ${state.l6BoardOps} 次 ｜ 当前三数总和 = <strong>${sum}（${sum % 2 === 1 ? '奇数' : '偶数'}）</strong>。
+                ${allEq
+                  ? `🎉 你把它们凑成了三个相等的奇数 [${b.join(', ')}]！但注意：三个相同的【偶数】总和必为偶数，而总和永远是奇数，所以全变偶数绝对不可能！`
+                  : '盯住总和：每次 +2，总和的奇偶性死活不变（永远是奇数）！所以目标如果是“全变成相等的偶数（总和必为偶数）”，1 秒就能断定无解！'}
+              </div>
+            </div>
+          </section>
+          ${renderQuizSection('l6')}
+          ${renderWorksheetSection('l6')}
+        `;
+      }
+
       // ---------- Main Render ----------
       function render() {
         const pBody = document.getElementById('protocolBody');
@@ -1851,9 +2537,21 @@
           pLbl.textContent = '展开 ▼';
         }
 
-        document.querySelectorAll('.lesson-tab').forEach((btn) => {
-          btn.classList.toggle('active', btn.dataset.lesson === state.activeLesson);
+        // Roadmap stage highlight
+        document.querySelectorAll('#roadmapGrid .pillar[data-stage]').forEach((el) => {
+          el.classList.toggle('active', Number(el.dataset.stage) === state.activeStage);
         });
+
+        // Render lesson tabs for active stage
+        const tabsEl = document.getElementById('lessonTabs');
+        const stageList = STAGE_LESSONS[state.activeStage] || STAGE_LESSONS[1];
+        tabsEl.innerHTML = stageList.map((item) => `
+          <button class="lesson-tab ${state.activeLesson === item.id ? 'active' : ''}" data-lesson="${item.id}" type="button">
+            <div class="lt-num">${item.num}</div>
+            <div class="lt-title">${item.title}</div>
+            <div class="lt-desc">${item.desc}</div>
+          </button>
+        `).join('');
 
         const host = document.getElementById('lessonHost');
         if (state.activeLesson === 'l1') {
@@ -1861,17 +2559,36 @@
         } else if (state.activeLesson === 'l2') {
           host.innerHTML = renderL2();
           updateL2SysDOM();
-        } else {
+        } else if (state.activeLesson === 'l3') {
           host.innerHTML = renderL3();
           if (state.l3Step === 1) updateL3NumDOM();
+        } else if (state.activeLesson === 'l4') {
+          host.innerHTML = renderL4();
+          updateL4RadarDOM();
+        } else if (state.activeLesson === 'l5') {
+          host.innerHTML = renderL5();
+          updateL5DivDOM();
+        } else {
+          host.innerHTML = renderL6();
+          updateL6RulerDOM();
+          updateL6ClockDOM();
         }
       }
 
       // ---------- Click Delegation ----------
       document.addEventListener('click', (e) => {
-        const target = e.target.closest('button, #protocolHead');
+        const target = e.target.closest('button, #protocolHead, .pillar[data-stage]');
         if (!target) return;
 
+        if (target.dataset.stage) {
+          const stg = Number(target.dataset.stage);
+          if (STAGE_LESSONS[stg]) {
+            state.activeStage = stg;
+            state.activeLesson = STAGE_LESSONS[stg][0].id;
+            render();
+          }
+          return;
+        }
         if (target.id === 'protocolHead' || target.id === 'btnToggleProtocol') {
           state.protocolOpen = !state.protocolOpen;
           render();
@@ -1991,6 +2708,63 @@
           render();
           return;
         }
+        // L4 Story Stripper
+        if (target.dataset.l4Card !== undefined) {
+          state.l4Card = Number(target.dataset.l4Card);
+          render();
+          return;
+        }
+        if (target.dataset.l4Pick) {
+          state.l4Picks[state.l4Card] = target.dataset.l4Pick;
+          render();
+          return;
+        }
+        // L5 Integer Division & Ceil
+        if (target.dataset.l5Mode) {
+          state.l5Mode = target.dataset.l5Mode;
+          render();
+          return;
+        }
+        if (target.dataset.l5Stage !== undefined) {
+          state.l5Stage = Number(target.dataset.l5Stage);
+          render();
+          return;
+        }
+        if (target.id === 'btnL5Exact') {
+          state.l5A = 10; state.l5B = 5;
+          render();
+          return;
+        }
+        if (target.id === 'btnL5NonExact') {
+          state.l5A = 11; state.l5B = 5;
+          render();
+          return;
+        }
+        // L6 Clock & Invariant Board
+        if (target.dataset.l6Step !== undefined) {
+          state.l6X += Number(target.dataset.l6Step);
+          updateL6ClockDOM();
+          return;
+        }
+        if (target.dataset.l6Set !== undefined) {
+          state.l6X = Number(target.dataset.l6Set);
+          updateL6ClockDOM();
+          return;
+        }
+        if (target.dataset.l6Pair) {
+          const [i, j] = target.dataset.l6Pair.split(',').map(Number);
+          state.l6Board[i] += 1;
+          state.l6Board[j] += 1;
+          state.l6BoardOps += 1;
+          render();
+          return;
+        }
+        if (target.id === 'btnL6ResetBoard') {
+          state.l6Board = [1, 2, 4];
+          state.l6BoardOps = 0;
+          render();
+          return;
+        }
         // Quiz (locked on first click!)
         if (target.dataset.quiz) {
           const lid = target.dataset.quiz;
@@ -2040,6 +2814,10 @@
         if (key === 'l1A' || key === 'l1B' || key === 'l1C') updateL1DynamicDOM();
         else if (key === 'l2N' || key === 'l2S') updateL2SysDOM();
         else if (key.startsWith('l3')) updateL3NumDOM();
+        else if (key === 'l4NIdx') updateL4RadarDOM();
+        else if (key === 'l5A' || key === 'l5B') updateL5DivDOM();
+        else if (key === 'l6L' || key === 'l6R') updateL6RulerDOM();
+        else if (key === 'l6M') updateL6ClockDOM();
       });
 
       initL2Level(0);

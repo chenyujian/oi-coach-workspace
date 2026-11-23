@@ -764,11 +764,11 @@ window.__ModuleLoader__.load({
           h(
             'div',
             { style: { display: 'grid', gap: 4 } },
-            h('div', { style: { fontWeight: 800, fontSize: 15 } }, '🧭 麒麒的 OI 读题与建模训练营（第 1 关已开放）'),
+            h('div', { style: { fontWeight: 800, fontSize: 15 } }, '🧭 麒麒的 OI 读题与建模训练营（第 1~2 关 · 共 6 课已开放）'),
             h(
               'div',
               { style: { fontSize: 12.5, color: C.sub } },
-              '动手玩明白（字母盒子 / 拼图拆括号 / 天平解方程 / 数轴翻号与划相同块）＋ 边做边讲小测验 ＋ 一键打印 A4 闯关单',
+              '第 1 关（字母/方程/不等式与交换证明）＋ 第 2 关（剥故事看 N 定生死 / 上下取整与减 1 公式 / 差 1、负数取模与不变量）＋ 说理测验 ＋ 1 页 A4 闯关单',
             ),
           ),
           h(
