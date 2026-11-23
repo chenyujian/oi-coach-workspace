@@ -21,3 +21,16 @@
    - 当家长要求分析孩子薄弱点或生成周报时，按 `.dsh/skills/parent-diagnosis/SKILL.md` 综合分析 `mistakes/`、`training/sync_logs/`、`profile/` 并输出报告到 `profile/reports/`。
 5. **保持目录所有权与跨平台整洁**：
    - 遵守 `docs/ARCHITECTURE.md` 中的双机写入隔离规范，维护好 `.gitignore` 与 `.gitattributes`，确保 Mac mini（macOS）与孩子电脑（Windows）同步零冲突。
+
+## 二、 研发质量门禁（轻量单测 + 按需独立冷审）
+
+本工作区暂不固化重型 4 角色流水线，优先保证“孩子实测 → 快速调优”的迭代速度，同时守住两条硬门禁：
+
+1. **日常小改（文案、样式、小功能修补）**：
+   - 改动涉及 `plugins/dsh-oi-coach/`、`scripts/`、`courses/math_lab/` 或规则文件时，**推送前必须执行 `node scripts/test_oi_coach.mjs --skip-live-agy` 全量通过**（并按需为新功能补充对应断言），未通过严禁 `git push`。
+2. **核心大改（教学方法论/护栏、跨平台安全边界、页面架构重构或新增模块）**：
+   - **先对齐方案再动手**（由家长把关产品与教学方向）；
+   - 开发完成后，**必须运行完整端到端测试 `node scripts/test_oi_coach.mjs`**（含真实 `agy-chat` 防剧透与防越狱校验）；
+   - **拉起 1 个物理只读的 `reviewer` 子代理**（`EnableWriteTools: false`）冷读 `git diff` 核查护栏漏洞、跨平台路径与回归风险，修复所有阻塞项后再推送。
+3. **演进预留**：
+   - 仅当未来扩展为多学科/多模块 Harness 时，再升级为正式的多 Agent 团队协作（`/teamwork`）或 `run_workflow` 固定流水线。
