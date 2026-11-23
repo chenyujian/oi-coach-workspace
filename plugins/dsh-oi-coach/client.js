@@ -647,12 +647,8 @@ window.__ModuleLoader__.load({
 
     function TodayTab({ data, st }) {
       const clock = data.clock || {}
-      const shieldTone = clock.isFatigueZone ? C.warn : clock.isWarningZone ? C.warn : C.ok
-      const shieldMsg = clock.isFatigueZone
-        ? `🌙 当前 ${clock.timeStr}（已过 21:15 夜间疲劳熔断线）：大脑电量低啦！今晚只复盘不硬刚新难题——记得 1171 和 abc484_c 都是睡一觉明天白天 1 发直接 AC 的！`
-        : clock.isWarningZone
-          ? `⏰ 当前 ${clock.timeStr}（距离 21:15 收工熔断不到 15 分钟）：准备收尾、存好当前思路断点或错题秘籍卡吧！`
-          : `☀️ 当前 ${clock.timeStr} · 精力在线！备好《麒麒的 OI 数学实验本》，先画 N=3/4 小例子再动键盘。`
+      const shieldTone = C.ok
+      const shieldMsg = `🧭 当前 ${clock.timeStr || ''} · 备好演草纸：先立数学目标式，再选代数变形，最后动键盘。`
 
       const agyReady = Boolean(data.agy?.ready)
       const agyHint = ''
@@ -1150,7 +1146,7 @@ window.__ModuleLoader__.load({
               { style: { fontSize: 28, fontWeight: 800, color: k.lateShare > 15 ? C.err : C.ok } },
               `${k.lateCount} 交 (${k.lateShare}%)`,
             ),
-            h('div', { style: { fontSize: 12, color: C.sub } }, `深夜 AC 仅 ${k.lateAc} 次（通过率 ${k.lateAcRate}%）｜ 21:15 必须停机`),
+            h('div', { style: { fontSize: 12, color: C.sub } }, `晚间 AC ${k.lateAc} 次（通过率 ${k.lateAcRate}%）｜仅作家长统计参考`),
           ),
         ),
 
