@@ -162,6 +162,52 @@ window.__ModuleLoader__.load({
       { path: 'profile/solved_timeline.md', title: 'AC 首通时间线（去重 734 题）', desc: '精确到分钟的跨平台首通记录与失误轨迹' },
     ]
 
+
+    const MODELING_DRILLS = [
+      {
+        id: 'abs-prefix-suffix',
+        title: '绝对值与前后缀拆解',
+        subtitle: '如最近异色点、接雨水、左右最值',
+        signal: '看到 |i - j| 或“每个位置依赖左右两边所有点”',
+        focus: '去绝对值按 j < i / j > i 分类 → 分离变量 → 相邻状态集合对比推递推',
+      },
+      {
+        id: 'contrib-separation',
+        title: '分离变量与拆贡献',
+        subtitle: '如子数组总和、配对计数、整体平移',
+        signal: '看到两重求和 ∑∑ 或枚举所有区间 [L, R] 必超时',
+        focus: '交换求和顺序，固定单个元素问它被算了几次，用乘法分配律降维',
+      },
+      {
+        id: 'invariant-parity',
+        title: '不变量与奇偶性守恒',
+        subtitle: '如操作能否达成目标、黑白染色、逆序对',
+        signal: '看到“可以任意次执行某种操作，问能否变成目标状态”',
+        focus: '盯住每次操作后总和、奇偶性、差值或模余数中死活不变的量',
+      },
+      {
+        id: 'greedy-exchange',
+        title: '邻项交换与贪心证明',
+        subtitle: '如排队最小代价、国王游戏、任务排序',
+        signal: '看到“安排最优顺序使总代价/最大值最小”',
+        focus: '只取相邻两项写代数表达式，比较 (1在前) 与 (2在前) 推严格不等式',
+      },
+      {
+        id: 'binary-answer',
+        title: '二分答案转判定',
+        subtitle: '如最大化最小值、最小化最大值、切木头',
+        signal: '看到“最大值最小”或“答案越大越容易满足”的单调性',
+        focus: '把最优化目标设成参数 X，反向转化成 O(N) 判定式 check(X)',
+      },
+      {
+        id: 'div-ceil-mod',
+        title: '整除、上下取整与差 1 边界',
+        subtitle: '如分组、周期循环、负数取模、区间长度',
+        signal: '看到分组向上取整、环形下标、闭区间端点计数',
+        focus: '建立 ⌈a/b⌉ = ⌊(a+b-1)/b⌋、r - l + 1 与 ((x%m)+m)%m 严谨代数式',
+      },
+    ]
+
     const SCOPED_CSS = `
       .oi-shell {
         height: 100%;
@@ -557,7 +603,75 @@ window.__ModuleLoader__.load({
         overflow-x: auto;
         white-space: pre;
       }
-    `
+    
+      .oi-coach-layout {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        overflow: hidden;
+      }
+      .oi-history-rail {
+        width: 256px;
+        flex-shrink: 0;
+        border-right: 1px solid var(--dsw-alias-border-l1);
+        background: var(--dsw-alias-bg-layer-2);
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .oi-history-list {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 8px 10px 16px;
+        display: grid;
+        gap: 6px;
+        align-content: start;
+      }
+      .oi-history-item {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 6px;
+        padding: 9px 10px;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        background: transparent;
+        cursor: pointer;
+        text-align: left;
+        color: var(--dsw-alias-label-primary);
+        transition: background 0.14s ease, border-color 0.14s ease;
+      }
+      .oi-history-item:hover {
+        background: var(--dsw-alias-bg-base);
+      }
+      .oi-history-item-active {
+        background: var(--dsw-alias-bg-base);
+        border-color: var(--dsw-alias-brand-primary);
+      }
+      .oi-input-sm {
+        width: 100%;
+        box-sizing: border-box;
+        border-radius: 8px;
+        border: 1px solid var(--dsw-alias-border-l1);
+        background: var(--dsw-alias-bg-base);
+        color: var(--dsw-alias-label-primary);
+        padding: 7px 10px;
+        font-size: 12.5px;
+        font-family: inherit;
+        outline: none;
+      }
+      .oi-input-sm:focus {
+        border-color: var(--dsw-alias-brand-primary);
+      }
+      .oi-field-label {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--dsw-alias-label-secondary);
+        margin-bottom: 4px;
+        display: block;
+      }
+`
 
     function ensureStyles() {
       const existing = document.getElementById(STYLE_ID)
@@ -583,17 +697,23 @@ window.__ModuleLoader__.load({
       problemSubTab: 'unsolved',
       platformFilter: 'ALL',
       practiceSubTab: 'lab',
+      drillLevel: 'cspj',
       archiveSubTab: 'mistakes',
       intakeMode: 'hint',
       data: null,
       intakeText: '',
       useAgyBrain: true,
       agyModel: 'gemini-4-neon-high',
+      chatHistory: [],
+      showHistoryRail: true,
+      historyQuery: '',
       agyChat: {
         open: false,
+        chatId: null,
         title: '',
         mode: 'coach',
         conversationId: null,
+        previewQuery: '',
         messages: [],
         draft: '',
         sending: false,
@@ -601,6 +721,7 @@ window.__ModuleLoader__.load({
       },
       problemPreview: null,
       showProblemPreview: false,
+      saveCardModal: null,
       activePrimerId: 'combo-mod',
       primerAnswers: {},
       docModal: null,
@@ -630,13 +751,186 @@ window.__ModuleLoader__.load({
       return json
     }
 
+    async function loadChatHistory() {
+      try {
+        const res = await fetchJson(`${API}/chats`)
+        setState({ chatHistory: Array.isArray(res.chats) ? res.chats : [] })
+      } catch {
+        // ignore chat history load failure
+      }
+    }
+
     async function loadOverview() {
       setState({ loading: !state.data, error: null })
       try {
-        const res = await fetchJson(`${API}/overview`)
-        setState({ loading: false, data: res.data })
+        const [ovRes, chatsRes] = await Promise.all([
+          fetchJson(`${API}/overview`),
+          fetchJson(`${API}/chats`).catch(() => ({ chats: state.chatHistory })),
+        ])
+        setState({
+          loading: false,
+          data: ovRes.data,
+          chatHistory: Array.isArray(chatsRes?.chats) ? chatsRes.chats : state.chatHistory,
+        })
       } catch (err) {
         setState({ loading: false, error: err?.message || String(err) })
+      }
+    }
+
+    async function openChatFromHistory(chatId) {
+      if (!chatId) return
+      if (activeAgyAbort) {
+        try { activeAgyAbort.abort() } catch { /* ignore */ }
+        activeAgyAbort = null
+      }
+      if (agyTimerId) {
+        clearInterval(agyTimerId)
+        agyTimerId = null
+      }
+      setState({ error: null, notice: null })
+      try {
+        const res = await fetchJson(`${API}/chat?id=${encodeURIComponent(chatId)}`)
+        const rec = res.chat
+        if (!rec) return
+        setState({
+          tab: 'coach',
+          problemPreview: null,
+          showProblemPreview: false,
+          agyChat: {
+            open: true,
+            chatId: rec.id,
+            title: rec.title || rec.id,
+            mode: rec.mode || 'coach',
+            conversationId: rec.conversationId || null,
+            previewQuery: rec.previewQuery !== undefined ? String(rec.previewQuery || '') : (rec.title || ''),
+            skipProblemContext: Boolean(rec.skipProblemContext),
+            messages: Array.isArray(rec.messages) ? rec.messages : [],
+            draft: '',
+            sending: false,
+            elapsed: 0,
+          },
+        })
+        const effectivePreview = rec.previewQuery !== undefined ? String(rec.previewQuery || '') : (rec.title || '')
+        if (effectivePreview && !rec.skipProblemContext) {
+          void fetchProblemPreview(effectivePreview)
+        }
+      } catch (err) {
+        setState({ error: `打开历史对话失败：${err?.message || err}` })
+      }
+    }
+
+    async function deleteChatFromHistory(chatId) {
+      if (!chatId) return
+      const isCurrent = state.agyChat?.chatId === chatId
+      if (isCurrent) {
+        if (activeAgyAbort) {
+          try { activeAgyAbort.abort() } catch { /* ignore */ }
+          activeAgyAbort = null
+        }
+        if (agyTimerId) {
+          clearInterval(agyTimerId)
+          agyTimerId = null
+        }
+      }
+      try {
+        await fetchJson(`${API}/chat-delete`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ id: chatId }),
+        })
+        const nextList = (state.chatHistory || []).filter((c) => c.id !== chatId)
+        setState({
+          chatHistory: nextList,
+          ...(isCurrent
+            ? {
+                problemPreview: null,
+                showProblemPreview: false,
+                agyChat: {
+                  open: false,
+                  chatId: null,
+                  title: '',
+                  mode: 'coach',
+                  conversationId: null,
+                  previewQuery: '',
+                  skipProblemContext: false,
+                  messages: [],
+                  draft: '',
+                  sending: false,
+                  elapsed: 0,
+                },
+              }
+            : {}),
+        })
+      } catch (err) {
+        setState({ error: `删除失败：${err?.message || err}` })
+      }
+    }
+
+    function inferCardDraftFromChat(chat, pv) {
+      const title = String(pv?.title || chat?.title || '').replace(/^(代数建模|建模|排错|复盘|旧题重斩|变形手算|建模快练)\s*·\s*/i, '').trim() || '未命名题目'
+      const combined = `${pv?.platform || ''} ${title}`.toLowerCase()
+      let platform = 'oj'
+      if (/atcoder|abc\d+|arc\d+|agc\d+/.test(combined)) platform = 'atcoder'
+      else if (/好吧|haoba/.test(combined)) platform = 'haoba'
+      else if (/洛谷|luogu|\bp\d{4}\b/.test(combined)) platform = 'luogu'
+      else if (/李拜天|oilibaitian/.test(combined)) platform = 'oilibaitian'
+      else if (/建模快练|微卡片|讲义/.test(String(chat?.title || ''))) platform = 'drill'
+
+      const asciiSlug = (String(pv?.pid || title).match(/[a-z0-9_-]{2,}/gi) || []).join('-').toLowerCase().slice(0, 32)
+      const lastAssistant = [...(chat?.messages || [])].reverse().find((m) => m.role === 'assistant')?.text || ''
+      const pickLine = (re) => {
+        const m = re.exec(lastAssistant)
+        return m ? m[1].replace(/\*\*/g, '').trim() : ''
+      }
+      const pitfall = pickLine(/(?:刚才掉进的坑|掉进的坑|卡点|坑点)\*{0,2}[：:]\s*(.+)/i) || pickLine(/^\s*1[.、]\s*(.+)/m)
+      const breakthrough = pickLine(/(?:破局[^：:\n]*|关键规律|核心模型|数学转化)\*{0,2}[：:]\s*(.+)/i) || pickLine(/^\s*2[.、]\s*(.+)/m)
+      const motto = pickLine(/(?:防坑口诀|口诀|下次[^：:\n]*)\*{0,2}[：:]\s*(.+)/i) || pickLine(/^\s*3[.、]\s*(.+)/m)
+
+      return {
+        title,
+        platform,
+        problem_slug: asciiSlug || '',
+        dimension: 'math',
+        pitfall,
+        breakthrough,
+        motto,
+        saving: false,
+      }
+    }
+
+    function openSaveCardModal() {
+      const draft = inferCardDraftFromChat(state.agyChat, state.problemPreview)
+      setState({ saveCardModal: draft })
+    }
+
+    async function submitSaveCard() {
+      const m = state.saveCardModal
+      if (!m || m.saving) return
+      setState({ saveCardModal: { ...m, saving: true }, error: null })
+      try {
+        const res = await fetchJson(`${API}/save-card`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            title: m.title,
+            platform: m.platform,
+            problem_slug: m.problem_slug,
+            dimension: m.dimension,
+            pitfall: m.pitfall,
+            breakthrough: m.breakthrough,
+            motto: m.motto,
+          }),
+        })
+        setState({
+          saveCardModal: null,
+          notice: { text: `通关秘籍卡已保存：${res.saved}` },
+        })
+        await loadOverview()
+      } catch (err) {
+        setState({
+          saveCardModal: { ...m, saving: false },
+          error: `保存秘籍卡失败：${err?.message || err}`,
+        })
       }
     }
 
@@ -668,6 +962,8 @@ window.__ModuleLoader__.load({
 
     let activeAgyAbort = null
     let agyTimerId = null
+    // 仅保留在当前页面内存态，绝不落盘到任何 JSON 文件
+    let activeParentPin = ''
 
     function cancelAgyRequest(clearMessages = false) {
       if (activeAgyAbort) {
@@ -684,7 +980,7 @@ window.__ModuleLoader__.load({
           ...state.agyChat,
           sending: false,
           elapsed: 0,
-          ...(clearMessages ? { open: false, conversationId: null, messages: [], title: '', draft: '' } : {}),
+          ...(clearMessages ? { open: false, chatId: null, conversationId: null, previewQuery: '', messages: [], title: '', draft: '' } : {}),
         },
       })
     }
@@ -705,7 +1001,21 @@ window.__ModuleLoader__.load({
       const prev = state.agyChat
       const title = opts.title || (isNew ? msg.slice(0, 24) : prev.title) || '新题目'
       const mode = opts.mode || (isNew ? 'coach' : prev.mode) || 'coach'
+      let parentPin = opts.parentPin || (mode === 'parent' ? activeParentPin : '')
+      if (mode === 'parent' && !parentPin && !state.data?.isWindows) {
+        const entered = typeof window !== 'undefined' && window.prompt ? window.prompt('继续家长教研对话，请输入家长口令（4位数字）：') : ''
+        if (!entered) return
+        parentPin = String(entered).trim()
+        activeParentPin = parentPin
+      }
       const convId = isNew ? null : prev.conversationId
+      const chatId = isNew ? null : prev.chatId
+      const previewQuery = isNew
+        ? opts.previewQuery !== undefined
+          ? String(opts.previewQuery || '')
+          : String(title || '')
+        : String(prev.previewQuery || '')
+      const skipProblemContext = isNew ? Boolean(opts.skipProblemContext) : Boolean(prev.skipProblemContext)
       const baseMsgs = isNew ? [] : prev.messages
       const displayText = String(opts.displayText || msg).trim()
       const nextMsgs = [...baseMsgs, { role: 'user', text: displayText }]
@@ -727,9 +1037,12 @@ window.__ModuleLoader__.load({
         ...(isNew ? { problemPreview: null, showProblemPreview: false } : {}),
         agyChat: {
           open: true,
+          chatId,
           title,
           mode,
           conversationId: convId,
+          previewQuery,
+          skipProblemContext,
           messages: nextMsgs,
           draft: '',
           sending: true,
@@ -737,8 +1050,8 @@ window.__ModuleLoader__.load({
         },
       })
 
-      if (isNew && mode === 'coach') {
-        void fetchProblemPreview(opts.previewQuery || title || msg)
+      if (isNew && mode === 'coach' && !skipProblemContext && previewQuery) {
+        void fetchProblemPreview(previewQuery)
       }
 
       try {
@@ -748,10 +1061,15 @@ window.__ModuleLoader__.load({
           signal: controller.signal,
           body: JSON.stringify({
             message: msg,
+            displayText,
+            title,
+            previewQuery: previewQuery || undefined,
+            skipProblemContext: skipProblemContext || undefined,
+            chatId: chatId || undefined,
             model: opts.model || state.agyModel || 'gemini-4-neon-high',
             conversationId: convId || undefined,
             mode,
-            parentPin: opts.parentPin || undefined,
+            parentPin: parentPin || undefined,
           }),
         })
         if (activeAgyAbort !== controller) return
@@ -760,6 +1078,7 @@ window.__ModuleLoader__.load({
         setState({
           agyChat: {
             ...state.agyChat,
+            chatId: res.chatId || chatId,
             conversationId: res.conversationId || convId,
             sending: false,
             elapsed: 0,
@@ -774,6 +1093,7 @@ window.__ModuleLoader__.load({
             ],
           },
         })
+        void loadChatHistory()
       } catch (err) {
         if (activeAgyAbort === controller) {
           activeAgyAbort = null
@@ -783,6 +1103,9 @@ window.__ModuleLoader__.load({
           setState({ agyChat: { ...state.agyChat, sending: false, elapsed: 0 } })
           return
         }
+        if (mode === 'parent' && /鉴权|口令|403/.test(String(err?.message || ''))) {
+          activeParentPin = ''
+        }
         setState({
           error: `教练连接失败：${err?.message || err}`,
           agyChat: { ...state.agyChat, sending: false, elapsed: 0 },
@@ -790,19 +1113,21 @@ window.__ModuleLoader__.load({
       }
     }
 
-    async function launchCoachSession({ presetId = 'oi-coach', title, prompt, displayText, previewQuery }) {
+    async function launchCoachSession({ presetId = 'oi-coach', title, prompt, displayText, previewQuery, skipProblemContext = false }) {
       if (state.data?.agy?.ready && state.useAgyBrain) {
         const wantsParent = !state.data?.isWindows && presetId === 'oi-parent'
-        let pin
-        if (wantsParent) {
+        let pin = wantsParent ? activeParentPin : ''
+        if (wantsParent && !pin) {
           pin = typeof window !== 'undefined' && window.prompt ? window.prompt('请输入家长口令（4位数字）以进入家长教研模式：') : ''
           if (!pin) return
+          activeParentPin = String(pin).trim()
         }
         await sendAgyMessage(prompt, {
           reset: true,
           title,
           displayText: displayText || title || prompt,
-          previewQuery: previewQuery || title || prompt,
+          previewQuery: previewQuery !== undefined ? previewQuery : (title || prompt),
+          skipProblemContext,
           mode: wantsParent ? 'parent' : 'coach',
           parentPin: wantsParent ? String(pin).trim() : undefined,
         })
@@ -1081,6 +1406,23 @@ window.__ModuleLoader__.load({
 
     function PracticeTab({ st }) {
       const primer = MATH_PRIMERS.find((p) => p.id === st.activePrimerId) || MATH_PRIMERS[0]
+      const levels = [
+        { id: 'basic', label: '热身 · 六年级基础' },
+        { id: 'cspj', label: '进阶 · CSP-J 复赛' },
+        { id: 'plus', label: '挑战 · 提高入门' },
+      ]
+      const activeLevel = levels.find((l) => l.id === st.drillLevel) || levels[1]
+
+      const startModelingDrill = (drill) => {
+        void launchCoachSession({
+          presetId: 'oi-coach',
+          title: `建模快练 · ${drill.title}`,
+          displayText: `开始「${drill.title}」专题建模快练（${activeLevel.label}）`,
+          previewQuery: '',
+          skipProblemContext: true,
+          prompt: `教练，我想做 1 道【${drill.title}】专题的 10 分钟纯演草纸代数建模快练（难度：${activeLevel.label}，不需要急着写代码）。请你先现编 1 道简短干净、数据范围明确（如 N ≤ 20万）的原创或经典变式微题，只给题面和约束，**绝不剧透解法或算法名**，然后严格按【代数建模 5 步锁步】从第 1 步「剥故事立数学目标式」开始带我一步步推导！`,
+        })
+      }
 
       return h(
         'div',
@@ -1111,7 +1453,16 @@ window.__ModuleLoader__.load({
                 className: `oi-nav-btn ${st.practiceSubTab === 'lab' ? 'oi-nav-btn-active' : ''}`,
                 onClick: () => setState({ practiceSubTab: 'lab' }),
               },
-              '🧭 读题建模训练营（6 课交互实验）',
+              '🧭 读题建模训练营（6 课）',
+            ),
+            h(
+              'button',
+              {
+                type: 'button',
+                className: `oi-nav-btn ${st.practiceSubTab === 'drills' ? 'oi-nav-btn-active' : ''}`,
+                onClick: () => setState({ practiceSubTab: 'drills' }),
+              },
+              '⚡ 专题建模快练（6 大母模型）',
             ),
             h(
               'button',
@@ -1120,7 +1471,7 @@ window.__ModuleLoader__.load({
                 className: `oi-nav-btn ${st.practiceSubTab === 'primers' ? 'oi-nav-btn-active' : ''}`,
                 onClick: () => setState({ practiceSubTab: 'primers' }),
               },
-              '✏️ 15 分钟手算微卡片（5 套）',
+              '✏️ 手算微卡片（5 套）',
             ),
           ),
           st.practiceSubTab === 'lab'
@@ -1133,25 +1484,41 @@ window.__ModuleLoader__.load({
                 },
                 '🌐 在浏览器中打开 / 打印 A4 单',
               )
-            : h(
-                'button',
-                {
-                  type: 'button',
-                  className: 'oi-btn',
-                  disabled: !!st.busy,
-                  onClick: () =>
-                    launchCoachSession({
-                      presetId: 'oi-coach',
-                      title: `变形手算 · ${primer.title.slice(6)}`,
-                      displayText: `刚做完「${primer.title}」，请再出 1 道变形小手算考考我！`,
-                      prompt: `教练，我刚在学习台做了「${primer.title}」（${primer.term}）。请再出 1 道六年级能用演草本 2 分钟手算完的小变形题考考我，只需让我报 1~2 个数字，不要长篇大论！`,
-                    }),
-                },
-                '✨ 让教练出 1 道变形手算题',
-              ),
+            : st.practiceSubTab === 'primers'
+              ? h(
+                  'button',
+                  {
+                    type: 'button',
+                    className: 'oi-btn',
+                    disabled: !!st.busy,
+                    onClick: () =>
+                      launchCoachSession({
+                        presetId: 'oi-coach',
+                        title: `变形手算 · ${primer.title.slice(6)}`,
+                        displayText: `刚做完「${primer.title}」，请再出 1 道变形小手算考考我！`,
+                        prompt: `教练，我刚在学习台做了「${primer.title}」（${primer.term}）。请再出 1 道六年级能用演草本 2 分钟手算完的小变形题考考我，只需让我报 1~2 个数字，不要长篇大论！`,
+                      }),
+                  },
+                  '✨ 让教练出 1 道变形手算题',
+                )
+              : h(
+                  'div',
+                  { style: { display: 'flex', gap: 6, flexWrap: 'wrap' } },
+                  ...levels.map((lv) =>
+                    h(
+                      'button',
+                      {
+                        key: lv.id,
+                        type: 'button',
+                        className: `oi-chip ${st.drillLevel === lv.id ? 'oi-chip-active' : ''}`,
+                        onClick: () => setState({ drillLevel: lv.id }),
+                      },
+                      lv.label,
+                    ),
+                  ),
+                ),
         ),
 
-        // Full-bleed interactive lab OR spacious primer studio
         st.practiceSubTab === 'lab'
           ? h('iframe', {
               src: '/dsh-oi-coach/math-lab',
@@ -1165,104 +1532,156 @@ window.__ModuleLoader__.load({
                 background: '#f6f8fc',
               },
             })
-          : h(
-              'div',
-              { className: 'oi-scroll' },
-              h(
+          : st.practiceSubTab === 'drills'
+            ? h(
                 'div',
-                { style: { maxWidth: 860, margin: '0 auto', display: 'grid', gap: 18 } },
+                { className: 'oi-scroll' },
                 h(
                   'div',
-                  { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } },
-                  ...MATH_PRIMERS.map((p) =>
-                    h(
-                      'button',
-                      {
-                        key: p.id,
-                        type: 'button',
-                        className: `oi-chip ${p.id === primer.id ? 'oi-chip-active' : ''}`,
-                        onClick: () => setState({ activePrimerId: p.id }),
-                      },
-                      p.title.replace(/^微卡片 \d+ · /, ''),
-                    ),
-                  ),
-                ),
-                h(
-                  'div',
-                  { className: 'oi-card', style: { display: 'grid', gap: 18, padding: '22px 24px' } },
+                  { className: 'oi-container' },
                   h(
                     'div',
-                    null,
-                    h('div', { style: { fontWeight: 800, fontSize: 16.5 } }, primer.title),
-                    h('div', { style: { fontSize: 13, color: C.sub, marginTop: 4 } }, `${primer.tag} ｜ ${primer.term}`),
+                    { style: { display: 'grid', gap: 4 } },
+                    h('div', { style: { fontSize: 18, fontWeight: 800 } }, '⚡ 每日 10 分钟 · 专题代数建模快练'),
+                    h('div', { style: { fontSize: 13.5, color: C.sub } }, '不用打开 OJ、不用急着写代码：选一个母模型专题，在演草纸上跟教练走完 5 步代数推导，练出秒认题型的肌肉记忆。'),
                   ),
-                  ...primer.questions.map((item, qi) => {
-                    const key = `${primer.id}:${qi}`
-                    const picked = st.primerAnswers[key]
-                    const answered = picked !== undefined
-                    const isRight = picked === item.ans
-                    return h(
-                      'div',
-                      {
-                        key,
-                        style: {
-                          borderTop: qi > 0 ? `1px solid ${C.border}` : 'none',
-                          paddingTop: qi > 0 ? 18 : 0,
-                          display: 'grid',
-                          gap: 12,
-                        },
-                      },
-                      h('div', { style: { fontSize: 15, fontWeight: 600, lineHeight: 1.65 } }, `Q${qi + 1}. ${item.q}`),
+                  h(
+                    'div',
+                    { className: 'oi-grid-2' },
+                    ...MODELING_DRILLS.map((drill) =>
                       h(
                         'div',
-                        { style: { display: 'flex', gap: 10, flexWrap: 'wrap' } },
-                        ...item.options.map((opt, oi) =>
+                        {
+                          key: drill.id,
+                          className: 'oi-card',
+                          style: { display: 'grid', gap: 10 },
+                        },
+                        h(
+                          'div',
+                          null,
+                          h('div', { style: { fontWeight: 800, fontSize: 15.5 } }, drill.title),
+                          h('div', { style: { fontSize: 12.5, color: C.sub, marginTop: 3 } }, drill.subtitle),
+                        ),
+                        h('div', { style: { fontSize: 13, lineHeight: 1.6 } }, `🔍 认题信号：${drill.signal}`),
+                        h('div', { style: { fontSize: 12.5, color: C.sub, lineHeight: 1.6 } }, `🧭 训练重点：${drill.focus}`),
+                        h(
+                          'div',
+                          { style: { paddingTop: 4 } },
                           h(
                             'button',
                             {
-                              key: oi,
                               type: 'button',
-                              className: 'oi-btn',
-                              style:
-                                answered && oi === item.ans
-                                  ? { borderColor: C.ok, color: C.ok, padding: '9px 16px', fontSize: 14 }
-                                  : answered && oi === picked && !isRight
-                                    ? { borderColor: C.err, color: C.err, padding: '9px 16px', fontSize: 14 }
-                                    : { padding: '9px 16px', fontSize: 14 },
-                              onClick: () =>
-                                setState({ primerAnswers: { ...st.primerAnswers, [key]: oi } }),
+                              className: 'oi-btn oi-btn-primary',
+                              disabled: !!st.busy,
+                              onClick: () => startModelingDrill(drill),
                             },
-                            opt,
+                            '开始 5 步建模快练 →',
                           ),
                         ),
                       ),
-                      answered
-                        ? h(
-                            'div',
-                            {
-                              style: {
-                                fontSize: 13.5,
-                                lineHeight: 1.7,
-                                padding: '10px 14px',
-                                borderRadius: 10,
-                                background: C.base,
-                                color: isRight ? C.ok : C.warn,
+                    ),
+                  ),
+                ),
+              )
+            : h(
+                'div',
+                { className: 'oi-scroll' },
+                h(
+                  'div',
+                  { style: { maxWidth: 860, margin: '0 auto', display: 'grid', gap: 18 } },
+                  h(
+                    'div',
+                    { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } },
+                    ...MATH_PRIMERS.map((p) =>
+                      h(
+                        'button',
+                        {
+                          key: p.id,
+                          type: 'button',
+                          className: `oi-chip ${p.id === primer.id ? 'oi-chip-active' : ''}`,
+                          onClick: () => setState({ activePrimerId: p.id }),
+                        },
+                        p.title.replace(/^微卡片 \d+ · /, ''),
+                      ),
+                    ),
+                  ),
+                  h(
+                    'div',
+                    { className: 'oi-card', style: { display: 'grid', gap: 18, padding: '22px 24px' } },
+                    h(
+                      'div',
+                      null,
+                      h('div', { style: { fontWeight: 800, fontSize: 16.5 } }, primer.title),
+                      h('div', { style: { fontSize: 13, color: C.sub, marginTop: 4 } }, `${primer.tag} ｜ ${primer.term}`),
+                    ),
+                    ...primer.questions.map((item, qi) => {
+                      const key = `${primer.id}:${qi}`
+                      const picked = st.primerAnswers[key]
+                      const answered = picked !== undefined
+                      const isRight = picked === item.ans
+                      return h(
+                        'div',
+                        {
+                          key,
+                          style: {
+                            borderTop: qi > 0 ? `1px solid ${C.border}` : 'none',
+                            paddingTop: qi > 0 ? 18 : 0,
+                            display: 'grid',
+                            gap: 12,
+                          },
+                        },
+                        h('div', { style: { fontSize: 15, fontWeight: 600, lineHeight: 1.65 } }, `Q${qi + 1}. ${item.q}`),
+                        h(
+                          'div',
+                          { style: { display: 'flex', gap: 10, flexWrap: 'wrap' } },
+                          ...item.options.map((opt, oi) =>
+                            h(
+                              'button',
+                              {
+                                key: oi,
+                                type: 'button',
+                                className: 'oi-btn',
+                                style:
+                                  answered && oi === item.ans
+                                    ? { borderColor: C.ok, color: C.ok, padding: '9px 16px', fontSize: 14 }
+                                    : answered && oi === picked && !isRight
+                                      ? { borderColor: C.err, color: C.err, padding: '9px 16px', fontSize: 14 }
+                                      : { padding: '9px 16px', fontSize: 14 },
+                                onClick: () =>
+                                  setState({ primerAnswers: { ...st.primerAnswers, [key]: oi } }),
                               },
-                            },
-                            `${isRight ? '✅ 答对了！' : '💡 差一点！'} ${item.explain}`,
-                          )
-                        : null,
-                    )
-                  }),
+                              opt,
+                            ),
+                          ),
+                        ),
+                        answered
+                          ? h(
+                              'div',
+                              {
+                                style: {
+                                  fontSize: 13.5,
+                                  lineHeight: 1.7,
+                                  padding: '10px 14px',
+                                  borderRadius: 10,
+                                  background: C.base,
+                                  color: isRight ? C.ok : C.warn,
+                                },
+                              },
+                              `${isRight ? '✅ 答对了！' : '💡 差一点！'} ${item.explain}`,
+                            )
+                          : null,
+                      )
+                    }),
+                  ),
                 ),
               ),
-            ),
       )
     }
 
     function ArchiveTab({ data, st }) {
       const k = data.kpis30d
       const agyReady = Boolean(data.agy?.ready)
+      const notes = data.courseNotes || []
 
       return h(
         'div',
@@ -1285,6 +1704,15 @@ window.__ModuleLoader__.load({
                   onClick: () => setState({ archiveSubTab: 'mistakes' }),
                 },
                 `🃏 我的通关秘籍（${data.mistakeCards.length}）`,
+              ),
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: `oi-nav-btn ${st.archiveSubTab === 'notes' ? 'oi-nav-btn-active' : ''}`,
+                  onClick: () => setState({ archiveSubTab: 'notes' }),
+                },
+                `📖 课程讲义（${notes.length}）`,
               ),
               h(
                 'button',
@@ -1317,7 +1745,7 @@ window.__ModuleLoader__.load({
               ? h(
                   'div',
                   { className: 'oi-card-flat', style: { textAlign: 'center', padding: '44px 24px', color: C.sub, fontSize: 14 } },
-                  '还没有存入第一张通关秘籍卡！下次 AC 一道题后，在教练室点「我 AC 了，存秘籍卡」就会自动挂到这里。',
+                  '还没有存入第一张通关秘籍卡！在教练室聊完一道题后，点顶部的「💾 存秘籍卡」就能一键归档到这里。',
                 )
               : h(
                   'div',
@@ -1341,127 +1769,186 @@ window.__ModuleLoader__.load({
                     ),
                   ),
                 )
-            : h(
-                'div',
-                { style: { display: 'grid', gap: 18 } },
-                // Clean summary strip
-                h(
-                  'div',
-                  { className: 'oi-grid-3' },
-                  h(
+            : st.archiveSubTab === 'notes'
+              ? notes.length === 0
+                ? h(
                     'div',
-                    { className: 'oi-card', style: { display: 'grid', gap: 4 } },
-                    h('div', { style: { fontSize: 12.5, color: C.sub, fontWeight: 600 } }, '四平台累计独立 AC'),
-                    h('div', { style: { fontSize: 28, fontWeight: 800, color: C.accent } }, `${data.totals.uniqueAc} 题`),
-                    h('div', { style: { fontSize: 12.5, color: C.sub } }, `近 7 天新过 ${k.recent7Ac} 题 · 总提交 ${data.totals.submissions} 次`),
-                  ),
-                  h(
+                    { className: 'oi-card-flat', style: { textAlign: 'center', padding: '44px 24px', color: C.sub, fontSize: 14 } },
+                    'courses/notes/ 目录下还没有整理好的课程讲义。',
+                  )
+                : h(
                     'div',
-                    { className: 'oi-card', style: { display: 'grid', gap: 4 } },
-                    h('div', { style: { fontSize: 12.5, color: C.sub, fontWeight: 600 } }, '近 30 天单题 ≥4 交占比'),
-                    h('div', { style: { fontSize: 28, fontWeight: 800, color: k.runawayRate > 15 ? C.warn : C.ok } }, `${k.runawayRate}%`),
-                    h('div', { style: { fontSize: 12.5, color: C.sub } }, `${k.runawayProbs}/${k.probsAttempted} 题 · 目标 ≤ 15%`),
-                  ),
-                  h(
-                    'div',
-                    { className: 'oi-card', style: { display: 'grid', gap: 4 } },
-                    h('div', { style: { fontSize: 12.5, color: C.sub, fontWeight: 600 } }, 'AtCoder Rating / 近 30 天 CE'),
-                    h('div', { style: { fontSize: 28, fontWeight: 800, color: C.text } }, `${data.student.atcoderRating} / ${k.ceCount} CE`),
-                    h('div', { style: { fontSize: 12.5, color: C.sub } }, `最高表现 ${data.student.atcoderPeakPerf} · 同期 TLE ${k.tleCount} 次`),
-                  ),
-                ),
-
-                // Parent tools (macOS only)
-                !data.isWindows
-                  ? h(
-                      'div',
-                      { className: 'oi-card', style: { display: 'grid', gap: 12 } },
-                      h('div', { style: { fontWeight: 700, fontSize: 14.5 } }, '🛠️ 家长端教研与数据同步（仅 Mac 家长端显示）'),
-                      h(
-                        'div',
-                        { style: { display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' } },
-                        h('button', { type: 'button', className: 'oi-btn', disabled: !!st.busy, onClick: () => triggerSync('atcoder', '同步 AtCoder') }, st.busy === 'sync:atcoder' ? '同步中…' : '🔄 同步 AtCoder'),
-                        h('button', { type: 'button', className: 'oi-btn', disabled: !!st.busy, onClick: () => triggerSync('haoba', '同步好吧平台') }, st.busy === 'sync:haoba' ? '同步中…' : '🔄 同步好吧'),
-                        h('button', { type: 'button', className: 'oi-btn', disabled: !!st.busy, onClick: () => triggerSync('timeline', '重建时间线') }, st.busy === 'sync:timeline' ? '重建中…' : '⏱️ 重建时间线'),
-                        h(
-                          'button',
-                          {
-                            type: 'button',
-                            className: 'oi-btn',
-                            disabled: !!st.busy,
-                            onClick: () =>
-                              launchCoachSession({
-                                presetId: 'oi-parent',
-                                title: '家长教研 · 周期诊断',
-                                displayText: '生成本周四维学习诊断与下周薄弱点建议',
-                                prompt: '请结合 profile/ 与 training/sync_logs/ 的最新四平台数据，按 parent-diagnosis 技能与核心习惯指标，帮我分析麒麒最近一周的进展与下周最该补的 2 个薄弱点。',
-                              }),
-                          },
-                          '📊 呼叫家长教研官',
-                        ),
-                        agyReady
-                          ? h(
-                              'button',
-                              {
-                                type: 'button',
-                                className: 'oi-btn',
-                                style: st.useAgyBrain ? { borderColor: C.ok, color: C.ok } : { color: C.sub },
-                                onClick: () => setState({ useAgyBrain: !st.useAgyBrain }),
-                              },
-                              st.useAgyBrain ? '🧠 外脑直连已开' : '🧠 外脑已关（仅 DSH 模型）',
-                            )
-                          : null,
-                      ),
-                    )
-                  : null,
-
-                // Platform breakdown
-                h(
-                  'div',
-                  { className: 'oi-grid-2' },
-                  ...(data.platforms || []).map((pl) =>
-                    h(
-                      'div',
-                      {
-                        key: pl.id,
-                        className: 'oi-card',
-                        style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 },
-                      },
-                      h(
-                        'div',
-                        null,
-                        h('div', { style: { fontWeight: 700, fontSize: 14 } }, `${pl.name}（${pl.account}）`),
-                        h('div', { style: { fontSize: 12.5, color: C.sub, marginTop: 3 } }, `总提交 ${pl.submissions} 条 · AC ${pl.solved} 题`),
-                      ),
-                      h('span', { style: { fontSize: 12, color: C.sub } }, `更新：${fmtIsoShort(pl.updatedAt)}`),
-                    ),
-                  ),
-                ),
-
-                // Core docs reader
-                h(
-                  'div',
-                  { style: { display: 'grid', gap: 10 } },
-                  h('div', { style: { fontWeight: 700, fontSize: 14.5 } }, '📚 学习档案直读'),
-                  h(
-                    'div',
-                    { className: 'oi-grid-3' },
-                    ...DOC_SHORTCUTS.map((doc) =>
+                    { className: 'oi-grid-2' },
+                    ...notes.map((n) =>
                       h(
                         'div',
                         {
-                          key: doc.path,
+                          key: n.file,
                           className: 'oi-card',
-                          onClick: () => openDoc(doc.path, doc.title),
-                          style: { cursor: 'pointer', display: 'grid', gap: 5 },
+                          style: { display: 'grid', gap: 10 },
                         },
-                        h('div', { style: { fontWeight: 700, fontSize: 13.5 } }, doc.title),
-                        h('div', { style: { fontSize: 12.5, color: C.sub, lineHeight: 1.5 } }, doc.desc),
+                        h(
+                          'div',
+                          { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 } },
+                          h('div', { style: { fontWeight: 800, fontSize: 15, lineHeight: 1.4 } }, n.title),
+                          n.date ? h('span', { className: 'oi-pill', style: { color: C.sub, whiteSpace: 'nowrap' } }, n.date) : null,
+                        ),
+                        n.summary ? h('div', { style: { fontSize: 13, color: C.sub, lineHeight: 1.6 } }, n.summary) : null,
+                        h(
+                          'div',
+                          { style: { display: 'flex', gap: 8, flexWrap: 'wrap', paddingTop: 2 } },
+                          h(
+                            'button',
+                            {
+                              type: 'button',
+                              className: 'oi-btn',
+                              onClick: () => openDoc(n.file, n.title),
+                            },
+                            '📖 阅读讲义',
+                          ),
+                          h(
+                            'button',
+                            {
+                              type: 'button',
+                              className: 'oi-btn oi-btn-primary',
+                              disabled: !!st.busy,
+                              onClick: () =>
+                                launchCoachSession({
+                                  presetId: 'oi-coach',
+                                  title: `讲义变式 · ${n.title.slice(0, 14)}`,
+                                  displayText: `基于讲义「${n.title}」出 1 道全新变式建模题练手`,
+                                  previewQuery: '',
+                                  skipProblemContext: true,
+                                  prompt: `教练，我刚复习完课程讲义「${n.title}」（${n.summary || '建模专题'}）。请你基于同一类核心母模型，**新编 1 道变式建模微题**（不要照抄讲义原题结论，绝不剧透算法方向），然后严格按【代数建模 5 步锁步】从第 1 步「剥故事立数学目标式」带我演草纸推一遍！`,
+                                }),
+                            },
+                            '🎯 练 1 道变式建模题',
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+              : h(
+                  'div',
+                  { style: { display: 'grid', gap: 18 } },
+                  // Clean summary strip
+                  h(
+                    'div',
+                    { className: 'oi-grid-3' },
+                    h(
+                      'div',
+                      { className: 'oi-card', style: { display: 'grid', gap: 4 } },
+                      h('div', { style: { fontSize: 12.5, color: C.sub, fontWeight: 600 } }, '四平台累计独立 AC'),
+                      h('div', { style: { fontSize: 28, fontWeight: 800, color: C.accent } }, `${data.totals.uniqueAc} 题`),
+                      h('div', { style: { fontSize: 12.5, color: C.sub } }, `近 7 天新过 ${k.recent7Ac} 题 · 总提交 ${data.totals.submissions} 次`),
+                    ),
+                    h(
+                      'div',
+                      { className: 'oi-card', style: { display: 'grid', gap: 4 } },
+                      h('div', { style: { fontSize: 12.5, color: C.sub, fontWeight: 600 } }, '近 30 天单题 ≥4 交占比'),
+                      h('div', { style: { fontSize: 28, fontWeight: 800, color: k.runawayRate > 15 ? C.warn : C.ok } }, `${k.runawayRate}%`),
+                      h('div', { style: { fontSize: 12.5, color: C.sub } }, `${k.runawayProbs}/${k.probsAttempted} 题 · 目标 ≤ 15%`),
+                    ),
+                    h(
+                      'div',
+                      { className: 'oi-card', style: { display: 'grid', gap: 4 } },
+                      h('div', { style: { fontSize: 12.5, color: C.sub, fontWeight: 600 } }, 'AtCoder Rating / 近 30 天 CE'),
+                      h('div', { style: { fontSize: 28, fontWeight: 800, color: C.text } }, `${data.student.atcoderRating} / ${k.ceCount} CE`),
+                      h('div', { style: { fontSize: 12.5, color: C.sub } }, `最高表现 ${data.student.atcoderPeakPerf} · 同期 TLE ${k.tleCount} 次`),
+                    ),
+                  ),
+
+                  // Parent tools (macOS only)
+                  !data.isWindows
+                    ? h(
+                        'div',
+                        { className: 'oi-card', style: { display: 'grid', gap: 12 } },
+                        h('div', { style: { fontWeight: 700, fontSize: 14.5 } }, '🛠️ 家长端教研与数据同步（仅 Mac 家长端显示）'),
+                        h(
+                          'div',
+                          { style: { display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' } },
+                          h('button', { type: 'button', className: 'oi-btn', disabled: !!st.busy, onClick: () => triggerSync('atcoder', '同步 AtCoder') }, st.busy === 'sync:atcoder' ? '同步中…' : '🔄 同步 AtCoder'),
+                          h('button', { type: 'button', className: 'oi-btn', disabled: !!st.busy, onClick: () => triggerSync('haoba', '同步好吧平台') }, st.busy === 'sync:haoba' ? '同步中…' : '🔄 同步好吧'),
+                          h('button', { type: 'button', className: 'oi-btn', disabled: !!st.busy, onClick: () => triggerSync('timeline', '重建时间线') }, st.busy === 'sync:timeline' ? '重建中…' : '⏱️ 重建时间线'),
+                          h(
+                            'button',
+                            {
+                              type: 'button',
+                              className: 'oi-btn',
+                              disabled: !!st.busy,
+                              onClick: () =>
+                                launchCoachSession({
+                                  presetId: 'oi-parent',
+                                  title: '家长教研 · 周期诊断',
+                                  displayText: '生成本周四维学习诊断与下周薄弱点建议',
+                                  prompt: '请结合 profile/ 与 training/sync_logs/ 的最新四平台数据，按 parent-diagnosis 技能与核心习惯指标，帮我分析麒麒最近一周的进展与下周最该补的 2 个薄弱点。',
+                                }),
+                            },
+                            '📊 呼叫家长教研官',
+                          ),
+                          agyReady
+                            ? h(
+                                'button',
+                                {
+                                  type: 'button',
+                                  className: 'oi-btn',
+                                  style: st.useAgyBrain ? { borderColor: C.ok, color: C.ok } : { color: C.sub },
+                                  onClick: () => setState({ useAgyBrain: !st.useAgyBrain }),
+                                },
+                                st.useAgyBrain ? '🧠 外脑直连已开' : '🧠 外脑已关（仅 DSH 模型）',
+                              )
+                            : null,
+                        ),
+                      )
+                    : null,
+
+                  // Platform breakdown
+                  h(
+                    'div',
+                    { className: 'oi-grid-2' },
+                    ...(data.platforms || []).map((pl) =>
+                      h(
+                        'div',
+                        {
+                          key: pl.id,
+                          className: 'oi-card',
+                          style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 },
+                        },
+                        h(
+                          'div',
+                          null,
+                          h('div', { style: { fontWeight: 700, fontSize: 14 } }, `${pl.name}（${pl.account}）`),
+                          h('div', { style: { fontSize: 12.5, color: C.sub, marginTop: 3 } }, `总提交 ${pl.submissions} 条 · AC ${pl.solved} 题`),
+                        ),
+                        h('span', { style: { fontSize: 12, color: C.sub } }, `更新：${fmtIsoShort(pl.updatedAt)}`),
+                      ),
+                    ),
+                  ),
+
+                  // Core docs reader
+                  h(
+                    'div',
+                    { style: { display: 'grid', gap: 10 } },
+                    h('div', { style: { fontWeight: 700, fontSize: 14.5 } }, '📚 学习档案直读'),
+                    h(
+                      'div',
+                      { className: 'oi-grid-3' },
+                      ...DOC_SHORTCUTS.map((doc) =>
+                        h(
+                          'div',
+                          {
+                            key: doc.path,
+                            className: 'oi-card',
+                            onClick: () => openDoc(doc.path, doc.title),
+                            style: { cursor: 'pointer', display: 'grid', gap: 5 },
+                          },
+                          h('div', { style: { fontWeight: 700, fontSize: 13.5 } }, doc.title),
+                          h('div', { style: { fontSize: 12.5, color: C.sub, lineHeight: 1.5 } }, doc.desc),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
         ),
       )
     }
@@ -1761,6 +2248,248 @@ window.__ModuleLoader__.load({
       return elements
     }
 
+    function HistorySidebar({ st }) {
+      const all = st.chatHistory || []
+      const q = String(st.historyQuery || '').trim().toLowerCase()
+      const filtered = q
+        ? all.filter((c) => `${c.title} ${c.lastPreview}`.toLowerCase().includes(q))
+        : all
+
+      return h(
+        'div',
+        { className: 'oi-history-rail' },
+        h(
+          'div',
+          { style: { padding: '12px 12px 8px', display: 'grid', gap: 8, borderBottom: `1px solid ${C.border}` } },
+          h(
+            'div',
+            { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 } },
+            h('span', { style: { fontSize: 12.5, fontWeight: 700, color: C.sub } }, `历史对话（${all.length}）`),
+            h(
+              'button',
+              {
+                type: 'button',
+                className: 'oi-btn oi-btn-primary',
+                style: { padding: '4px 10px', fontSize: 12 },
+                onClick: () => cancelAgyRequest(true),
+              },
+              '+ 新题',
+            ),
+          ),
+          all.length > 3
+            ? h('input', {
+                type: 'text',
+                className: 'oi-input-sm',
+                value: st.historyQuery,
+                placeholder: '搜索题号或关键词…',
+                onChange: (e) => setState({ historyQuery: e.target.value }),
+              })
+            : null,
+        ),
+        h(
+          'div',
+          { className: 'oi-history-list' },
+          filtered.length === 0
+            ? h(
+                'div',
+                { style: { fontSize: 12.5, color: C.sub, padding: '20px 8px', textAlign: 'center', lineHeight: 1.6 } },
+                all.length === 0 ? '聊完任意一道题后，记录会自动保存在这里，随时可以回看或继续推。' : '没有找到匹配的历史对话',
+              )
+            : filtered.map((item) => {
+                const active = st.agyChat?.open && st.agyChat?.chatId === item.id
+                return h(
+                  'div',
+                  {
+                    key: item.id,
+                    className: `oi-history-item ${active ? 'oi-history-item-active' : ''}`,
+                    onClick: () => openChatFromHistory(item.id),
+                  },
+                  h(
+                    'div',
+                    { style: { minWidth: 0, flex: 1, display: 'grid', gap: 3 } },
+                    h(
+                      'div',
+                      {
+                        style: {
+                          fontSize: 13,
+                          fontWeight: 700,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        },
+                      },
+                      item.title,
+                    ),
+                    h(
+                      'div',
+                      { style: { fontSize: 11.5, color: C.sub, display: 'flex', gap: 6, flexWrap: 'wrap' } },
+                      h('span', null, `${item.turns || 1} 轮`),
+                      h('span', null, fmtIsoShort(item.updatedAt)),
+                    ),
+                  ),
+                  h(
+                    'button',
+                    {
+                      type: 'button',
+                      className: 'oi-btn oi-btn-ghost',
+                      title: '删除这条历史记录',
+                      style: { padding: '2px 6px', fontSize: 12, flexShrink: 0 },
+                      onClick: (e) => {
+                        e.stopPropagation()
+                        void deleteChatFromHistory(item.id)
+                      },
+                    },
+                    '×',
+                  ),
+                )
+              }),
+        ),
+      )
+    }
+
+    function SaveCardModal({ modal }) {
+      if (!modal) return null
+      const update = (patch) => setState({ saveCardModal: { ...modal, ...patch } })
+      const dims = [
+        { id: 'math', label: '数学建模 (math)' },
+        { id: 'algorithm', label: '算法思路 (algorithm)' },
+        { id: 'coding', label: '编程实现 (coding)' },
+        { id: 'habit', label: '习惯策略 (habit)' },
+      ]
+      return h(
+        'div',
+        { className: 'oi-modal-bg', onClick: () => setState({ saveCardModal: null }) },
+        h(
+          'div',
+          { className: 'oi-modal', style: { width: 'min(580px, 95vw)' }, onClick: (e) => e.stopPropagation() },
+          h(
+            'div',
+            {
+              style: {
+                padding: '14px 20px',
+                borderBottom: `1px solid ${C.border}`,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              },
+            },
+            h('div', { style: { fontWeight: 800, fontSize: 15 } }, '💾 保存 3 行通关秘籍卡到 mistakes/'),
+            h('button', { type: 'button', className: 'oi-btn oi-btn-ghost', onClick: () => setState({ saveCardModal: null }) }, '关闭'),
+          ),
+          h(
+            'div',
+            { style: { padding: '18px 20px', display: 'grid', gap: 14, overflowY: 'auto' } },
+            h(
+              'div',
+              { style: { display: 'grid', gridTemplateColumns: '1fr 130px', gap: 10 } },
+              h(
+                'div',
+                null,
+                h('label', { className: 'oi-field-label' }, '题目名称'),
+                h('input', {
+                  type: 'text',
+                  className: 'oi-input-sm',
+                  value: modal.title,
+                  onChange: (e) => update({ title: e.target.value }),
+                }),
+              ),
+              h(
+                'div',
+                null,
+                h('label', { className: 'oi-field-label' }, '平台'),
+                h(
+                  'select',
+                  {
+                    className: 'oi-input-sm',
+                    value: modal.platform,
+                    onChange: (e) => update({ platform: e.target.value }),
+                  },
+                  h('option', { value: 'atcoder' }, 'AtCoder'),
+                  h('option', { value: 'haoba' }, '好吧平台'),
+                  h('option', { value: 'oilibaitian' }, '信奥李拜天'),
+                  h('option', { value: 'luogu' }, '洛谷'),
+                  h('option', { value: 'drill' }, '建模快练'),
+                  h('option', { value: 'oj' }, '其他 OJ'),
+                ),
+              ),
+            ),
+            h(
+              'div',
+              null,
+              h('label', { className: 'oi-field-label' }, '四维核心根因'),
+              h(
+                'div',
+                { style: { display: 'flex', gap: 6, flexWrap: 'wrap' } },
+                ...dims.map((d) =>
+                  h(
+                    'button',
+                    {
+                      key: d.id,
+                      type: 'button',
+                      className: `oi-chip ${modal.dimension === d.id ? 'oi-chip-active' : ''}`,
+                      onClick: () => update({ dimension: d.id }),
+                    },
+                    d.label,
+                  ),
+                ),
+              ),
+            ),
+            h(
+              'div',
+              null,
+              h('label', { className: 'oi-field-label' }, '1. 刚才掉进的坑'),
+              h('input', {
+                type: 'text',
+                className: 'oi-input-sm',
+                placeholder: '例如：没去绝对值直接两重枚举，N=30万超时',
+                value: modal.pitfall,
+                onChange: (e) => update({ pitfall: e.target.value }),
+              }),
+            ),
+            h(
+              'div',
+              null,
+              h('label', { className: 'oi-field-label' }, '2. 破局的数学变形 / 极小反例'),
+              h('input', {
+                type: 'text',
+                className: 'oi-input-sm',
+                placeholder: '例如：按 j<i 和 j>i 去绝对值后分离变量，同色时候选集合一致',
+                value: modal.breakthrough,
+                onChange: (e) => update({ breakthrough: e.target.value }),
+              }),
+            ),
+            h(
+              'div',
+              null,
+              h('label', { className: 'oi-field-label' }, '3. 下次交前一句防坑口诀'),
+              h('input', {
+                type: 'text',
+                className: 'oi-input-sm',
+                placeholder: '例如：见 |i-j| 先去绝对值分左右，无解初值设 10⁹ 不设 INT_MAX',
+                value: modal.motto,
+                onChange: (e) => update({ motto: e.target.value }),
+              }),
+            ),
+            h(
+              'div',
+              { style: { display: 'flex', justifyContent: 'flex-end', gap: 8, paddingTop: 4 } },
+              h('button', { type: 'button', className: 'oi-btn', onClick: () => setState({ saveCardModal: null }) }, '取消'),
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: 'oi-btn oi-btn-primary',
+                  disabled: modal.saving || (!modal.pitfall.trim() && !modal.breakthrough.trim() && !modal.motto.trim()),
+                  onClick: () => submitSaveCard(),
+                },
+                modal.saving ? '保存中…' : '确认存入 mistakes/',
+              ),
+            ),
+          ),
+        ),
+      )
+    }
+
     function CoachRoomTab({ data, st }) {
       const chat = st.agyChat
       const scrollRef = React.useRef(null)
@@ -1790,7 +2519,18 @@ window.__ModuleLoader__.load({
         })
       }
 
-      // Empty state: spacious, calm welcome studio
+      const historyToggleBtn = h(
+        'button',
+        {
+          type: 'button',
+          className: `oi-btn oi-btn-ghost`,
+          title: st.showHistoryRail ? '收起历史对话栏' : '展开历史对话栏',
+          onClick: () => setState({ showHistoryRail: !st.showHistoryRail }),
+        },
+        st.showHistoryRail ? '◧ 收起历史' : `☰ 历史（${(st.chatHistory || []).length}）`,
+      )
+
+      let mainArea
       if (!isActive) {
         const quickProblems = (data?.unsolvedRecent || []).slice(0, 3)
         const modes = [
@@ -1799,329 +2539,353 @@ window.__ModuleLoader__.load({
           { id: 'tle', label: '⏱️ TLE 重拆' },
           { id: 'pm', label: '🃏 AC 存秘籍' },
         ]
-        return h(
+        mainArea = h(
           'div',
-          {
-            className: 'oi-scroll',
-            style: { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' },
-          },
+          { className: 'oi-chat-room' },
+          h(
+            'div',
+            { style: { flexShrink: 0, padding: '8px 18px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+            historyToggleBtn,
+            h('span', null),
+          ),
           h(
             'div',
             {
-              style: {
-                width: '100%',
-                maxWidth: 740,
-                display: 'grid',
-                gap: 24,
-                justifyItems: 'center',
-                paddingBottom: 24,
-              },
+              className: 'oi-scroll',
+              style: { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', paddingTop: 12 },
             },
             h(
               'div',
-              { style: { textAlign: 'center', display: 'grid', gap: 8 } },
-              h('div', { style: { fontSize: 26, fontWeight: 800, letterSpacing: '-0.02em' } }, '今天想攻克哪道题？'),
-              h('div', { style: { fontSize: 14, color: C.sub } }, '备好演草纸，贴上题号、题面或卡住的代码，教练带你从数学目标式一步步推出来'),
-            ),
-            h(
-              'div',
-              { className: 'oi-composer' },
-              h('textarea', {
-                className: 'oi-textarea',
-                placeholder: '输入题号（如 abc485_c）、粘贴题面，或贴一段报错/超时的代码…（Ctrl/Cmd + Enter 发送）',
-                value: st.intakeText,
-                onChange: (e) => setState({ intakeText: e.target.value }),
-                onKeyDown: (e) => {
-                  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                    e.preventDefault()
-                    handleStartNew()
-                  }
+              {
+                style: {
+                  width: '100%',
+                  maxWidth: 740,
+                  display: 'grid',
+                  gap: 24,
+                  justifyItems: 'center',
+                  paddingBottom: 24,
                 },
-              }),
+              },
               h(
                 'div',
-                { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 } },
+                { style: { textAlign: 'center', display: 'grid', gap: 8 } },
+                h('div', { style: { fontSize: 26, fontWeight: 800, letterSpacing: '-0.02em' } }, '今天想攻克哪道题？'),
+                h('div', { style: { fontSize: 14, color: C.sub } }, '备好演草纸，贴上题号、题面或卡住的代码，教练带你从数学目标式一步步推出来'),
+              ),
+              h(
+                'div',
+                { className: 'oi-composer' },
+                h('textarea', {
+                  className: 'oi-textarea',
+                  placeholder: '输入题号（如 abc485_c）、粘贴题面，或贴一段报错/超时的代码…（Ctrl/Cmd + Enter 发送）',
+                  value: st.intakeText,
+                  onChange: (e) => setState({ intakeText: e.target.value }),
+                  onKeyDown: (e) => {
+                    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                      e.preventDefault()
+                      handleStartNew()
+                    }
+                  },
+                }),
                 h(
                   'div',
-                  { style: { display: 'flex', gap: 6, flexWrap: 'wrap' } },
-                  ...modes.map((m) =>
+                  { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 } },
+                  h(
+                    'div',
+                    { style: { display: 'flex', gap: 6, flexWrap: 'wrap' } },
+                    ...modes.map((m) =>
+                      h(
+                        'button',
+                        {
+                          key: m.id,
+                          type: 'button',
+                          className: `oi-chip ${st.intakeMode === m.id ? 'oi-chip-active' : ''}`,
+                          onClick: () => setState({ intakeMode: m.id }),
+                        },
+                        m.label,
+                      ),
+                    ),
+                  ),
+                  h(
+                    'button',
+                    {
+                      type: 'button',
+                      className: 'oi-btn oi-btn-primary',
+                      disabled: !!st.busy || !st.intakeText.trim(),
+                      style: { padding: '8px 18px', fontSize: 13.5 },
+                      onClick: handleStartNew,
+                    },
+                    '开始辅导 →',
+                  ),
+                ),
+              ),
+              quickProblems.length > 0
+                ? h(
+                    'div',
+                    { style: { width: '100%', display: 'grid', gap: 10 } },
+                    h(
+                      'div',
+                      { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 4px' } },
+                      h('span', { style: { fontSize: 13, color: C.sub, fontWeight: 600 } }, '接着补近期卡住的题'),
+                      h(
+                        'button',
+                        {
+                          type: 'button',
+                          className: 'oi-btn oi-btn-ghost',
+                          style: { fontSize: 12.5 },
+                          onClick: () => setState({ tab: 'problems' }),
+                        },
+                        `查看全部 ${(data?.unsolvedRecent || []).length} 道待补题 →`,
+                      ),
+                    ),
+                    h(
+                      'div',
+                      { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 10 } },
+                      ...quickProblems.map((p, idx) =>
+                        h(
+                          'button',
+                          {
+                            key: `quick-${p.platform}-${p.title}-${idx}`,
+                            type: 'button',
+                            className: 'oi-card',
+                            disabled: !!st.busy,
+                            onClick: () => launchProblemAction(p, 'model'),
+                            style: {
+                              textAlign: 'left',
+                              cursor: 'pointer',
+                              padding: '13px 15px',
+                              display: 'grid',
+                              gap: 5,
+                              color: C.text,
+                            },
+                          },
+                          h('div', { style: { fontWeight: 700, fontSize: 13.5, lineHeight: 1.35 } }, p.title),
+                          h('div', { style: { fontSize: 12, color: C.sub } }, `${p.platform} · ${p.trajectory}`),
+                        ),
+                      ),
+                    ),
+                  )
+                : null,
+            ),
+          ),
+        )
+      } else {
+        const pv = st.problemPreview
+        mainArea = h(
+          'div',
+          { className: 'oi-chat-room' },
+          h(
+            'div',
+            { className: 'oi-chat-head' },
+            h(
+              'div',
+              { className: 'oi-chat-head-inner' },
+              h(
+                'div',
+                { style: { display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 } },
+                historyToggleBtn,
+                h(
+                  'button',
+                  {
+                    type: 'button',
+                    className: 'oi-btn oi-btn-ghost',
+                    onClick: () => cancelAgyRequest(true),
+                  },
+                  '← 新题',
+                ),
+                h(
+                  'div',
+                  { style: { fontWeight: 700, fontSize: 14.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } },
+                  chat.title || '教练对话',
+                ),
+              ),
+              h(
+                'div',
+                { style: { display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' } },
+                pv && pv.statement
+                  ? h(
+                      'button',
+                      {
+                        type: 'button',
+                        className: `oi-chip ${st.showProblemPreview ? 'oi-chip-active' : ''}`,
+                        onClick: () => setState({ showProblemPreview: !st.showProblemPreview }),
+                      },
+                      st.showProblemPreview ? '📄 收起原题' : '📄 看原题',
+                    )
+                  : null,
+                chat.messages.length >= 2 && chat.mode !== 'parent'
+                  ? h(
+                      'button',
+                      {
+                        type: 'button',
+                        className: 'oi-chip',
+                        onClick: () => openSaveCardModal(),
+                      },
+                      '💾 存秘籍卡',
+                    )
+                  : null,
+                !data?.isWindows
+                  ? h(
+                      'select',
+                      {
+                        value: st.agyModel,
+                        onChange: (e) => setState({ agyModel: e.target.value }),
+                        style: {
+                          borderRadius: 8,
+                          border: `1px solid ${C.border}`,
+                          background: C.base,
+                          color: C.sub,
+                          padding: '5px 8px',
+                          fontSize: 12,
+                        },
+                      },
+                      h('option', { value: 'gemini-4-neon-high' }, 'Gemini 4 Neon (High)'),
+                      h('option', { value: 'gemini-4-neon-medium' }, 'Gemini 4 Neon (Medium)'),
+                      h('option', { value: 'gemini-4-argon-high' }, 'Gemini 4 Argon (High)'),
+                      h('option', { value: 'gemini-3.8-flash-high' }, 'Gemini 3.8 Flash'),
+                    )
+                  : null,
+              ),
+            ),
+            pv && pv.statement && st.showProblemPreview
+              ? h(
+                  'div',
+                  {
+                    style: {
+                      maxWidth: 840,
+                      margin: '10px auto 2px',
+                      padding: '12px 16px',
+                      borderRadius: 12,
+                      background: C.layer,
+                      border: `1px solid ${C.border}`,
+                      maxHeight: 240,
+                      overflowY: 'auto',
+                      fontSize: 13.5,
+                      lineHeight: 1.7,
+                    },
+                  },
+                  h('div', { style: { fontWeight: 700, marginBottom: 6, fontSize: 13.5 } }, `${pv.title}（${pv.platform}）`),
+                  ...renderRichMessage(pv.statement, 'pv'),
+                )
+              : null,
+          ),
+
+          h(
+            'div',
+            { ref: scrollRef, className: 'oi-chat-messages' },
+            h(
+              'div',
+              { className: 'oi-chat-stream' },
+              ...chat.messages.map((m, idx) =>
+                m.role === 'user'
+                  ? h('div', { key: idx, className: 'oi-msg-user' }, ...renderRichMessage(m.text, `u-${idx}`))
+                  : h(
+                      'div',
+                      { key: idx, className: 'oi-msg-assistant' },
+                      h(
+                        'div',
+                        { style: { fontSize: 12, color: C.sub, marginBottom: 6, display: 'flex', justifyContent: 'space-between', gap: 8 } },
+                        h('span', { style: { fontWeight: 600 } }, chat.mode === 'parent' ? '📊 家长教研官' : '🧭 OI 教练'),
+                        m.duration ? h('span', null, `${Number(m.duration).toFixed(1)}s`) : null,
+                      ),
+                      ...renderRichMessage(m.text, `a-${idx}`),
+                    ),
+              ),
+              chat.sending
+                ? h(
+                    'div',
+                    {
+                      style: {
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 10,
+                        padding: '12px 16px',
+                        borderRadius: 12,
+                        background: C.layer,
+                        fontSize: 13.5,
+                        color: C.accent,
+                        fontWeight: 600,
+                      },
+                    },
+                    h('span', null, `思考中… ${chat.elapsed || 0}s`),
                     h(
                       'button',
                       {
-                        key: m.id,
                         type: 'button',
-                        className: `oi-chip ${st.intakeMode === m.id ? 'oi-chip-active' : ''}`,
-                        onClick: () => setState({ intakeMode: m.id }),
+                        className: 'oi-btn',
+                        style: { borderColor: C.err, color: C.err, padding: '4px 10px', fontSize: 12 },
+                        onClick: () => cancelAgyRequest(false),
                       },
-                      m.label,
+                      '停止',
                     ),
+                  )
+                : null,
+            ),
+          ),
+
+          h(
+            'div',
+            { className: 'oi-chat-dock' },
+            h(
+              'div',
+              { className: 'oi-chat-dock-inner' },
+              h(
+                'div',
+                { style: { display: 'flex', gap: 6, flexWrap: 'wrap' } },
+                ...['A', 'B', 'C', '给我一组 N≤4 的小反例', '下一步呢？', '请按 3 行通关秘籍卡帮我总结这道题'].map((quick) =>
+                  h(
+                    'button',
+                    {
+                      key: quick,
+                      type: 'button',
+                      className: 'oi-chip',
+                      disabled: chat.sending,
+                      onClick: () => sendAgyMessage(quick),
+                    },
+                    quick,
                   ),
                 ),
+              ),
+              h(
+                'div',
+                { style: { display: 'flex', gap: 10, alignItems: 'center' } },
+                h('input', {
+                  type: 'text',
+                  className: 'oi-reply-input',
+                  value: chat.draft,
+                  disabled: chat.sending,
+                  placeholder: '回复 A / B / C、演草纸算出的数字，或直接提问…（回车发送）',
+                  onChange: (e) => setState({ agyChat: { ...chat, draft: e.target.value } }),
+                  onKeyDown: (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault()
+                      void sendAgyMessage(chat.draft)
+                    }
+                  },
+                }),
                 h(
                   'button',
                   {
                     type: 'button',
                     className: 'oi-btn oi-btn-primary',
-                    disabled: !!st.busy || !st.intakeText.trim(),
-                    style: { padding: '8px 18px', fontSize: 13.5 },
-                    onClick: handleStartNew,
+                    style: { padding: '11px 20px', fontSize: 14 },
+                    disabled: chat.sending || !chat.draft.trim(),
+                    onClick: () => sendAgyMessage(chat.draft),
                   },
-                  '开始辅导 →',
+                  chat.sending ? '思考中…' : '发送',
                 ),
               ),
             ),
-            quickProblems.length > 0
-              ? h(
-                  'div',
-                  { style: { width: '100%', display: 'grid', gap: 10 } },
-                  h(
-                    'div',
-                    { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 4px' } },
-                    h('span', { style: { fontSize: 13, color: C.sub, fontWeight: 600 } }, '接着补近期卡住的题'),
-                    h(
-                      'button',
-                      {
-                        type: 'button',
-                        className: 'oi-btn oi-btn-ghost',
-                        style: { fontSize: 12.5 },
-                        onClick: () => setState({ tab: 'problems' }),
-                      },
-                      `查看全部 ${(data?.unsolvedRecent || []).length} 道待补题 →`,
-                    ),
-                  ),
-                  h(
-                    'div',
-                    { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 10 } },
-                    ...quickProblems.map((p, idx) =>
-                      h(
-                        'button',
-                        {
-                          key: `quick-${p.platform}-${p.title}-${idx}`,
-                          type: 'button',
-                          className: 'oi-card',
-                          disabled: !!st.busy,
-                          onClick: () => launchProblemAction(p, 'model'),
-                          style: {
-                            textAlign: 'left',
-                            cursor: 'pointer',
-                            padding: '13px 15px',
-                            display: 'grid',
-                            gap: 5,
-                            color: C.text,
-                          },
-                        },
-                        h('div', { style: { fontWeight: 700, fontSize: 13.5, lineHeight: 1.35 } }, p.title),
-                        h('div', { style: { fontSize: 12, color: C.sub } }, `${p.platform} · ${p.trajectory}`),
-                      ),
-                    ),
-                  ),
-                )
-              : null,
           ),
         )
       }
 
-      // Active full-height focus chat room
-      const pv = st.problemPreview
       return h(
         'div',
-        { className: 'oi-chat-room' },
-        // Slim focus header
-        h(
-          'div',
-          { className: 'oi-chat-head' },
-          h(
-            'div',
-            { className: 'oi-chat-head-inner' },
-            h(
-              'div',
-              { style: { display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 } },
-              h(
-                'button',
-                {
-                  type: 'button',
-                  className: 'oi-btn oi-btn-ghost',
-                  onClick: () => cancelAgyRequest(true),
-                },
-                '← 新题',
-              ),
-              h(
-                'div',
-                { style: { fontWeight: 700, fontSize: 14.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } },
-                chat.title || '教练对话',
-              ),
-            ),
-            h(
-              'div',
-              { style: { display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' } },
-              pv && pv.statement
-                ? h(
-                    'button',
-                    {
-                      type: 'button',
-                      className: `oi-chip ${st.showProblemPreview ? 'oi-chip-active' : ''}`,
-                      onClick: () => setState({ showProblemPreview: !st.showProblemPreview }),
-                    },
-                    st.showProblemPreview ? '📄 收起原题' : '📄 看原题',
-                  )
-                : null,
-              !data?.isWindows
-                ? h(
-                    'select',
-                    {
-                      value: st.agyModel,
-                      onChange: (e) => setState({ agyModel: e.target.value }),
-                      style: {
-                        borderRadius: 8,
-                        border: `1px solid ${C.border}`,
-                        background: C.base,
-                        color: C.sub,
-                        padding: '5px 8px',
-                        fontSize: 12,
-                      },
-                    },
-                    h('option', { value: 'gemini-4-neon-high' }, 'Gemini 4 Neon (High)'),
-                    h('option', { value: 'gemini-4-neon-medium' }, 'Gemini 4 Neon (Medium)'),
-                    h('option', { value: 'gemini-4-argon-high' }, 'Gemini 4 Argon (High)'),
-                    h('option', { value: 'gemini-3.8-flash-high' }, 'Gemini 3.8 Flash'),
-                  )
-                : null,
-            ),
-          ),
-          // Collapsible problem preview drawer
-          pv && pv.statement && st.showProblemPreview
-            ? h(
-                'div',
-                {
-                  style: {
-                    maxWidth: 840,
-                    margin: '10px auto 2px',
-                    padding: '12px 16px',
-                    borderRadius: 12,
-                    background: C.layer,
-                    border: `1px solid ${C.border}`,
-                    maxHeight: 240,
-                    overflowY: 'auto',
-                    fontSize: 13.5,
-                    lineHeight: 1.7,
-                  },
-                },
-                h('div', { style: { fontWeight: 700, marginBottom: 6, fontSize: 13.5 } }, `${pv.title}（${pv.platform}）`),
-                ...renderRichMessage(pv.statement, 'pv'),
-              )
-            : null,
-        ),
-
-        // Full-height message list
-        h(
-          'div',
-          { ref: scrollRef, className: 'oi-chat-messages' },
-          h(
-            'div',
-            { className: 'oi-chat-stream' },
-            ...chat.messages.map((m, idx) =>
-              m.role === 'user'
-                ? h('div', { key: idx, className: 'oi-msg-user' }, ...renderRichMessage(m.text, `u-${idx}`))
-                : h(
-                    'div',
-                    { key: idx, className: 'oi-msg-assistant' },
-                    h(
-                      'div',
-                      { style: { fontSize: 12, color: C.sub, marginBottom: 6, display: 'flex', justifyContent: 'space-between', gap: 8 } },
-                      h('span', { style: { fontWeight: 600 } }, chat.mode === 'parent' ? '📊 家长教研官' : '🧭 OI 教练'),
-                      m.duration ? h('span', null, `${Number(m.duration).toFixed(1)}s`) : null,
-                    ),
-                    ...renderRichMessage(m.text, `a-${idx}`),
-                  ),
-            ),
-            chat.sending
-              ? h(
-                  'div',
-                  {
-                    style: {
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: 10,
-                      padding: '12px 16px',
-                      borderRadius: 12,
-                      background: C.layer,
-                      fontSize: 13.5,
-                      color: C.accent,
-                      fontWeight: 600,
-                    },
-                  },
-                  h('span', null, `思考中… ${chat.elapsed || 0}s`),
-                  h(
-                    'button',
-                    {
-                      type: 'button',
-                      className: 'oi-btn',
-                      style: { borderColor: C.err, color: C.err, padding: '4px 10px', fontSize: 12 },
-                      onClick: () => cancelAgyRequest(false),
-                    },
-                    '停止',
-                  ),
-                )
-              : null,
-          ),
-        ),
-
-        // Fixed bottom reply dock
-        h(
-          'div',
-          { className: 'oi-chat-dock' },
-          h(
-            'div',
-            { className: 'oi-chat-dock-inner' },
-            h(
-              'div',
-              { style: { display: 'flex', gap: 6, flexWrap: 'wrap' } },
-              ...['A', 'B', 'C', '给我一组 N≤4 的小反例', '下一步呢？', '我 AC 了，帮我存 3 行秘籍卡'].map((quick) =>
-                h(
-                  'button',
-                  {
-                    key: quick,
-                    type: 'button',
-                    className: 'oi-chip',
-                    disabled: chat.sending,
-                    onClick: () => sendAgyMessage(quick),
-                  },
-                  quick,
-                ),
-              ),
-            ),
-            h(
-              'div',
-              { style: { display: 'flex', gap: 10, alignItems: 'center' } },
-              h('input', {
-                type: 'text',
-                className: 'oi-reply-input',
-                value: chat.draft,
-                disabled: chat.sending,
-                placeholder: '回复 A / B / C、演草纸算出的数字，或直接提问…（回车发送）',
-                onChange: (e) => setState({ agyChat: { ...chat, draft: e.target.value } }),
-                onKeyDown: (e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault()
-                    void sendAgyMessage(chat.draft)
-                  }
-                },
-              }),
-              h(
-                'button',
-                {
-                  type: 'button',
-                  className: 'oi-btn oi-btn-primary',
-                  style: { padding: '11px 20px', fontSize: 14 },
-                  disabled: chat.sending || !chat.draft.trim(),
-                  onClick: () => sendAgyMessage(chat.draft),
-                },
-                chat.sending ? '思考中…' : '发送',
-              ),
-            ),
-          ),
-        ),
+        { className: 'oi-coach-layout' },
+        st.showHistoryRail ? h(HistorySidebar, { st }) : null,
+        mainArea,
       )
     }
 
@@ -2332,6 +3096,7 @@ window.__ModuleLoader__.load({
                   : null,
 
         h(DocModal, { modal: st.docModal }),
+        h(SaveCardModal, { modal: st.saveCardModal }),
       )
     }
 
