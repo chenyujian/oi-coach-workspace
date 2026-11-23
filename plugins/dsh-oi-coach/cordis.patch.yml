@@ -39,7 +39,15 @@
             name: '@deepseek-ai/dsh-skill-filesystem'
             config:
               customSkillDirs:
-                - /Users/chenyujian/.gemini/antigravity/scratch/oi-coach-workspace/.dsh/skills
+                - !!js >-
+                  process.getBuiltinModule('node:path').resolve(
+                    process.getBuiltinModule('node:path').dirname(
+                      process.getBuiltinModule('node:fs').realpathSync(
+                        process.getBuiltinModule('node:module').createRequire(baseUrl).resolve('dsh-oi-coach/package.json')
+                      )
+                    ),
+                    '..', '..', '.dsh', 'skills'
+                  )
           - id: tool-skill
             name: '@deepseek-ai/dsh-tool-skill'
           - id: compaction
@@ -64,6 +72,7 @@
 
     - id: preset-oi-parent
       name: '@deepseek-ai/dsh-agent-preset'
+      disabled: !!js process.platform === 'win32'
       config:
         id: oi-parent
         name: OI 家长教研官
@@ -96,7 +105,15 @@
             name: '@deepseek-ai/dsh-skill-filesystem'
             config:
               customSkillDirs:
-                - /Users/chenyujian/.gemini/antigravity/scratch/oi-coach-workspace/.dsh/skills
+                - !!js >-
+                  process.getBuiltinModule('node:path').resolve(
+                    process.getBuiltinModule('node:path').dirname(
+                      process.getBuiltinModule('node:fs').realpathSync(
+                        process.getBuiltinModule('node:module').createRequire(baseUrl).resolve('dsh-oi-coach/package.json')
+                      )
+                    ),
+                    '..', '..', '.dsh', 'skills'
+                  )
           - id: tool-skill
             name: '@deepseek-ai/dsh-tool-skill'
           - id: compaction

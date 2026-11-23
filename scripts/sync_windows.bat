@@ -4,6 +4,10 @@ setlocal enabledelayedexpansion
 
 REM 孩子端（Windows）一键同步脚本
 REM 建议右键此文件 -> 发送到桌面快捷方式，命名为“学习同步”
+REM 非交互调用（例如由 dsh-oi-coach 插件触发）可传入 --no-pause 或设置 OI_NO_PAUSE=1
+
+set NO_PAUSE=%OI_NO_PAUSE%
+if /i "%~1"=="--no-pause" set NO_PAUSE=1
 
 cd /d "%~dp0\.."
 echo ==========================================
@@ -15,7 +19,7 @@ echo.
 git remote get-url origin >nul 2>&1
 if errorlevel 1 (
     echo [提示] 还未连接远程仓库，请联系家长先完成仓库绑定。
-    pause
+    if not "%NO_PAUSE%"=="1" pause
     exit /b 1
 )
 
@@ -43,7 +47,7 @@ if errorlevel 1 (
     echo.
     echo [注意] 同步时遇到文件冲突或网络异常！
     echo 请不要手动强行覆盖，截图发给爸爸处理即可。
-    pause
+    if not "%NO_PAUSE%"=="1" pause
     exit /b 1
 )
 
@@ -53,7 +57,7 @@ git push
 if errorlevel 1 (
     echo.
     echo [注意] 上传失败，请检查网络连接或账号凭据后重试。
-    pause
+    if not "%NO_PAUSE%"=="1" pause
     exit /b 1
 )
 
@@ -61,4 +65,4 @@ echo.
 echo ==========================================
 echo   同步完成！现在可以开始学习或关闭窗口。
 echo ==========================================
-pause
+if not "%NO_PAUSE%"=="1" pause

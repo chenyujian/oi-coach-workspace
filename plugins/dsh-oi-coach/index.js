@@ -32,21 +32,107 @@ const ALLOWED_AGY_MODELS = new Set([
 ])
 
 async function resolveAgyBinary() {
-  const candidates =
-    process.platform === 'win32'
-      ? [path.join(os.homedir(), '.local', 'bin', 'agy.exe'), 'agy.exe', 'agy']
-      : [path.join(os.homedir(), '.local', 'bin', 'agy'), '/opt/homebrew/bin/agy', '/usr/local/bin/agy', 'agy']
-  for (const bin of candidates) {
-    if (bin.includes(path.sep)) {
-      try {
-        await fs.access(bin)
-        return bin
-      } catch {
-        continue
-      }
+  const envBin = String(process.env.AGY_BIN || '').trim()
+  if (envBin) {
+    try {
+      await fs.access(envBin)
+      return envBin
+    } catch {
+      // fall through
     }
   }
-  return 'agy'
+
+  const localAppData = process.env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local')
+  const candidates =
+    process.platform === 'win32'
+      ? [
+          path.join(os.homedir(), '.local', 'bin', 'agy.exe'),
+          path.join(localAppData, 'Programs', 'antigravity', 'agy.exe'),
+          path.join(localAppData, 'antigravity', 'bin', 'agy.exe'),
+          path.join(os.homedir(), '.antigravity', 'bin', 'agy.exe'),
+        ]
+      : [
+          path.join(os.homedir(), '.local', 'bin', 'agy'),
+          '/opt/homebrew/bin/agy',
+          '/usr/local/bin/agy',
+        ]
+
+  for (const bin of candidates) {
+    try {
+      await fs.access(bin)
+      return bin
+    } catch {
+      continue
+    }
+  }
+
+  // 通过 PATH 兜底查找（Windows 下优先选 .exe，避免 .cmd 参数换行截断）
+  try {
+    const locator = process.platform === 'win32' ? 'where.exe' : 'which'
+    const { stdout } = await execFileAsync(locator, ['agy'], {
+      timeout: 3000,
+      windowsHide: true,
+    })
+    const lines = String(stdout || '')
+      .split(/\r?\n/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+    if (lines.length > 0) {
+      if (process.platform === 'win32') {
+        const exe = lines.find((p) => /\.exe$/i.test(p))
+        return exe || lines[0]
+      }
+      return lines[0]
+    }
+  } catch {
+    // ignore locator failure
+  }
+
+  return process.platform === 'win32' ? 'agy.exe' : 'agy'
+}
+
+async function execAgy(bin, cliArgs, options = {}) {
+  const opts = { windowsHide: true, ...options }
+  if (process.platform === 'win32' && /\.(cmd|bat)$/i.test(bin)) {
+    return execFileAsync('cmd.exe', ['/d', '/s', '/c', bin, ...cliArgs], opts)
+  }
+  return execFileAsync(bin, cliArgs, opts)
+}
+
+let cachedPythonCmd = null
+async function resolvePythonCommand() {
+  if (cachedPythonCmd) return cachedPythonCmd
+  const candidates =
+    process.platform === 'win32'
+      ? [
+          { cmd: 'py', prefixArgs: ['-3'] },
+          { cmd: 'python', prefixArgs: [] },
+          { cmd: 'python3', prefixArgs: [] },
+        ]
+      : [
+          { cmd: 'python3', prefixArgs: [] },
+          { cmd: '/opt/homebrew/bin/python3', prefixArgs: [] },
+          { cmd: 'python', prefixArgs: [] },
+        ]
+
+  for (const cand of candidates) {
+    try {
+      const { stdout, stderr } = await execFileAsync(cand.cmd, [...cand.prefixArgs, '--version'], {
+        timeout: 3000,
+        windowsHide: true,
+      })
+      const ver = `${stdout || ''} ${stderr || ''}`.trim()
+      if (/Python\s+3\./i.test(ver)) {
+        cachedPythonCmd = cand
+        return cand
+      }
+    } catch {
+      continue
+    }
+  }
+  return process.platform === 'win32'
+    ? { cmd: 'python', prefixArgs: [] }
+    : { cmd: 'python3', prefixArgs: [] }
 }
 
 async function detectSystemProxyUrl() {
@@ -71,15 +157,25 @@ async function detectSystemProxyUrl() {
       const { stdout } = await execFileAsync(
         'reg',
         ['query', 'HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings'],
-        { timeout: 3000 },
+        { timeout: 3000, windowsHide: true },
       )
       const text = String(stdout || '')
       const enabled = /ProxyEnable\s+REG_DWORD\s+0x1/i.test(text)
       const srv = text.match(/ProxyServer\s+REG_SZ\s+(.+)/i)
       if (enabled && srv && srv[1]) {
         const raw = srv[1].trim()
-        const httpsPart = raw.match(/https=([^;]+)/i)?.[1] || raw.match(/http=([^;]+)/i)?.[1] || raw
-        return /^https?:\/\/|^socks/i.test(httpsPart) ? httpsPart : `http://${httpsPart}`
+        const httpsMatch = raw.match(/https=([^;]+)/i)?.[1]
+        const httpMatch = raw.match(/http=([^;]+)/i)?.[1]
+        const socksMatch = raw.match(/socks=([^;]+)/i)?.[1]
+        if (httpsMatch || httpMatch) {
+          const picked = (httpsMatch || httpMatch).trim()
+          return /^https?:\/\/|^socks/i.test(picked) ? picked : `http://${picked}`
+        }
+        if (socksMatch) {
+          const picked = socksMatch.trim()
+          return /^socks/i.test(picked) ? picked : `socks5://${picked}`
+        }
+        return /^https?:\/\/|^socks/i.test(raw) ? raw : `http://${raw}`
       }
     }
   } catch {
@@ -110,7 +206,7 @@ async function buildAgyEnv() {
 async function checkAgyReady() {
   const bin = await resolveAgyBinary()
   try {
-    const { stdout } = await execFileAsync(bin, ['--version'], { timeout: 5000 })
+    const { stdout } = await execAgy(bin, ['--version'], { timeout: 5000 })
     return { ready: true, bin, version: String(stdout || '').trim(), defaultModel: DEFAULT_AGY_MODEL }
   } catch {
     return { ready: false, bin: null, version: null, defaultModel: DEFAULT_AGY_MODEL }
@@ -515,7 +611,9 @@ export function apply(ctx, config) {
   async function handleDoc(req, res) {
     try {
       const url = new URL(req.url || '/', 'http://localhost')
-      const rel = String(url.searchParams.get('path') || '').replace(/^\/+/, '')
+      const rel = String(url.searchParams.get('path') || '')
+        .replace(/\\/g, '/')
+        .replace(/^\/+/, '')
       const allowed =
         ALLOWED_EXACT_DOCS.has(rel) || ALLOWED_DOC_PREFIXES.some((p) => rel.startsWith(p))
       if (!rel || rel.includes('..') || !allowed) {
@@ -615,20 +713,26 @@ export function apply(ctx, config) {
       const action = String(body?.action || '').trim()
       let cmd = ''
       let args = []
+      const execEnv = { ...process.env }
+      let py = null
 
       if (action === 'atcoder') {
-        cmd = 'python3'
-        args = ['scripts/fetch_atcoder.py', '--user', 'chenyanxu', '--days', '30']
+        py = await resolvePythonCommand()
+        cmd = py.cmd
+        args = [...py.prefixArgs, 'scripts/fetch_atcoder.py', '--user', 'chenyanxu', '--days', '30']
       } else if (action === 'haoba') {
-        cmd = 'python3'
-        args = ['scripts/fetch_haoba.py', 'sync', '--domains', 'cpptrain,Cpp2023', '--days', '60']
+        py = await resolvePythonCommand()
+        cmd = py.cmd
+        args = [...py.prefixArgs, 'scripts/fetch_haoba.py', 'sync', '--domains', 'cpptrain,Cpp2023', '--days', '60']
       } else if (action === 'timeline') {
-        cmd = 'python3'
-        args = ['scripts/build_timeline.py']
+        py = await resolvePythonCommand()
+        cmd = py.cmd
+        args = [...py.prefixArgs, 'scripts/build_timeline.py']
       } else if (action === 'git-sync') {
         if (process.platform === 'win32') {
           cmd = 'cmd.exe'
-          args = ['/c', 'scripts\\sync_windows.bat']
+          args = ['/c', 'scripts\\sync_windows.bat', '--no-pause']
+          execEnv.OI_NO_PAUSE = '1'
         } else {
           cmd = 'bash'
           args = ['scripts/sync_mac.sh', 'chore: oi-coach board sync']
@@ -639,15 +743,20 @@ export function apply(ctx, config) {
 
       const { stdout, stderr } = await execFileAsync(cmd, args, {
         cwd: workspace,
+        env: execEnv,
         timeout: 120_000,
         maxBuffer: 2 * 1024 * 1024,
+        windowsHide: true,
       })
 
       let timelineOut = ''
       if (action === 'atcoder' || action === 'haoba') {
-        const tl = await execFileAsync('python3', ['scripts/build_timeline.py'], {
+        const pyRunner = py || (await resolvePythonCommand())
+        const tl = await execFileAsync(pyRunner.cmd, [...pyRunner.prefixArgs, 'scripts/build_timeline.py'], {
           cwd: workspace,
+          env: execEnv,
           timeout: 30_000,
+          windowsHide: true,
         })
         timelineOut = tl.stdout || ''
       }
@@ -846,7 +955,7 @@ export function apply(ctx, config) {
       let stdout = ''
       let stderr = ''
       try {
-        const out = await execFileAsync(bin, cliArgs, {
+        const out = await execAgy(bin, cliArgs, {
           cwd: runCwd,
           env: agyEnv,
           signal: ac.signal,
@@ -1117,7 +1226,7 @@ export function apply(ctx, config) {
               }
 
               const agyEnv = await buildAgyEnv()
-              const { stdout, stderr } = await execFileAsync(bin, cliArgs, {
+              const { stdout, stderr } = await execAgy(bin, cliArgs, {
                 cwd: runCwd,
                 env: agyEnv,
                 timeout: 210_000,
