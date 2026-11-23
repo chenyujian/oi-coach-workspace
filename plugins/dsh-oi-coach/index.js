@@ -803,19 +803,19 @@ export function apply(ctx, config) {
     return isolatedDir
   }
 
-  async function resolveProblemContextBlock(userMsg) {
+  async function findCachedProblem(query) {
     try {
       const cacheDir = path.join(workspace, 'training', 'problem_cache')
       let files = []
       try {
         files = (await fs.readdir(cacheDir)).filter((f) => f.endsWith('.json'))
       } catch {
-        return ''
+        return null
       }
-      if (files.length === 0) return ''
+      if (files.length === 0) return null
 
-      const lower = String(userMsg || '').toLowerCase()
-      let matched = null
+      const lower = String(query || '').toLowerCase()
+      if (!lower.trim()) return null
 
       // 1. 优先精确匹配题号（如 abc485_c、5250、1505、5313）
       for (const fname of files) {
@@ -824,23 +824,27 @@ export function apply(ctx, config) {
         if (!pidPart) continue
         const re = new RegExp(`(^|[^a-z0-9_])${pidPart.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^a-z0-9_]|$)`, 'i')
         if (re.test(lower)) {
-          matched = JSON.parse(await fs.readFile(path.join(cacheDir, fname), 'utf8'))
-          break
+          return JSON.parse(await fs.readFile(path.join(cacheDir, fname), 'utf8'))
         }
       }
 
       // 2. 兜底按题名关键字匹配（如“切木头”“宝石项链”“最长回文子串”）
-      if (!matched) {
-        for (const fname of files) {
-          const obj = JSON.parse(await fs.readFile(path.join(cacheDir, fname), 'utf8'))
-          const cleanTitle = String(obj?.title || '').replace(/^[a-z0-9_]+\s+/i, '').trim()
-          if (cleanTitle.length >= 2 && lower.includes(cleanTitle.toLowerCase())) {
-            matched = obj
-            break
-          }
+      for (const fname of files) {
+        const obj = JSON.parse(await fs.readFile(path.join(cacheDir, fname), 'utf8'))
+        const cleanTitle = String(obj?.title || '').replace(/^[a-z0-9_]+\s+/i, '').trim()
+        if (cleanTitle.length >= 2 && lower.includes(cleanTitle.toLowerCase())) {
+          return obj
         }
       }
+      return null
+    } catch {
+      return null
+    }
+  }
 
+  async function resolveProblemContextBlock(userMsg) {
+    try {
+      const matched = await findCachedProblem(userMsg)
       if (!matched) return ''
 
       const lines = [
@@ -1048,6 +1052,60 @@ export function apply(ctx, config) {
     }
   }
 
+  async function handleOpenMathLab(req, res) {
+    if ((req.method || 'GET').toUpperCase() !== 'POST') {
+      return sendJson(res, { ok: false, error: '仅支持 POST' }, 405)
+    }
+    try {
+      const labPath = path.join(workspace, 'courses', 'math_lab', 'index.html')
+      await fs.access(labPath)
+      const host = String(req.headers?.host || '').trim()
+      const target = /^(127\.0\.0\.1|localhost)(:\d+)?$/i.test(host)
+        ? `http://${host}/dsh-oi-coach/math-lab`
+        : labPath
+      if (process.platform === 'darwin') {
+        await execFileAsync('open', [target], { timeout: 5000 })
+      } else if (process.platform === 'win32') {
+        await execFileAsync('cmd.exe', ['/c', 'start', '', target], { timeout: 5000, windowsHide: true })
+      } else {
+        await execFileAsync('xdg-open', [target], { timeout: 5000 })
+      }
+      return sendJson(res, { ok: true, target }, 200)
+    } catch (err) {
+      return sendJson(res, { ok: false, error: `打开浏览器失败: ${err?.message || err}` }, 500)
+    }
+  }
+
+  async function handleProblemPreview(req, res) {
+    try {
+      const url = new URL(req.url || '/', 'http://localhost')
+      const q = String(url.searchParams.get('q') || '').trim()
+      if (!q) return sendJson(res, { ok: true, found: false }, 200)
+      const matched = await findCachedProblem(q)
+      if (!matched) return sendJson(res, { ok: true, found: false }, 200)
+      return sendJson(
+        res,
+        {
+          ok: true,
+          found: true,
+          problem: {
+            pid: matched.pid || '',
+            title: matched.title || matched.pid || '',
+            platform: matched.platform || '',
+            attempts: matched.attempts ?? null,
+            trajectory: matched.trajectory || '',
+            statement: matched.statement ? String(matched.statement).slice(0, 4000) : '',
+            hasCode: Boolean(matched.latest_code),
+            note: matched.note || '',
+          },
+        },
+        200,
+      )
+    } catch (err) {
+      return sendJson(res, { ok: false, error: err?.message || String(err) }, 500)
+    }
+  }
+
   // 2. 挂载 HTTP API 路由（使用标准 Node handler(req, res)，完整支持 GET/POST，避免 resource 的 405 限制）
   ctx.inject(['webServer'], (child) => {
     const routes = [
@@ -1056,6 +1114,8 @@ export function apply(ctx, config) {
       [`${API_BASE}/dispatch`, handleDispatch],
       [`${API_BASE}/sync`, handleSync],
       [`${API_BASE}/agy-chat`, handleAgyChat],
+      [`${API_BASE}/open-math-lab`, handleOpenMathLab],
+      [`${API_BASE}/problem-preview`, handleProblemPreview],
       ['/dsh-oi-coach/math-lab', handleMathLab],
     ]
     for (const [routePath, handler] of routes) {
