@@ -1,0 +1,13 @@
+{
+  "platform": "好吧(cpptrain)",
+  "pid": "5027",
+  "title": "5027 合唱团排练",
+  "url": "https://haoba.vip/d/cpptrain/p/5027?tid=6aa7439f5ee0445aa3a6334f",
+  "statement": "## T3 合唱团排练\n\n### 题目描述\n\n学校合唱团连续记录了 $n$ 天的排练状态，第 $i$ 天的状态值为 $a_i$（正数表示状态好，负数表示状态差）。\n\n指挥老师想安排一段**集训期**：集训期必须是连续的一段日子，并且天数**不能超过 $L$ 天**。集训期的\"总状态值\"是这段日子状态值的总和。\n\n集训期至少包含一天。请帮老师求出：总状态值最大是多少？\n\n### 输入格式\n\n第一行两个整数 $n$ 和 $L$，表示记录的天数和集训期的最大天数。\n\n第二行 $n$ 个整数 $a_1, a_2, \\ldots, a_n$，以空格分隔，表示每天的状态值。\n\n### 输出格式\n\n一行一个整数，表示最大总状态值。\n\n### 样例\n\n#### 输入 1\n\n```text\n5 2\n3 -1 2 5 -4\n```\n\n#### 输出 1\n\n```text\n7\n```\n\n#### 输入 2\n\n```text\n6 3\n-2 4 -1 3 -5 2\n```\n\n#### 输出 2\n\n```text\n6\n```\n\n#### 输入 3\n\n```text\n4 2\n-5 -2 -3 -1\n```\n\n#### 输出 3\n\n```text\n-1\n```\n\n样例 1 解释：选第 3、4 天（长度 2），总状态值 $2+5=7$。\n\n样例 2 解释：选第 2、3、4 天（长度 3），总状态值 $4+(-1)+3=6$。\n\n样例 3 解释：所有状态值都是负数，但必须至少选一天，最优是只选第 4 天，答案 $-1$。\n\n### 数据范围\n\n- $1 \\le L \\le n \\le 2 \\times 10^5$\n- $|a_i| \\le 10^4$（$a_i$ 可以为 $0$）\n\n时间限制：1 秒。内存限制：256 MB。",
+  "attempts": 9,
+  "best_score": 76,
+  "trajectory": "WA→WA→WA→WA→WA→WA→WA→TLE",
+  "latest_verdict": "TLE",
+  "latest_score": 0,
+  "latest_code": "#include<bits/stdc++.h>\n#define int long long\nusing namespace std;\nint a[222222],s[222222];\nint n,k,ans;\nvoid dfs(int p,int mn,int o){\n\tif(p>=n){\n\t\tif(o==k){\n\t\t\tans=max(ans,mn);\n\t\t}\n\t\treturn ;\n\t}else if(o>k||o+(n-p)<k){\n\t\treturn ;\n\t}else{\n\t\tfor(int i=p+1;i<=n;i++){\n\t\t\tdfs(i,min(mn,s[i]-s[p]),o+1);\n\t\t\t\n\t\t}\n\t}\n}\n\nsigned main(){\n\tios::sync_with_stdio(0);cin.tie(0);cout.tie(0);\n\tcin>>n>>k;\n\tfor(int i=1;i<=n;i++){\n\t\tcin>>a[i];\n\t\ts[i]=s[i-1]+a[i];\n\t}\n\tdfs(0,INT_MAX,0);\n\tcout<<ans;\n    return 0;\n}\n"
+}

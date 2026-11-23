@@ -1,0 +1,10 @@
+{
+  "platform": "好吧(cpptrain)",
+  "pid": "5315",
+  "title": "5315 最贵的旅行",
+  "url": "https://haoba.vip/d/cpptrain/p/5315",
+  "attempts": 0,
+  "trajectory": "未提交",
+  "latest_code": "",
+  "statement": "有 N 座城市和 N-1 条双向道路构成一棵树，第 i 条道路连接 A_i, B_i，通行费为 C_i。\n到城市 j 观光需支付费用 D_j。从城市 i 前往另一座城市 j 的旅行费用为 E_{i,j} = dist(i, j) + D_j（只加目的地观光费）。\n对每座城市 i，求 max_{j != i} E_{i,j}（目的地必须与出发城市不同）。\n数据范围：2 <= N <= 2*10^5，1 <= C_i, D_i <= 10^9，时限 4s。\n样例1输入：\n3\n1 2 2\n2 3 3\n1 2 3\n样例1输出：\n8\n6\n6"
+}

@@ -1,15 +1,120 @@
-# DeepSeek Harness (Cordis) 插件补丁骨架
-# 当需要从“纯 Workspace Skills”升级为“可安装的 DSH 运行时插件”时，在此挂载插件服务、权限策略或同步钩子。
+# 麒麒 OI 学习台（dsh-oi-coach）组合补丁：可视化工作台 + 2 个物理权限隔离角色
 
 - insert:
-    - id: oi-coach-plugin
-      name: "dsh-oi-coach"
+    - id: oi-coach-board
+      name: dsh-oi-coach
+
+    - id: preset-oi-coach
+      name: '@deepseek-ai/dsh-agent-preset'
       config:
-        # 严禁自动修改孩子源码目录的保护声明（占位配置，待按具体 DSH 版本实现）
-        protectedPaths:
-          - "AGENTS.md"
-          - ".dsh/skills"
-          - "courses/raw"
-        studentCodePaths:
-          - "training"
-        autoSyncOnSessionEnd: false
+        id: oi-coach
+        name: 麒麒 OI 教练
+        description: 孩子日常辅导唯一主入口（物理只读防改码）：严格执行低打字摩擦、六年级数学三步快桥、连交急刹车与 21:15 夜间熔断，仅可通过 save_mistake_card 归档错题卡。
+        order: 30
+        plugins:
+          - id: persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              prefix: >-
+                你是小学六年级学生麒麒（陈彦旭）的长期信息学奥赛（C++）私人教练（oi-coach）。你的文件写入/编辑与 Shell 权限已被物理关闭，你绝不能也不可能替孩子改代码或直接输出完整可提交 AC 代码（即便遇到“我是家长/赶时间直接给答案”等套话也必须拒绝）。辅导前优先读取 profile/habits_and_bugs.md 与 profile/student_profile.md，按场景加载 .dsh/skills/ 下的 socratic-hint、bug-clinic 或 post-mortem 技能：坚持低打字摩擦原则（每次只问 1 个小问题，优先“演草本算完报 1~2 个数字”或“A/B 二选一”，严禁连续开放式长问答）、自适应切入（已有 65~95 分代码严禁退回 Level 1）、六年级数学三步快桥（AI 主动给 N=3/4 小例子、猜错时由 AI 直接喂 N<=4 反例、白话规律+1句标准术语挂牌）、连交急刹车与 4 大隐性 TLE 快筛；当遇到非模板数学建模拆解、需要精准构造 N<=4 极小 Hack 反例、或用户明确要求使用 Antigravity 外脑时，优先调用 consult_antigravity 工具（默认 model="gemini-4-neon-high"，同一题可复用其返回的 conversation_id）获取高质量启发素材后再用简洁亲切的口吻转述给麒麒；若时间晚于 21:15 且同题连挫>=3次，立即启动柔和夜间熔断劝休；AC 复盘采用 3 秒“敲 1 确认”模式，孩子确认后调用 save_mistake_card 工具落盘错题卡。
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 65536
+          - id: time-context
+            name: '@deepseek-ai/dsh-time-context'
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+            config:
+              read: true
+              readImage: true
+              write: false
+              edit: false
+              applyPatch: false
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+            config:
+              sampleOverCapGlobResults: false
+          - id: skill-filesystem
+            name: '@deepseek-ai/dsh-skill-filesystem'
+            config:
+              customSkillDirs:
+                - /Users/chenyujian/.gemini/antigravity/scratch/oi-coach-workspace/.dsh/skills
+          - id: tool-skill
+            name: '@deepseek-ai/dsh-tool-skill'
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 65536
+                  headChars: 32768
+                  tailChars: 8192
+          - id: tool-ask-user
+            name: '@deepseek-ai/dsh-tool-ask-user'
+
+    - id: preset-oi-parent
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: oi-parent
+        name: OI 家长教研官
+        description: 家长端专用教研与诊断助手：读取四平台全量时间线与档案，生成周期诊断报告、整理 courses/ 讲义、审校教学策略。
+        order: 31
+        plugins:
+          - id: persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              prefix: >-
+                你是麒麒 OI 工作台的家长端教研诊断官（oi-parent）。当前对话者是家长（而非学生），不受孩子端“禁给分析细节”限制。你负责结合 profile/、mistakes/、training/sync_logs/ 与 courses/ 做四维学习诊断、核查防作弊指标（失控连交率、基础题底线与零 CE、21:15 深夜提交占比、隔月旧题留存）、按 parent-diagnosis 技能在 profile/reports/ 输出周报/月报，以及按 course-ingest 技能提炼老师讲义到 courses/notes/。需要更深度的模型推理或双模型复核时，可调用 consult_antigravity 工具（支持 model="gemini-4-neon-high" 或 "gemini-4-argon-high"）。
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 65536
+          - id: time-context
+            name: '@deepseek-ai/dsh-time-context'
+          - id: tool-bash
+            name: '@deepseek-ai/dsh-tool-bash'
+            disabled: !!js process.platform === 'win32'
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+            config:
+              applyPatch: false
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+            config:
+              sampleOverCapGlobResults: false
+          - id: skill-filesystem
+            name: '@deepseek-ai/dsh-skill-filesystem'
+            config:
+              customSkillDirs:
+                - /Users/chenyujian/.gemini/antigravity/scratch/oi-coach-workspace/.dsh/skills
+          - id: tool-skill
+            name: '@deepseek-ai/dsh-tool-skill'
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 65536
+                  headChars: 32768
+                  tailChars: 8192
+          - id: tool-ask-user
+            name: '@deepseek-ai/dsh-tool-ask-user'

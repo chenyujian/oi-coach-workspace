@@ -1,0 +1,2050 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>麒麒的 OI 读题与建模训练营</title>
+  <style>
+    :root {
+      --bg: #f6f8fc;
+      --card: #ffffff;
+      --ink: #1e293b;
+      --sub: #475569;
+      --muted: #64748b;
+      --border: #dbe3f0;
+      --brand: #2563eb;
+      --brand-soft: #eff6ff;
+      --brand-deep: #1d4ed8;
+      --amber: #d97706;
+      --amber-soft: #fffbeb;
+      --green: #059669;
+      --green-soft: #ecfdf5;
+      --red: #dc2626;
+      --red-soft: #fef2f2;
+      --purple: #7c3aed;
+      --purple-soft: #f5f3ff;
+      --radius: 14px;
+      --shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.62;
+    }
+
+    .topbar {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #0284c7 100%);
+      color: #fff;
+      padding: 18px 24px;
+      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.22);
+    }
+    .topbar-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+    }
+    .brand-title { font-size: 21px; font-weight: 800; margin: 0; }
+    .brand-sub { font-size: 13px; opacity: 0.92; margin: 3px 0 0; }
+    .top-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.14s ease;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: var(--brand); color: var(--brand); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-primary { background: var(--brand); color: #fff; border-color: var(--brand); }
+    .btn-primary:hover { background: var(--brand-deep); color: #fff; border-color: var(--brand-deep); }
+    .btn-ghost { background: rgba(255,255,255,0.14); color: #fff; border-color: rgba(255,255,255,0.34); }
+    .btn-ghost:hover { background: rgba(255,255,255,0.24); color: #fff; border-color: #fff; }
+    .btn-amber { background: var(--amber-soft); color: #92400e; border-color: #fcd34d; }
+    .btn-amber:hover { background: #fef3c7; color: #78350f; border-color: var(--amber); }
+    .btn-green { background: var(--green); color: #fff; border-color: var(--green); }
+    .btn-green:hover { background: #047857; color: #fff; }
+    .btn-sm { padding: 5px 10px; font-size: 12.5px; border-radius: 8px; }
+    .btn-active { background: var(--brand); color: #fff !important; border-color: var(--brand); }
+
+    .container {
+      max-width: 1120px;
+      margin: 18px auto 48px;
+      padding: 0 20px;
+    }
+
+    /* 5-step protocol */
+    .protocol-card {
+      background: var(--card);
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius);
+      padding: 15px 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+    .protocol-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .protocol-head h2 { margin: 0; font-size: 15.5px; color: var(--brand-deep); }
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .step-box {
+      background: var(--brand-soft);
+      border: 1px solid #dbeafe;
+      border-radius: 10px;
+      padding: 10px 11px;
+      font-size: 12.5px;
+    }
+    .step-box strong { display: block; color: var(--brand-deep); font-size: 13.5px; margin-bottom: 3px; }
+
+    /* Roadmap */
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .pillar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 13px;
+      font-size: 12.5px;
+    }
+    .pillar.active { border: 2px solid var(--brand); background: linear-gradient(180deg, #eff6ff 0%, #fff 100%); }
+    .pillar.locked { opacity: 0.72; }
+    .pillar-tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 999px; margin-bottom: 5px; }
+    .pillar.active .pillar-tag { background: var(--brand); color: #fff; }
+    .pillar.locked .pillar-tag { background: #e2e8f0; color: #475569; }
+    .pillar h3 { margin: 0 0 3px; font-size: 14px; }
+    .pillar p { margin: 0; color: var(--sub); font-size: 12px; }
+
+    /* Lesson tabs */
+    .lesson-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .lesson-tab {
+      flex: 1 1 240px;
+      text-align: left;
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 15px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .lesson-tab:hover { border-color: #93c5fd; }
+    .lesson-tab.active { border-color: var(--brand); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.12); }
+    .lt-num { font-size: 11.5px; font-weight: 700; color: var(--brand); }
+    .lt-title { font-size: 15px; font-weight: 800; margin: 2px 0; color: var(--ink); }
+    .lt-desc { font-size: 12px; color: var(--muted); }
+
+    /* Cards & Labs */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+    }
+    .section-badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+    .badge-blue { background: var(--brand-soft); color: var(--brand-deep); }
+    .badge-amber { background: var(--amber-soft); color: #b45309; }
+    .badge-green { background: var(--green-soft); color: #047857; }
+    .badge-purple { background: var(--purple-soft); color: #6d28d9; }
+
+    .card h2 { margin: 0 0 8px; font-size: 18.5px; }
+    .lead { color: var(--sub); margin: 0 0 14px; font-size: 14px; }
+
+    .lab-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-top: 14px;
+    }
+    .lab-title {
+      font-weight: 800;
+      font-size: 14.5px;
+      margin: 0 0 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .slider-item {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 7px 11px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      user-select: none;
+    }
+    .slider-item input[type="range"] { width: 108px; accent-color: var(--brand); cursor: pointer; }
+    .val-pill {
+      display: inline-block;
+      min-width: 28px;
+      text-align: center;
+      font-weight: 800;
+      color: var(--brand-deep);
+      background: var(--brand-soft);
+      border-radius: 6px;
+      padding: 1px 6px;
+    }
+
+    .stage-display {
+      background: #fff;
+      border: 2px dashed #93c5fd;
+      border-radius: 12px;
+      padding: 16px 18px;
+      text-align: center;
+      margin: 10px 0;
+    }
+    .stage-formula {
+      font-size: 20px;
+      font-weight: 800;
+      color: #0f172a;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      word-break: break-word;
+    }
+    .stage-note { margin-top: 8px; font-size: 13.5px; color: var(--sub); }
+
+    .box-chip { display: inline-block; padding: 2px 9px; border-radius: 8px; font-weight: 700; margin: 0 2px; }
+    .chip-a { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+    .chip-b { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .chip-c { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+
+    .callout {
+      background: #fff;
+      border-left: 4px solid var(--brand);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-top: 10px;
+      font-size: 13.5px;
+      color: #334155;
+    }
+    .callout-purple { border-left-color: var(--purple); background: var(--purple-soft); }
+
+    .dict-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .dict-item { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 13px; }
+    .dict-math { font-size: 15.5px; font-weight: 800; color: var(--purple); font-family: ui-monospace, Menlo, Consolas, monospace; }
+    .dict-cpp {
+      margin-top: 4px;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+    }
+
+    /* Balance / Algebraic Derivation */
+    .balance-layout { display: grid; grid-template-columns: 1.25fr 1fr; gap: 16px; align-items: start; }
+    .steps-log {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      min-height: 205px;
+    }
+    .steps-log h4 { margin: 0 0 8px; font-size: 13.5px; color: var(--brand-deep); }
+    .step-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      font-size: 13.5px;
+      margin-bottom: 4px;
+      background: #f8fafc;
+    }
+    .step-line.done { background: var(--green-soft); color: #065f46; font-weight: 800; }
+    .step-reason { font-family: inherit; font-size: 11.5px; color: var(--muted); text-align: right; }
+
+    .feedback-bar { margin-top: 10px; padding: 9px 12px; border-radius: 8px; font-size: 13.5px; font-weight: 600; }
+    .fb-info { background: var(--brand-soft); color: var(--brand-deep); }
+    .fb-ok { background: var(--green-soft); color: #065f46; }
+    .fb-warn { background: var(--amber-soft); color: #92400e; }
+
+    /* L3 stepped exchange proof */
+    .step-pill-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .step-pill {
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 700;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      color: var(--sub);
+      cursor: pointer;
+    }
+    .step-pill.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+    .step-pill.done { background: var(--green-soft); color: #065f46; border-color: #6ee7b7; }
+
+    .mini-table { width: 100%; border-collapse: collapse; background: #fff; font-size: 13.5px; margin: 10px 0; }
+    .mini-table th, .mini-table td { border: 1px solid #cbd5e1; padding: 7px 10px; text-align: center; }
+    .mini-table th { background: #f1f5f9; }
+
+    .term-arena { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; margin: 12px 0; }
+    .term-side { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 13px; min-height: 108px; }
+    .term-side h4 { margin: 0 0 8px; font-size: 13px; color: var(--sub); }
+    .term-list { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; }
+    .term-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      font-size: 13.5px;
+      font-weight: 700;
+      border: 1.5px solid #cbd5e1;
+      background: #f8fafc;
+      transition: all 0.16s ease;
+    }
+    .term-chip.common { cursor: pointer; border-color: #f59e0b; background: #fffbeb; color: #92400e; }
+    .term-chip.common:hover { transform: scale(1.04); background: #fef3c7; }
+    .term-chip.canceled { text-decoration: line-through; opacity: 0.3; background: #e2e8f0; border-color: #cbd5e1; color: #64748b; cursor: default; }
+    .term-chip.core { border-color: #2563eb; background: #eff6ff; color: #1d4ed8; }
+    .vs-badge { font-size: 20px; font-weight: 900; color: var(--brand); text-align: center; min-width: 34px; }
+
+    .code-strip {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      font-size: 13.5px;
+      margin-top: 10px;
+      overflow-x: auto;
+    }
+
+    /* Quiz */
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+    .score-pill {
+      background: var(--green-soft);
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .mcq-item { border: 1px solid var(--border); border-radius: 12px; padding: 15px 17px; margin-bottom: 12px; background: #fcfdff; }
+    .mcq-q { font-weight: 700; font-size: 14.5px; margin: 0 0 9px; }
+    .mcq-options { display: grid; gap: 7px; }
+    .mcq-opt {
+      text-align: left;
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      padding: 8px 12px;
+      font-size: 13.5px;
+      cursor: pointer;
+      color: var(--ink);
+      transition: all 0.12s ease;
+    }
+    .mcq-opt:hover:not(:disabled) { border-color: var(--brand); background: var(--brand-soft); }
+    .mcq-opt:disabled { cursor: default; }
+    .mcq-opt.correct { border-color: var(--green); background: var(--green-soft); color: #065f46; font-weight: 700; }
+    .mcq-opt.wrong { border-color: var(--red); background: var(--red-soft); color: #991b1b; }
+    .mcq-explain { margin-top: 9px; padding: 9px 12px; border-radius: 8px; font-size: 13px; background: #f1f5f9; }
+    .oral-prompt {
+      margin-top: 8px;
+      padding: 9px 12px;
+      border-radius: 9px;
+      background: var(--amber-soft);
+      border: 1px solid #fde68a;
+      color: #78350f;
+      font-size: 13px;
+    }
+    .oral-rubric { margin-top: 5px; font-size: 12.5px; color: #92400e; }
+
+    /* Printable A4 Worksheet (strictly tuned to fit 1 A4 page per lesson!) */
+    .worksheet-sheet {
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 18px 20px;
+      background: #fff;
+      margin-top: 10px;
+    }
+    .ws-meta {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      border-bottom: 2px solid #1e293b;
+      padding-bottom: 7px;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+    .ws-goal { margin: 0 0 10px; font-size: 12.5px; color: #334155; }
+    .ws-task { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dashed #cbd5e1; }
+    .ws-task:last-of-type { border-bottom: none; margin-bottom: 6px; padding-bottom: 0; }
+    .ws-task h4 { margin: 0 0 5px; font-size: 13.5px; color: #0f172a; }
+    .ws-task p { margin: 0 0 5px; font-size: 12.5px; }
+    .ws-table { width: 99.5%; border-collapse: collapse; margin: 5px 0; font-size: 12.5px; table-layout: fixed; }
+    .ws-table th, .ws-table td { border: 1px solid #64748b; padding: 5px 7px; text-align: center; word-wrap: break-word; }
+    .ws-table th { background: #f1f5f9; }
+    .write-box {
+      border: 1px dashed #64748b;
+      border-radius: 7px;
+      min-height: 50px;
+      padding: 6px 10px;
+      margin-top: 5px;
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.9;
+    }
+    .write-line { border-bottom: 1px solid #94a3b8; height: 24px; margin-bottom: 3px; }
+    .slot-grid {
+      display: grid;
+      grid-template-columns: 70px repeat(5, 1fr);
+      gap: 5px;
+      align-items: center;
+      margin-top: 6px;
+    }
+    .slot-cell {
+      border: 1px solid #64748b;
+      border-radius: 5px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11.5px;
+      color: #94a3b8;
+    }
+    .ws-footer {
+      margin-top: 10px;
+      padding-top: 7px;
+      border-top: 1px solid #cbd5e1;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: #64748b;
+    }
+    .parent-lock-bar {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      border-radius: 10px;
+    }
+    .parent-lock-bar input {
+      width: 90px;
+      padding: 5px 8px;
+      border: 1px solid #94a3b8;
+      border-radius: 7px;
+      font-size: 13px;
+    }
+    .parent-answers {
+      margin-top: 10px;
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-radius: 10px;
+      padding: 12px 15px;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 820px) {
+      .steps-grid, .roadmap, .balance-layout, .term-arena { grid-template-columns: 1fr; }
+    }
+
+    @page { size: A4 portrait; margin: 12mm 13mm; }
+    @media print {
+      body { background: #fff; color: #000; font-size: 10.5pt; line-height: 1.45; }
+      .no-print { display: none !important; }
+      .container { max-width: 100%; margin: 0; padding: 0; }
+      .card { box-shadow: none; border: none; padding: 0; margin: 0; }
+      .worksheet-sheet { border: none; padding: 0; margin: 0; }
+      .ws-table { width: 99%; }
+      .ws-task { page-break-inside: avoid; margin-bottom: 9px; padding-bottom: 8px; }
+      .write-box { min-height: 46px; border: 1px solid #64748b; color: #475569; }
+      .write-line { height: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar no-print">
+    <div class="topbar-inner">
+      <div>
+        <h1 class="brand-title">🧭 麒麒的 OI 读题与建模训练营</h1>
+        <p class="brand-sub">动手玩明白（网页实验） → 开口讲清楚（边做边讲） → 拿笔写下来（A4 闯关单）</p>
+      </div>
+      <div class="top-actions">
+        <button class="btn btn-ghost" id="btnToggleProtocol" type="button">📋 读题五步法</button>
+        <button class="btn btn-amber" id="btnPrintTop" type="button">🖨️ 打印本课 A4 闯关单</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- 1. Unified 5-step protocol (matches AGENTS.md & socratic-hint!) -->
+    <section class="protocol-card no-print" id="protocolSection">
+      <div class="protocol-head" id="protocolHead">
+        <h2>🔑 遇到没见过的新题，先在草稿纸上走这 5 步（前 4 步先别碰键盘！）</h2>
+        <span style="font-size:12.5px;color:#2563eb;font-weight:700;" id="protocolToggleLabel">收起 ▲</span>
+      </div>
+      <div class="steps-grid" id="protocolBody">
+        <div class="step-box"><strong>① 剥故事 + 看 N</strong>去掉故事词，写清对象与目标；第一眼看数据范围 N，先判暴力能不能过！</div>
+        <div class="step-box"><strong>② 造小世界</strong>拿 3~4 个小数字在草稿纸上亲手算一遍，盯住自己到底是怎么选出来的。</div>
+        <div class="step-box"><strong>③ 写算式</strong>先用中文方框写规律，再给方框贴上字母，写成等式或不等式。</div>
+        <div class="step-box"><strong>④ 挑刺验毒</strong>拿 2 组最刁钻的数（0、1、相等、整除）代进去，试着把自己的式子推翻。</div>
+        <div class="step-box"><strong>⑤ 译代码</strong>纸上怎么都挑不出毛病了，最后一步再把草稿纸上的式子翻译成 C++！</div>
+      </div>
+    </section>
+
+    <!-- 2. 4-Stage Roadmap -->
+    <section class="roadmap no-print" aria-label="四大关卡路线图">
+      <div class="pillar active">
+        <span class="pillar-tag">第 1 关 · 正在闯关（3 课）</span>
+        <h3>1. 用字母和式子说话</h3>
+        <p>从真实 OI 题面剥故事起字母、玩转多字母/含参方程，用不等式和“划相同块”证贪心。</p>
+      </div>
+      <div class="pillar locked">
+        <span class="pillar-tag">第 2 关 · 即将解锁</span>
+        <h3>2. 看穿题目的“真面目”</h3>
+        <p>认出序列、树图和规律，搞定整数上下取整、差 1 陷阱和一直不变的量。</p>
+      </div>
+      <div class="pillar locked">
+        <span class="pillar-tag">第 3 关 · 后续解锁</span>
+        <h3>3. 换个角度把难题变简单</h3>
+        <p>正面不好算就反着算，枚举太慢就换主角算贡献，把陌生题变成老熟人。</p>
+      </div>
+      <div class="pillar locked">
+        <span class="pillar-tag">第 4 关 · 后续解锁</span>
+        <h3>4. 像侦探一样查错和证明</h3>
+        <p>从小例子猜规律，用反例一秒抓虫，写代码前先估清复杂度和 64 位溢出。</p>
+      </div>
+    </section>
+
+    <!-- 3. Lesson tabs -->
+    <nav class="lesson-tabs no-print" id="lessonTabs" aria-label="第 1 关课程选择">
+      <button class="lesson-tab active" data-lesson="l1" type="button">
+        <div class="lt-num">第 1 关 · 第 1 课</div>
+        <div class="lt-title">剥故事起字母：多字母展开与合并</div>
+        <div class="lt-desc">真实 OI 题剥故事 · 拆三项括号与合并同类项 · 数学 = vs C++ ==</div>
+      </button>
+      <button class="lesson-tab" data-lesson="l2" type="button">
+        <div class="lt-num">第 1 关 · 第 2 课</div>
+        <div class="lt-title">升级解方程：双边 x、负项与全字母倒推</div>
+        <div class="lt-desc">跳过幼稚算术题 · 氢气球理解负项 · 纯字母公式与二元含参消元</div>
+      </button>
+      <button class="lesson-tab" data-lesson="l3" type="button">
+        <div class="lt-num">第 1 关 · 第 3 课</div>
+        <div class="lt-title">不等式翻号 & 完整 5 步贪心证明</div>
+        <div class="lt-desc">数轴翻号接取负反转 · 小数字→盒子→手拆→划相同块→冒泡桥与 C++ cmp</div>
+      </button>
+    </nav>
+
+    <div id="lessonHost"></div>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // ---------- State ----------
+      const state = {
+        activeLesson: 'l1',
+        protocolOpen: true,
+        // L1
+        l1Scene: 0,
+        l1Stage: 0,
+        l1A: 4,
+        l1B: 3,
+        l1C: 2,
+        l1DistSplit: false,
+        // L2 (upgraded for a student who ALREADY knows simple 1-var & 2-var equations!)
+        l2Level: 0,
+        l2History: [], // stack of snapshots for Undo
+        l2Current: null,
+        l2Steps: [],
+        l2Feedback: '',
+        l2FeedbackType: 'fb-info',
+        l2VerifiedMsg: '',
+        l2N: 10,
+        l2S: 32,
+        // L3 number line
+        l3A: 2,
+        l3B: 5,
+        l3History: '初始状态：2 < 5（2 在 5 的左边）。点下面按钮观察两点怎么动！',
+        l3Flipped: false,
+        // L3 5-step greedy proof (corrected bottom-up ladder: numbers -> box -> expand step by step -> cancel -> bubble + cmp!)
+        l3Step: 1, // 1..5
+        l3P: 0,
+        l3T1: 3,
+        l3W1: 4,
+        l3T2: 2,
+        l3W2: 5,
+        l3BoxBuilt: false,
+        l3Expand1: false, // expand (P+t1)*w1 and (P+t2)*w2
+        l3Expand2: false, // expand (P+t1+t2)*w2 and (P+t2+t1)*w1
+        l3Canceled: { pw1: false, pw2: false, t1w1: false, t2w2: false },
+        // Quizzes (locked on first click!)
+        quizAnswers: {},
+        // Parent answer unlock per lesson (requires code 2015 or quick parent check)
+        parentUnlocked: { l1: false, l2: false, l3: false },
+        parentLockErr: { l1: '', l2: '', l3: '' },
+      };
+
+      // ---------- L1 Scenarios (including real OI story stripping + intermediate ∑ step + 3-term distributive!) ----------
+      const L1_SCENES = [
+        {
+          name: '场景 1（真实 OI 剥故事）：切木头算段数',
+          desc: '【真实模拟赛故事】一根长为 a 的木头，每段最多长 x，正好切了 k 刀分成 k+1 段（每段尽量拉满 x），最多能盖住多长的木头？如果还有 1 段余头 c 呢？',
+          render: (a, b, c, stage) => {
+            // Here treat a as 刀数+1(段数), b as 每段上限x, c as 多出长度
+            if (stage === 0) {
+              return {
+                formula: `${a} 段 × 每段 ${b} 米 + 多出 ${c} 米 = ${a * b + c} 米`,
+                note: '造小世界：先拿具体数字算一遍，摸清“段数 × 上限 + 余头 = 总长”的关系。',
+              };
+            }
+            if (stage === 1) {
+              return {
+                formula: `<span class="box-chip chip-a">[段数]</span> × <span class="box-chip chip-b">[每段上限]</span> + <span class="box-chip chip-c">[余头]</span>`,
+                note: '剥故事装盒子：去掉“木头、米”，只留下 3 个中文盒子。',
+              };
+            }
+            if (stage === 2) {
+              return {
+                formula: `<span class="box-chip chip-a">m</span> · <span class="box-chip chip-b">x</span> + <span class="box-chip chip-c">c</span>  （若没有余头，m 段就盖住 m·x）`,
+                note: '贴字母：写中文太慢，给盒子起 1 个字母名字（如 m, x, c），以后遇到切木头、分车厢全是一套式子！',
+              };
+            }
+            return {
+              formula: `long long cover = 1LL * m * x + c;  // 防 int 溢出先乘 1LL`,
+              note: '对照 C++：数学里的字母式子就是 C++ 表达式；记得在 C++ 里大数相乘前要加 1LL！',
+            };
+          },
+        },
+        {
+          name: '场景 2：一排数求和（补齐过渡：A₁+A₂+A₃ → … → ∑）',
+          desc: '一排格子里的数字分别是 A₁、A₂、A₃……一直到 Aₙ，求总和。',
+          render: (a, b, c, stage) => {
+            if (stage === 0) {
+              return {
+                formula: `${a} + ${b} + ${c} = ${a + b + c}`,
+                note: '造小世界：n = 3 时把 3 个具体数直接加起来。',
+              };
+            }
+            if (stage === 1) {
+              return {
+                formula: `<span class="box-chip chip-a">A₁</span> + <span class="box-chip chip-b">A₂</span> + <span class="box-chip chip-c">A₃</span>  →  A₁ + A₂ + … + Aₙ`,
+                note: '关键过渡步：给位置编上脚标 1, 2, 3…n，就能从 3 个数推广到任意 n 个数！',
+              };
+            }
+            if (stage === 2) {
+              return {
+                formula: `∑ (i = 1 到 n) A_i`,
+                note: '大写的 Σ（西格玛）只是 A₁ + A₂ + … + Aₙ 的省纸简写，别被长相吓到！',
+              };
+            }
+            return {
+              formula: `long long sum = 0; for (int i = 1; i <= n; ++i) sum += A[i];`,
+              note: '记住：脚标 A_i / t₁ 就是数组 A[i] / t[1]；看到 Σ 立刻在脑中翻译成 for 循环累加！',
+            };
+          },
+        },
+        {
+          name: '场景 3：三项拆括号 + 合并同类项（给第 3 课铺路！）',
+          desc: '高为 a 的大块，由宽为 b、宽为 c、和另一个宽为 b 的小块拼在一起，总面积怎么拆、怎么合并？',
+          render: (a, b, c, stage) => {
+            const total = a * (b + c + b);
+            if (stage === 0) {
+              return {
+                formula: `(${b} + ${c} + ${b}) × ${a} = ${b * a} + ${c * a} + ${b * a} = 2×${b * a} + ${c * a} = ${total}`,
+                note: '看右侧乘数：不管是左边乘 a 还是右边乘 a，括号里的【每一项】都要乘一次 a！',
+              };
+            }
+            if (stage === 1) {
+              return {
+                formula: `(<span class="box-chip chip-b">b</span> + <span class="box-chip chip-c">c</span> + <span class="box-chip chip-b">b</span>) · <span class="box-chip chip-a">a</span> = ab + ac + ab = <span class="box-chip chip-a">2ab</span> + ac`,
+                note: '合并同类项就像数盒子：1 个 [ab] 盒子 + 1 个 [ab] 盒子 = 2 个 [ab] 盒子（写成 2ab）！',
+              };
+            }
+            if (stage === 2) {
+              return {
+                formula: `(b + c + d) · a = ba + ca + da`,
+                note: '三项括号乘在右边也完全一样！第 3 课拆 (P + t₁ + t₂)·w₂ 时就会用到这一招。',
+              };
+            }
+            return {
+              formula: `(1LL * (b + c + b) * a) == (1LL * 2 * a * b + 1LL * a * c)`,
+              note: '重要区分：数学里的“=”是【判断左右相等】，对应 C++ 的 ==（不是赋值的 =）！且 C++ 里不溢出时才恒相等。',
+            };
+          },
+        },
+      ];
+
+      // ---------- L2 Upgraded Levels (for student who ALREADY knows simple 1-var & 2-var equations!) ----------
+      const L2_LEVELS = [
+        {
+          id: 'both-sides',
+          title: '关卡 1（热身升级）：3x - 4 = x + 6',
+          story: '两边都有 x，而且左边还有负项 -4（想象成拴着一个向上拉 4kg 的氢气球！）。怎么先把气球抵消、再把 x 赶到同一边？',
+          type: 'linear',
+          init: { lx: 3, lc: -4, rx: 1, rc: 6 },
+          answer: 5,
+          verifyFn: (x) => `代入 x = ${x}：左边 3×${x} - 4 = ${3 * x - 4}，右边 ${x} + 6 = ${x + 6}，左右严格相等！`,
+          ops: [
+            { id: 'subX', label: '两边同减 x' },
+            { id: 'add4', label: '两边同加 4（消掉 -4 气球）' },
+            { id: 'div2', label: '两边同除以 2' },
+            { id: 'addX', label: '两边同加 x' },
+          ],
+        },
+        {
+          id: 'symbolic',
+          title: '关卡 2（OI 核心 · 全字母倒推）：k·x + d = L，反求 x',
+          story: '已知总长 L、先截掉 d，剩下平均分成 k 段，每段长 x（k > 0）。没有任何具体数字，照样用天平把 x 单独留在左边！',
+          type: 'symbolic',
+          init: { stage: 0, expr: 'k·x + d = L' },
+          ops: [
+            { id: 'symSubD', label: '两边同减 d' },
+            { id: 'symDivK', label: '两边同除以 k（k > 0）' },
+            { id: 'symAddD', label: '两边同加 d' },
+          ],
+        },
+        {
+          id: 'two-var-param',
+          title: '关卡 3（二元含参消元）：a + b = n 且 2a + 5b = S，反求 b',
+          story: '你会解数字版二元方程组，但 OI 题里给的是字母 n 和 S！用加减消元法，把 a 彻底消掉，直接推导出 b 的通用公式！',
+          type: 'system',
+          init: { stage: 0, eq1: 'a + b = n', eq2: '2a + 5b = S' },
+          ops: [
+            { id: 'sysMul2', label: '① 一式两边同乘 2（对齐 2a）' },
+            { id: 'sysSub', label: '② 二式减去新的一式（消掉 2a）' },
+            { id: 'sysDiv3', label: '③ 两边同除以 3（得到 b）' },
+          ],
+        },
+      ];
+
+      function formatSide(x, c) {
+        const parts = [];
+        if (x !== 0) parts.push(x === 1 ? 'x' : x === -1 ? '-x' : `${x}x`);
+        if (c !== 0) {
+          if (parts.length === 0) parts.push(`${c}`);
+          else parts.push(c > 0 ? `+ ${c}` : `- ${Math.abs(c)}`);
+        }
+        return parts.length ? parts.join(' ') : '0';
+      }
+
+      function formatL2Display(lv, cur) {
+        if (lv.type === 'linear') return `${formatSide(cur.lx, cur.lc)} = ${formatSide(cur.rx, cur.rc)}`;
+        if (lv.type === 'symbolic') return cur.expr;
+        return cur.stage === 0 ? `${cur.eq1}  |  ${cur.eq2}`
+          : cur.stage === 1 ? `2a + 2b = 2n  |  2a + 5b = S`
+          : cur.stage === 2 ? `3b = S - 2n`
+          : `b = (S - 2n) / 3`;
+      }
+
+      function isL2Solved(lv, cur) {
+        if (lv.type === 'linear') return cur.lx === 1 && cur.lc === 0 && cur.rx === 0;
+        if (lv.type === 'symbolic') return cur.stage === 2;
+        return cur.stage === 3;
+      }
+
+      function initL2Level(idx) {
+        state.l2Level = idx;
+        const lv = L2_LEVELS[idx];
+        state.l2Current = JSON.parse(JSON.stringify(lv.init));
+        state.l2History = [];
+        state.l2Steps = [{ eq: formatL2Display(lv, state.l2Current), reason: '初始关系式' }];
+        state.l2Feedback = lv.story;
+        state.l2FeedbackType = 'fb-info';
+        state.l2VerifiedMsg = '';
+      }
+
+      function applyL2Op(opId) {
+        const lv = L2_LEVELS[state.l2Level];
+        const cur = state.l2Current;
+        if (isL2Solved(lv, cur)) {
+          state.l2Feedback = '这一关已经推导完成啦！可以点下方“代回原式验毒”或挑战下一关。';
+          state.l2FeedbackType = 'fb-ok';
+          render();
+          return;
+        }
+        const snap = JSON.parse(JSON.stringify(cur));
+
+        if (lv.type === 'linear') {
+          if (opId === 'subX') {
+            if (cur.lx <= 1 && cur.rx <= 0) {
+              state.l2Feedback = '再减 x 左边会变成 0 或负的 x，方向反了！想想怎么让 1 个 x 单独留在左边。';
+              state.l2FeedbackType = 'fb-warn';
+              render();
+              return;
+            }
+            cur.lx -= 1; cur.rx -= 1;
+            const helpful = snap.rx > 0;
+            state.l2History.push(snap);
+            state.l2Steps.push({ eq: formatL2Display(lv, cur), reason: '两边同减 x' });
+            state.l2Feedback = helpful
+              ? '方向很准！右边的 x 被消掉了，现在只剩左边有 x。'
+              : '等式依然成立，但右边冒出了负的 x，反而绕远了——点“撤销一步”试试！';
+            state.l2FeedbackType = helpful ? 'fb-info' : 'fb-warn';
+          } else if (opId === 'addX') {
+            state.l2Feedback = '两边同加 x 会让右边 x 越变越多（方向反啦），我们要把右边的 x 消掉！';
+            state.l2FeedbackType = 'fb-warn';
+            render();
+            return;
+          } else if (opId === 'add4') {
+            if (cur.lc >= 0) {
+              state.l2Feedback = '左边已经没有 -4 了，再加 4 只会让左边多出常数（方向反了）。';
+              state.l2FeedbackType = 'fb-warn';
+              render();
+              return;
+            }
+            cur.lc += 4; cur.rc += 4;
+            state.l2History.push(snap);
+            state.l2Steps.push({ eq: formatL2Display(lv, cur), reason: '两边同加 4（抵消 -4）' });
+            state.l2Feedback = '漂亮！向上拉的 4kg 氢气球被 4kg 砝码彻底抵消了！';
+            state.l2FeedbackType = 'fb-info';
+          } else if (opId === 'div2') {
+            if (cur.lx % 2 !== 0 || cur.lc % 2 !== 0 || cur.rx % 2 !== 0 || cur.rc % 2 !== 0) {
+              state.l2Feedback = '现在两边还有奇数项，先同减 x 或同加 4，把系数凑成偶数再除以 2！';
+              state.l2FeedbackType = 'fb-warn';
+              render();
+              return;
+            }
+            cur.lx /= 2; cur.lc /= 2; cur.rx /= 2; cur.rc /= 2;
+            state.l2History.push(snap);
+            state.l2Steps.push({ eq: formatL2Display(lv, cur), reason: '两边同除以 2' });
+            state.l2Feedback = '两边同时砍半，系数变清爽了！';
+            state.l2FeedbackType = 'fb-info';
+          }
+        } else if (lv.type === 'symbolic') {
+          if (opId === 'symSubD') {
+            if (cur.stage !== 0) {
+              state.l2Feedback = '左边已经没有 +d 啦，下一步该消掉乘在 x 前面的 k！';
+              state.l2FeedbackType = 'fb-warn';
+              render();
+              return;
+            }
+            state.l2History.push(snap);
+            cur.stage = 1;
+            cur.expr = 'k·x = L - d';
+            state.l2Steps.push({ eq: cur.expr, reason: '两边同减 d' });
+            state.l2Feedback = '太棒了！把 d 移到了右边，现在左边只剩 k·x。';
+            state.l2FeedbackType = 'fb-info';
+          } else if (opId === 'symDivK') {
+            if (cur.stage === 0) {
+              state.l2Feedback = '现在直接除以 k 会得到 x + d/k = L/k，冒出分数！先同减 d 清理掉尾巴更干净。';
+              state.l2FeedbackType = 'fb-warn';
+              render();
+              return;
+            }
+            state.l2History.push(snap);
+            cur.stage = 2;
+            cur.expr = 'x = (L - d) / k';
+            state.l2Steps.push({ eq: cur.expr, reason: '两边同除以 k' });
+            state.l2Feedback = '🎉 推导成功！你不用任何具体数字，就推出了通用公式 x = (L - d) / k！';
+            state.l2FeedbackType = 'fb-ok';
+          } else if (opId === 'symAddD') {
+            state.l2Feedback = '同加 d 会让左边变成 k·x + 2d，越变越长（方向反啦），试试同减 d！';
+            state.l2FeedbackType = 'fb-warn';
+            render();
+            return;
+          }
+        } else if (lv.type === 'system') {
+          if (opId === 'sysMul2') {
+            if (cur.stage !== 0) {
+              state.l2Feedback = '已经对齐 2a 啦，下一步用二式减去新的一式！';
+              state.l2FeedbackType = 'fb-warn';
+              render();
+              return;
+            }
+            state.l2History.push(snap);
+            cur.stage = 1;
+            state.l2Steps.push({ eq: '2a + 2b = 2n', reason: '一式两边同乘 2（对齐 2a）' });
+            state.l2Feedback = '很好！现在两个式子里都有 2a，相减就能把 a 彻底消灭！';
+            state.l2FeedbackType = 'fb-info';
+          } else if (opId === 'sysSub') {
+            if (cur.stage !== 1) {
+              state.l2Feedback = cur.stage === 0 ? '先别急着减！一式里是 1 个 a，二式里是 2 个 a，直接减消不掉 a。先对齐 2a！' : '已经消掉 a 啦，下一步同除以 3！';
+              state.l2FeedbackType = 'fb-warn';
+              render();
+              return;
+            }
+            state.l2History.push(snap);
+            cur.stage = 2;
+            state.l2Steps.push({ eq: '3b = S - 2n', reason: '(2a+5b) - (2a+2b) = S - 2n' });
+            state.l2Feedback = '干净利落！2a - 2a = 0，5b - 2b = 3b，a 彻底消失了！';
+            state.l2FeedbackType = 'fb-info';
+          } else if (opId === 'sysDiv3') {
+            if (cur.stage !== 2) {
+              state.l2Feedback = '还没消成 3b = S - 2n 呢，先按顺序消掉 a！';
+              state.l2FeedbackType = 'fb-warn';
+              render();
+              return;
+            }
+            state.l2History.push(snap);
+            cur.stage = 3;
+            state.l2Steps.push({ eq: 'b = (S - 2n) / 3', reason: '两边同除以 3' });
+            state.l2Feedback = '🎉 漂亮！写成 C++ 就是 (S - 2*n) / 3（还能顺手检查 (S - 2*n) % 3 == 0 判无解！）';
+            state.l2FeedbackType = 'fb-ok';
+          }
+        }
+
+        if (isL2Solved(lv, cur) && lv.type === 'linear') {
+          state.l2Feedback = `🎉 解出来了！x = ${cur.rc}。点击下方“🔍 代回原式验毒”确认一下！`;
+          state.l2FeedbackType = 'fb-ok';
+        }
+        render();
+      }
+
+      // ---------- Quizzes (Balanced answer positions A/B/C/D, balanced lengths, NO strawman options, oral revealed ONLY AFTER answering!) ----------
+      const QUIZZES = {
+        l1: [
+          {
+            q: '1. 一根长为 a 的木头，分成每段长度不超过 x 的 m 段（刚好用完或有余头），已知前 m-1 段都拉满长度为 x，最后一段长 r（0 < r ≤ x）。下面哪个式子准确刻画了总长 a？',
+            options: [
+              'A. a = m·x + r',
+              'B. a = (m - 1)·x + r',
+              'C. a = m·(x + r)',
+              'D. a = (m - 1)·(x + r)',
+            ],
+            ans: 1,
+            explain: '前 m-1 段每段长 x，合计 (m-1)·x，再加上最后一段 r，才是整根木头的长度 a。代入 m=2, x=5, r=3：总长 5+3=8，只有 B 算出 8！',
+            oral: '拿 m=2、x=5、r=3 讲给爸爸/妈妈听：选项 A 算出来为什么会多出一截？',
+            rubric: '家长听懂要点：能说出“总共有 m 段，前 m-1 段是满的 x，最后 1 段是 r，A 把最后一段也当成 x 又多加了一次 r”。',
+          },
+          {
+            q: '2. 把复杂式子 (P + t₁ + t₂)·w + 2·t₁·w 展开并合并同类项，下面哪一项是完全正确的？',
+            options: [
+              'A. P·w + t₁·w + t₂·w',
+              'B. P + 3·t₁·w + t₂·w',
+              'C. P·w + 3·t₁·w + t₂·w',
+              'D. P·w + 2·t₁·w + 2·t₂·w',
+            ],
+            ans: 2,
+            explain: '先把三项括号拆开得 P·w + t₁·w + t₂·w，再和后面的 2·t₁·w 合并同类项（1 个 t₁·w 加 2 个 t₁·w 等于 3 个 t₁·w），结果是 P·w + 3·t₁·w + t₂·w！',
+            oral: '不用背口诀，讲讲为什么 1 个 t₁·w 加 2 个 t₁·w 能合并成 3·t₁·w，但不能和 t₂·w 合并？',
+            rubric: '家长听懂要点：能说出“字母乘积完全一样的盒子（都是 t₁·w）才能合在一起数个数，t₂·w 是另一种盒子”。',
+          },
+          {
+            q: '3. 在 C++ 代码里写 x = x + 1 完全合法，但在数学式子里写 x = x + 1 却绝对不成立。最核心的原因是？',
+            options: [
+              'A. 数学里的“=”表示左右相等（对应 C++ 的 ==），不是赋值更新',
+              'B. 数学里不允许等号两边同时出现相同的字母 x',
+              'C. 数学里的字母 x 只能代表正整数，不能加 1',
+              'D. C++ 里的加号和数学里的加号运算顺序不同',
+            ],
+            ans: 0,
+            explain: '在 C++ 里单个 = 是“把右边新值塞进左边变量”，而数学里的 = 永远是天平判断“左右是否相等”（对应 C++ 的 ==）。x 永远不可能等于 x+1！',
+            oral: '顺手考一考：数学式子 a(b+c) = ab + ac 写成 C++ 校验语句，中间应该写 = 还是 ==？为什么还要小心 int 溢出？',
+            rubric: '家长听懂要点：能答出写 ==，并提醒大数相乘超过 2×10⁹ 时 int 溢出可能破坏等式。',
+          },
+          {
+            q: '4. 题目描述里出现 ∑(i = 1 到 n) (A_i · B_i)，它在 C++ 里最准确的含义是？',
+            options: [
+              'A. 先把所有 A[i] 加起来，再乘以所有 B[i] 的和',
+              'B. 找出 A[i] * B[i] 在 1 到 n 里的最大值',
+              'C. 把 A[1] 到 A[n] 和 B[1] 到 B[n] 合并成大数组',
+              'D. 用循环对每个 i=1..n 计算 A[i]*B[i]，再全部累加',
+            ],
+            ans: 3,
+            explain: 'Σ 后面紧跟的是每一项的通项 (A_i · B_i)，意思就是对每个 i 从 1 到 n 算一次 1LL * A[i] * B[i]，再全部加进 sum 里。注意 A 选项把“先乘后加”搞成了“先加后乘”，两者完全不等！',
+            oral: '拿 n=2、A=[1,2]、B=[3,4] 口算一遍，证明选项 A 和选项 D 算出来的数不一样！',
+            rubric: '家长听懂要点：能算出正确 D 是 1×3+2×4=11，而误算 A 是 (1+2)×(3+4)=21，清楚先乘后加。',
+          },
+        ],
+        l2: [
+          {
+            q: '1. 已知含字母的等式 a·x - c = b·x + d（且 a ≠ b），想把 x 单独解出来，正确的最终公式是？',
+            options: [
+              'A. x = (d - c) / (a - b)',
+              'B. x = (c + d) / (a - b)',
+              'C. x = (c + d) / (a + b)',
+              'D. x = (d - c) / (a + b)',
+            ],
+            ans: 1,
+            explain: '两边同减 b·x 得 (a-b)·x - c = d；再两边同加 c 得 (a-b)·x = c + d；最后同除以 (a-b) 得 x = (c + d) / (a - b)！代 a=3,b=1,c=4,d=6 验毒：(4+6)/(3-1)=5，完全吻合！',
+            oral: '讲讲第 2 步：为什么从左边的 -c 移到右边，变成了 +c 而不是 -c？',
+            rubric: '家长听懂要点：能说出“为了抵消左边的 -c，天平两边必须同时 +c，所以右边出现 +c”。',
+          },
+          {
+            q: '2. 已知二元关系 a + b = n 且 2a + 5b = S（a, b 为非负整数）。写成 OI 代码判定“有没有合法非负整数解”时，除了 (S - 2n) % 3 == 0，还必须检查什么？',
+            options: [
+              'A. 只要检查 S > n 就足够了',
+              'B. 检查 S - 2n ≥ 0 且算出的 b ≤ n（保证 a ≥ 0 且 b ≥ 0）',
+              'C. 只要检查 n 是偶数、S 是 3 的倍数',
+              'D. 不用再检查，整除就一定有合法解',
+            ],
+            ans: 1,
+            explain: '在 OI 建模里，解出代数公式 b = (S - 2n) / 3 后必须检查题目隐藏的非负范围！若 S < 2n 则 b < 0，若 b > n 则 a = n - b < 0，这些都是无解边界！',
+            oral: '给出一组具体数字反例：令 n = 5，说一个满足 (S - 2n) 能被 3 整除、但却没有非负整数解的 S！',
+            rubric: '家长听懂要点：例如 S = 7（b = -1）或 S = 28（b = 6, a = -1），能说出“数学能整除不代表符合非负范围”。',
+          },
+          {
+            q: '3. 某题条件绕了三圈：“甲的钱比乙的 2 倍少 5 元，丙的钱是甲乙之和，三人总共 62 元”。相比纯靠心算倒推，顺着故事设乙有 x 元列方程最大的优势是？',
+            options: [
+              'A. 顺着句子顺序直接翻译成表达式，不用在脑子里逆向记好几步',
+              'B. 列方程一定比心算少写一半的字',
+              'C. 只有列方程才能算出整数答案，心算算不出整数',
+              'D. 方程不需要检查答案对不对',
+            ],
+            ans: 0,
+            explain: '简单一两步的题心算确实快，但条件绕三圈或变成字母参数时，脑子逆推极易绕晕；顺着故事把甲写成 2x-5、丙写成 3x-5，直接相加 6x-10 = 62，立刻算出乙有 12 元，大脑零负担！',
+            oral: '顺着这个思路口述一下：设乙有 x 元，那甲、丙分别是多少？三个人加起来等于 62 的完整方程怎么念？',
+            rubric: '家长听懂要点：能顺畅口述 甲=2x-5，丙=x+(2x-5)=3x-5，总和 6x-10=62（解得 x=12 元，甲 19、丙 31，共 62 元）。',
+          },
+          {
+            q: '4. 同学解 2(x + 3) = 18 时，写成 2x + 6 = 18 → 2x = 12 → 得出 x = 12。最直接的抓错动作和真正错因分别是？',
+            options: [
+              'A. 错在拆括号时忘了给 3 乘 2，应重新展开括号',
+              'B. 错在移项时把 +6 算成了加 6，应改成 18 + 6',
+              'C. 把 x=12 代回左边算得 30 ≠ 18 立刻抓错；真实错因是 2x=12 最后忘了两边除以 2',
+              'D. 把 18 除以 3 看整不整除；真实错因是把乘法当成了加法',
+            ],
+            ans: 2,
+            explain: '代回原式验毒 2×(12+3)=30 ≠ 18，3 秒就能抓住错误！回头一看 2x + 6 = 18 和 2x = 12 全都对，唯独最后一步忘了同除以 2（正解 x = 6）。',
+            oral: '如果换一种更快解法：第一步不拆括号，直接两边同除以 2，接下来的两行式子怎么念？',
+            rubric: '家长听懂要点：能口述 x + 3 = 9 → x = 6，并懂得“代回原式验根”最快抓粗心。',
+          },
+        ],
+        l3: [
+          {
+            q: '1. 已知序列里有两个高度 h_i ≥ h_j（前高后低，允许相等）。为了套用递增模板，把每个数全乘 -1 变成 v_i = -h_i 和 v_j = -h_j，此时 v_i 和 v_j 的大小关系变成？',
+            options: [
+              'A. v_i ≤ v_j（不等号翻面，原“不升”变成“不降”）',
+              'B. v_i ≥ v_j（乘 -1 后方向保持不变）',
+              'C. v_i < v_j（乘 -1 后等号消失，变成严格小于）',
+              'D. 无法确定，取决于 h_i 是奇数还是偶数',
+            ],
+            ans: 0,
+            explain: '不等式两边同乘 -1，数轴镜像翻转，≥ 翻成 ≤（相等的数取负后依然相等）！这就是模拟赛《烟花拦截》把“不升子序列”取负转成“不降子序列”的数学原理。',
+            oral: '用具体数字 5 ≥ 3 和 4 ≥ 4 讲给爸爸/妈妈听：乘 -1 后为什么变成 -5 ≤ -3 和 -4 ≤ -4？',
+            rubric: '家长听懂要点：能说清乘 -1 镜像翻面，且原本相等的两个数取负后依然相等（不能丢等号）。',
+          },
+          {
+            q: '2. 比较两个方案总代价：甲 = P·w₁ + P·w₂ + t₁·w₁ + t₂·w₂ + t₁·w₂，乙 = P·w₁ + P·w₂ + t₁·w₁ + t₂·w₂ + t₂·w₁。不管前面已耗时 P 是 0 还是 10⁹，判断“甲 < 乙”只需要比什么？',
+            options: [
+              'A. 比较 t₁ + w₂ < t₂ + w₁',
+              'B. 必须先算出 P 的具体值才能比较',
+              'C. 比较 t₁·w₁ < t₂·w₂',
+              'D. 划掉两边相同的 4 项，直接比较 t₁·w₂ < t₂·w₁',
+            ],
+            ans: 3,
+            explain: '不等式两边同时减去完全相同的 4 个公共项，方向绝不改变，直接剩下 t₁·w₂ < t₂·w₁！这也是为什么前置耗时 P 无论多大，都不影响这俩任务的先后顺序。',
+            oral: '用“两人兜里都有同样一张 100 元，另各有一把零钱”讲清为什么划掉相同项不会改变大小关系。',
+            rubric: '家长听懂要点：能说清两边同时减掉一模一样的部分，差值完全不变，所以大小关系不变。',
+          },
+          {
+            q: '3. 我们已经证明“对于任意相邻两个任务，把满足 t₁·w₂ < t₂·w₁ 的排在前面更省钱”。为什么这就足以保证按这个规则排序后的【整支队伍】也是全局最优？',
+            options: [
+              'A. 因为如果整队还没排好，一定存在一对相邻的“坏顺序”，交换它俩总罚金必下降，一直换到有序为止',
+              'B. 因为题目里只会有 2 个任务，不需要考虑更多任务',
+              'C. 因为只要第一个任务排对了，后面怎么排总罚金都一样',
+              'D. 因为相邻交换会同时减小前面所有已经完成任务的罚金',
+            ],
+            ans: 0,
+            explain: '这就是“冒泡排序桥”！任何没按规则排好的队伍里，必然能找到一对相邻逆序（坏顺序）；每次交换这对相邻元素，前面和后面的人不受影响，总罚金严格变小（或不变），换到没有坏顺序时就是全局最优！',
+            oral: '再补一句关键：为什么交换相邻两个任务，不会影响排在它们【后面】的第 3、4 个人的罚金？',
+            rubric: '家长听懂要点：能答出“这俩任务合起来占用的总时间 t₁+t₂ 没变，所以后面所有人开始和结束的时刻都不变”。',
+          },
+          {
+            q: '4. 把排序条件 t₁·w₂ < t₂·w₁（正整数，可达 10⁹）翻译成 C++ 的 sort 比较函数，下面哪种写法最安全？',
+            options: [
+              'A. return a.t / a.w < b.t / b.w;',
+              'B. return a.t * b.w < b.t * a.w;',
+              'C. return 1LL * a.t * b.w < 1LL * b.t * a.w;',
+              'D. return a.t * b.w <= b.t * a.w;',
+            ],
+            ans: 2,
+            explain: 'A 用整数除法会直接砍掉小数（错！）；B 两个 10⁹ 的 int 相乘会爆 32 位溢出（错！）；D 用 <= 违反 C++ sort 严格弱序要求，平局时可能直接 RE 崩溃！只有 C 用 1LL 防溢出且严格 <，满分！',
+            oral: '请逐个给家长挑刺：A、B、D 三个坑在 C++ 里分别会引发 WA、溢出还是 RE？',
+            rubric: '家长听懂要点：A 整除丢精度(WA)、B 爆 int 溢出(WA)、D sort 写 <= 破坏严格弱序(可能 RE)。',
+          },
+        ],
+      };
+
+      // ---------- Worksheets (Strictly tuned to fit 1 PAGE A4, zero duplicate text, aligned 5-slot cancel grid, from-scratch variable naming!) ----------
+      const WORKSHEETS = {
+        l1: {
+          title: '第 1 关 · 第 1 课手写闯关单：剥故事起字母与多字母展开',
+          goal: '亲手把真实题面剥成字母算式、拆开三项括号并合并同类项，再用极小数字挑刺验毒。',
+          tasksHtml: `
+            <div class="ws-task">
+              <h4>题 1 · 剥故事起字母（从零决定变量名，不准照抄故事词！）</h4>
+              <p><strong>题目片段：</strong>有若干箱零件，每箱装同样多的零件，发完所有整箱后，仓库还剩一些零散零件，但其中有几个坏的要扔掉。请<strong>自己给每个未知量起 1 个字母名字</strong>，再写出好零件总数的字母式子：</p>
+              <div class="write-box" style="min-height:48px;">
+                我起的字母名字：_________________________________________________________<br/>
+                好零件总数算式：__________________________ ｜ 代 1 组小数验算：___________________
+              </div>
+            </div>
+            <div class="ws-task">
+              <h4>题 2 · 三项展开与合并同类项（必须写中间拆开那一步！）</h4>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;font-size:12.5px;margin-top:4px;">
+                <div>（1）<code>(P + t₁ + t₂) · w =</code><div class="write-line"></div></div>
+                <div>（2）<code>3(a + 2b) + 2a =</code><div class="write-line"></div></div>
+                <div>（3）<code>a(b + 3) + 2ab - a =</code><div class="write-line"></div></div>
+                <div>（4）<code>2(x + y) + 3(x - y) =</code><div class="write-line"></div></div>
+              </div>
+            </div>
+            <div class="ws-task">
+              <h4>题 3 · 数学 ↔ C++ 翻译官（注意区分 = 与 ==，乘法记得防溢出）</h4>
+              <table class="ws-table">
+                <tr><th style="width:28%;">数学式子</th><th style="width:32%;">大白话意思</th><th style="width:40%;">对应 C++ 核心语句</th></tr>
+                <tr><td><code>∑(i=1..n) A_i</code></td><td style="height:28px;"></td><td></td></tr>
+                <tr><td><code>t₁ · w₂ &lt; t₂ · w₁</code></td><td style="height:28px;"></td><td></td></tr>
+                <tr><td><code>(m - 1) · x + r = a</code></td><td style="height:28px;"></td><td></td></tr>
+              </table>
+            </div>
+            <div class="ws-task">
+              <h4>题 4 · 挑刺验毒：抓出拆括号漏洞</h4>
+              <p>有人把 <code>(a + b + c)·w</code> 错拆成 <code>a·w + b + c</code>。请代入 <strong>a=2, b=3, c=4, w=5</strong> 算出两边结果抓虫，并写出正确展开式：</p>
+              <div class="write-box" style="min-height:40px;">原式 = _______ ，错式 = _______ （不相等！）｜ 正确展开：_________________________</div>
+            </div>
+          `,
+          parentAnsHtml: `
+            <strong>题 1（开放题，字母合理即满分）：</strong>如设箱数 <code>a</code>、每箱 <code>b</code> 个、散装 <code>c</code> 个、坏的 <code>d</code> 个，算式 <code>a·b + c - d</code>，且自选小数代入算对。<br/>
+            <strong>题 2：</strong>(1) <code>P·w + t₁·w + t₂·w</code>；(2) <code>3a + 6b + 2a = 5a + 6b</code>；(3) <code>ab + 3a + 2ab - a = 3ab + 2a</code>；(4) <code>2x + 2y + 3x - 3y = 5x - y</code>。<br/>
+            <strong>题 3：</strong>① 累加 A[1]~A[n]：<code>for(int i=1;i<=n;i++) sum+=A[i];</code>；② 交叉乘积比较：<code>1LL*t[1]*w[2] < 1LL*t[2]*w[1]</code>；③ 校验等式（注意 <code>==</code>）：<code>1LL*(m-1)*x + r == a</code>。<br/>
+            <strong>题 4：</strong>原式 <code>(2+3+4)×5 = 45</code>，错式 <code>2×5+3+4 = 17</code>；正确展开 <code>a·w + b·w + c·w</code>。
+          `,
+        },
+        l2: {
+          title: '第 1 关 · 第 2 课手写闯关单：双边方程、全字母倒推与含参消元',
+          goal: '亲手推导出含字母参数的通用解公式，写出隐藏的整数/非负边界条件，并代回验毒。',
+          tasksHtml: `
+            <div class="ws-task">
+              <h4>题 1 · 复杂等式逐步推导（右注每步操作，第 1 题须代回验毒）</h4>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;font-size:12.5px;margin-top:4px;">
+                <div>（1）解数字方程：<code>5x - 7 = 2x + 11</code><div class="write-line"></div><div class="write-line"></div><div class="write-line"></div></div>
+                <div>（2）全字母反求 x（a≠b）：<code>a·x + c = b·x + d</code><div class="write-line"></div><div class="write-line"></div><div class="write-line"></div></div>
+              </div>
+            </div>
+            <div class="ws-task">
+              <h4>题 2 · 二元含参消元（OI 常见：不给具体数，只给字母 n 和 S）</h4>
+              <p>有 A、B 两种卡共 <strong>n</strong> 张，A 卡每张 3 分，B 卡每张 7 分，总分恰好为 <strong>S</strong> 分。请<strong>自己设 A、B 卡数量为字母</strong>，用消元法推出 B 卡张数的通用公式，并写出“有合法非负整数解”需要满足的 2 个判断条件：</p>
+              <div class="write-box" style="min-height:82px;">
+                ① 列出两个方程：_______________________ 和 _______________________<br/>
+                ② 消元过程：_______________________________________________________<br/>
+                ③ B 卡公式 = ___________________ ｜ C++ 判合法解条件：_____________________
+              </div>
+            </div>
+            <div class="ws-task">
+              <h4>题 3 · 从零自主建模（对比“顺着故事写”的威力）</h4>
+              <p><strong>故事：</strong>机房 3 位同学刷题：小明的题数比小红的 2 倍多 4 道，小刚的题数是小明和小红之和，三人总共刷了 <strong>T</strong> 道题。请自己选 1 个字母当核心未知数，写出三人题数之和等于 T 的方程，并解出小红刷了多少道（用含 T 的式子表示），再代 <strong>T = 56</strong> 验算：</p>
+              <div class="write-box" style="min-height:76px;">
+                ① 设 ________ = ____ ，则另两人分别是 ____________ 和 ____________<br/>
+                ② 总和方程与化简：_________________________________________________<br/>
+                ③ 小红 = ______________ ｜ 代 T = 56 验算三人之和是否为 56：_____________
+              </div>
+            </div>
+          `,
+          parentAnsHtml: `
+            <strong>题 1：</strong>(1) 同减 2x 得 <code>3x - 7 = 11</code> → 同加 7 得 <code>3x = 18</code> → <code>x = 6</code>（验：5×6-7=23，2×6+11=23）；(2) 同减 b·x 得 <code>(a-b)x + c = d</code> → 同减 c 得 <code>(a-b)x = d - c</code> → <code>x = (d - c) / (a - b)</code>。<br/>
+            <strong>题 2：</strong>设 A 卡 <code>a</code> 张、B 卡 <code>b</code> 张：<code>a + b = n</code>，<code>3a + 7b = S</code>。一式乘 3 得 <code>3a + 3b = 3n</code>，二式减一式得 <code>4b = S - 3n</code> → <code>b = (S - 3n) / 4</code>。合法条件：① <code>(S - 3*n) % 4 == 0</code>；② <code>S >= 3*n && b <= n</code>（即 <code>3*n <= S && S <= 7*n</code>）。<br/>
+            <strong>题 3：</strong>设小红 <code>x</code> 道，则小明 <code>2x + 4</code>，小刚 <code>3x + 4</code>；总和 <code>6x + 8 = T</code> → <code>x = (T - 8) / 6</code>。代 T=56 得小红 8 道、小明 20 道、小刚 28 道，8+20+28 = 56！
+          `,
+        },
+        l3: {
+          title: '第 1 关 · 第 3 课手写闯关单：不等式翻号与“格子斜线划掉”交换证明',
+          goal: '记住乘负数翻号，用上下对齐 5 格亲手划掉公共项推完贪心条件，并造反例验毒。',
+          tasksHtml: `
+            <div class="ws-task">
+              <h4>题 1 · 不等号侦探（在圆圈里填 <code>&lt;</code> 或 <code>&gt;</code>，并写明原因）</h4>
+              <p>已知 <strong>a &lt; b</strong>（拿不准就代 a=2, b=5 验毒！）：</p>
+              <table class="ws-table">
+                <tr><th style="width:45%;">变形后的两边（在 ◯ 里填 &lt; 或 &gt;）</th><th style="width:55%;">为什么？（同加减 / 乘正数 / 乘负数翻号）</th></tr>
+                <tr><td><code>a + 9</code> &nbsp; ◯ &nbsp; <code>b + 9</code></td><td></td></tr>
+                <tr><td><code>-a</code> &nbsp; ◯ &nbsp; <code>-b</code></td><td></td></tr>
+                <tr><td><code>-3a + 2</code> &nbsp; ◯ &nbsp; <code>-3b + 2</code></td><td></td></tr>
+              </table>
+            </div>
+            <div class="ws-task">
+              <h4>题 2 · 亲手填格 + 铅笔斜线划掉公共项！（把 5 项分别填进上下 5 格再划！）</h4>
+              <p>相邻两任务：任务 1 (<code>t₁, w₁</code>)、任务 2 (<code>t₂, w₂</code>)，前面已耗时 <code>P</code>；做完时刻结算罚金。</p>
+              <p>甲（1在前）：<code>(P+t₁)·w₁ + (P+t₁+t₂)·w₂</code> ｜ 乙（2在前）：<code>(P+t₂)·w₂ + (P+t₂+t₁)·w₁</code></p>
+              <div class="slot-grid">
+                <strong style="font-size:12px;">甲展开：</strong>
+                <div class="slot-cell">第1项</div><div class="slot-cell">第2项</div><div class="slot-cell">第3项</div><div class="slot-cell">第4项</div><div class="slot-cell">第5项</div>
+              </div>
+              <div class="slot-grid">
+                <strong style="font-size:12px;">乙展开：</strong>
+                <div class="slot-cell">第1项</div><div class="slot-cell">第2项</div><div class="slot-cell">第3项</div><div class="slot-cell">第4项</div><div class="slot-cell">第5项</div>
+              </div>
+              <div class="write-box" style="min-height:42px;">
+                划掉上下相同的 4 项后，“甲 &lt; 乙”化简为：___________________ ｜ C++ cmp 写法（防溢出）：___________________________
+              </div>
+            </div>
+            <div class="ws-task">
+              <h4>题 3 · 按公式造 1 组“打脸短耗时优先”的 2 任务反例</h4>
+              <p>自己挑两组正整数，让任务 1 耗时更短（<code>t₁ &lt; t₂</code>），但按你题 2 推出的公式却必须把<strong>任务 2 排前面</strong>（设 P=0）：</p>
+              <div class="write-box" style="min-height:46px;">
+                任务 1 (t₁=___, w₁=___)，任务 2 (t₂=___, w₂=___) ｜ 先 1 后 2 罚金 = _________ ，先 2 后 1 罚金 = _________
+              </div>
+            </div>
+          `,
+          parentAnsHtml: `
+            <strong>题 1：</strong>依次为 <code>&lt;</code>（同加不变）、<code>&gt;</code>（同乘 -1 翻号）、<code>&gt;</code>（同乘 -3 翻号，再加 2 不变）。<br/>
+            <strong>题 2：</strong>甲 5 格：<code>P·w₁</code>、<code>t₁·w₁</code>、<code>P·w₂</code>、<code>t₁·w₂</code>、<code>t₂·w₂</code>；乙 5 格：<code>P·w₂</code>、<code>t₂·w₂</code>、<code>P·w₁</code>、<code>t₂·w₁</code>、<code>t₁·w₁</code>。划掉 4 项公共块后剩：<code>t₁·w₂ &lt; t₂·w₁</code>；C++ 写法：<code>1LL * a.t * b.w &lt; 1LL * b.t * a.w</code>（注意不是 <code>&lt;=</code>）。<br/>
+            <strong>题 3（满足 t₁ &lt; t₂ 且 t₁·w₂ &gt; t₂·w₁ 均对）：</strong>例 <code>(2, 1)</code> 与 <code>(3, 10)</code>，先 1 后 2 罚 <code>2×1+5×10=52</code>，先 2 后 1 罚 <code>3×10+5×1=35</code>。
+          `,
+        },
+      };
+
+      // ---------- SVG Builders ----------
+      function buildAreaSVG(a, b, c, split) {
+        const cell = 23;
+        const gap = split ? 28 : 0;
+        const w1 = b * cell, w2 = c * cell, h = a * cell;
+        const padX = 42, padY = 32;
+        const totalW = padX + w1 + gap + w2 + 30;
+        const totalH = padY + h + 40;
+        let lines = '';
+        for (let r = 1; r < a; r++) {
+          const y = padY + r * cell;
+          lines += `<line x1="${padX}" y1="${y}" x2="${padX + w1}" y2="${y}" stroke="#93c5fd" stroke-width="1"/>`;
+          lines += `<line x1="${padX + w1 + gap}" y1="${y}" x2="${padX + w1 + gap + w2}" y2="${y}" stroke="#fcd34d" stroke-width="1"/>`;
+        }
+        for (let col = 1; col < b; col++) lines += `<line x1="${padX + col * cell}" y1="${padY}" x2="${padX + col * cell}" y2="${padY + h}" stroke="#93c5fd" stroke-width="1"/>`;
+        for (let col = 1; col < c; col++) lines += `<line x1="${padX + w1 + gap + col * cell}" y1="${padY}" x2="${padX + w1 + gap + col * cell}" y2="${padY + h}" stroke="#fcd34d" stroke-width="1"/>`;
+
+        return `
+          <svg viewBox="0 0 ${totalW} ${totalH}" style="max-width:100%;height:${Math.min(245, totalH)}px;display:block;margin:0 auto;">
+            <rect x="${padX}" y="${padY}" width="${w1}" height="${h}" fill="#dbeafe" stroke="#2563eb" stroke-width="2" rx="3"/>
+            <rect x="${padX + w1 + gap}" y="${padY}" width="${w2}" height="${h}" fill="#fef3c7" stroke="#d97706" stroke-width="2" rx="3"/>
+            ${lines}
+            <text x="${padX - 12}" y="${padY + h / 2 + 5}" text-anchor="end" font-size="13.5" font-weight="800" fill="#1e40af">a=${a}</text>
+            <text x="${padX + w1 / 2}" y="${padY - 9}" text-anchor="middle" font-size="13.5" font-weight="800" fill="#1e40af">b=${b}</text>
+            <text x="${padX + w1 + gap + w2 / 2}" y="${padY - 9}" text-anchor="middle" font-size="13.5" font-weight="800" fill="#b45309">c=${c}</text>
+            <text x="${padX + w1 / 2}" y="${padY + h / 2 + 5}" text-anchor="middle" font-size="14" font-weight="800" fill="#1e3a8a">${a * b}</text>
+            <text x="${padX + w1 + gap + w2 / 2}" y="${padY + h / 2 + 5}" text-anchor="middle" font-size="14" font-weight="800" fill="#92400e">${a * c}</text>
+            ${split ? `<text x="${padX + w1 + gap / 2}" y="${padY + h / 2 + 6}" text-anchor="middle" font-size="18" font-weight="900" fill="#475569">+</text>` : ''}
+            <text x="${padX + (w1 + gap + w2) / 2}" y="${padY + h + 24}" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">
+              ${split ? `拆开加：a·b + a·c = ${a * b} + ${a * c} = ${a * (b + c)} 格` : `合起来算：a × (b + c) = ${a} × (${b} + ${c}) = ${a * (b + c)} 格`}
+            </text>
+          </svg>
+        `;
+      }
+
+      function buildBalanceSVG(lv, cur) {
+        const solved = isL2Solved(lv, cur);
+        let leftText = '', rightText = '', balloonHtml = '';
+        if (lv.type === 'linear') {
+          leftText = formatSide(cur.lx, cur.lc);
+          rightText = formatSide(cur.rx, cur.rc);
+          if (cur.lc < 0) {
+            balloonHtml = `<g><circle cx="52" cy="20" r="11" fill="#fca5a5" stroke="#dc2626" stroke-width="1.5"/><text x="52" y="24" text-anchor="middle" font-size="9.5" font-weight="800" fill="#991b1b">${cur.lc}</text><line x1="52" y1="31" x2="52" y2="46" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="2,2"/></g>`;
+          }
+        } else if (lv.type === 'symbolic') {
+          const parts = cur.expr.split('=');
+          leftText = parts[0].trim();
+          rightText = parts[1].trim();
+        } else {
+          const disp = formatL2Display(lv, cur);
+          if (disp.includes('|')) {
+            const p = disp.split('|');
+            leftText = p[0].trim();
+            rightText = p[1].trim();
+          } else {
+            const p = disp.split('=');
+            leftText = p[0].trim();
+            rightText = p[1].trim();
+          }
+        }
+        const midSym = (lv.type === 'system' && cur.stage < 2) ? '＆' : '=';
+        return `
+          <svg viewBox="0 0 460 190" style="width:100%;max-width:460px;display:block;margin:0 auto;">
+            <rect x="200" y="160" width="60" height="13" rx="4" fill="#475569"/>
+            <polygon points="230,98 208,160 252,160" fill="#64748b"/>
+            <line x1="65" y1="98" x2="395" y2="98" stroke="#1e293b" stroke-width="5.5" stroke-linecap="round"/>
+            <circle cx="230" cy="98" r="8" fill="${solved ? '#059669' : '#2563eb'}"/>
+            ${balloonHtml}
+            <rect x="18" y="46" width="160" height="48" rx="10" fill="${solved ? '#ecfdf5' : '#eff6ff'}" stroke="${solved ? '#059669' : '#2563eb'}" stroke-width="2.5"/>
+            <text x="98" y="75" text-anchor="middle" font-size="16" font-weight="800" font-family="ui-monospace, monospace" fill="#0f172a">${leftText}</text>
+            <rect x="282" y="46" width="160" height="48" rx="10" fill="${solved ? '#ecfdf5' : '#fffbeb'}" stroke="${solved ? '#059669' : '#d97706'}" stroke-width="2.5"/>
+            <text x="362" y="75" text-anchor="middle" font-size="16" font-weight="800" font-family="ui-monospace, monospace" fill="#0f172a">${rightText}</text>
+            <text x="230" y="77" text-anchor="middle" font-size="22" font-weight="900" fill="${solved ? '#059669' : '#2563eb'}">${midSym}</text>
+            <text x="230" y="136" text-anchor="middle" font-size="12" font-weight="700" fill="#059669">
+              ${lv.type === 'linear' && cur.lc < 0 ? '红色气球表示负项（往上拉），两边同加正数就能抵消！' : '两边做相同运算，始终保持平衡'}
+            </text>
+          </svg>
+        `;
+      }
+
+      function buildNumberLineSVG(a, b) {
+        const minV = Math.min(-12, a - 2, b - 2);
+        const maxV = Math.max(12, a + 2, b + 2);
+        const pad = 34, width = 560;
+        const mapX = (v) => pad + ((v - minV) / (maxV - minV)) * (width - pad * 2);
+        const xA = mapX(a), xB = mapX(b), x0 = mapX(0);
+        // Prevent label overlap when points are close!
+        const close = Math.abs(xA - xB) < 64;
+        const yLabelA = close ? 6 : 20;
+        const yLabelB = close ? 34 : 20;
+
+        let ticks = '';
+        const step = (maxV - minV) > 28 ? 4 : 2;
+        for (let v = Math.ceil(minV / step) * step; v <= maxV; v += step) {
+          const x = mapX(v);
+          ticks += `<line x1="${x}" y1="74" x2="${x}" y2="83" stroke="#94a3b8" stroke-width="1.5"/>`;
+          ticks += `<text x="${x}" y="99" text-anchor="middle" font-size="11" fill="#64748b">${v}</text>`;
+        }
+        const rel = a < b ? '<' : a > b ? '>' : '=';
+        return `
+          <svg viewBox="0 0 ${width} 124" style="width:100%;max-width:600px;display:block;margin:0 auto;">
+            <line x1="${pad - 12}" y1="79" x2="${width - pad + 16}" y2="79" stroke="#334155" stroke-width="2.5"/>
+            <polygon points="${width - pad + 22},79 ${width - pad + 12},74 ${width - pad + 12},84" fill="#334155"/>
+            ${ticks}
+            <line x1="${x0}" y1="64" x2="${x0}" y2="88" stroke="#0f172a" stroke-width="2.5"/>
+            <circle cx="${xA}" cy="79" r="7.5" fill="#2563eb"/>
+            <rect x="${xA - 28}" y="${yLabelA}" width="56" height="22" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+            <text x="${xA}" y="${yLabelA + 15}" text-anchor="middle" font-size="12.5" font-weight="800" fill="#1e40af">蓝 ${a}</text>
+            <line x1="${xA}" y1="${yLabelA + 22}" x2="${xA}" y2="71" stroke="#2563eb" stroke-width="1.4" stroke-dasharray="3,2"/>
+            <circle cx="${xB}" cy="79" r="7.5" fill="#d97706"/>
+            <rect x="${xB - 28}" y="${yLabelB}" width="56" height="22" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+            <text x="${xB}" y="${yLabelB + 15}" text-anchor="middle" font-size="12.5" font-weight="800" fill="#92400e">橙 ${b}</text>
+            <line x1="${xB}" y1="${yLabelB + 22}" x2="${xB}" y2="71" stroke="#d97706" stroke-width="1.4" stroke-dasharray="3,2"/>
+            <text x="${width / 2}" y="118" text-anchor="middle" font-size="13" font-weight="800" fill="${rel === '>' ? '#dc2626' : '#1d4ed8'}">数轴越靠右越大：当前 蓝(${a})  ${rel}  橙(${b})</text>
+          </svg>
+        `;
+      }
+
+      // ---------- Targeted DOM updaters for sliders (FIXES P0 #4: ZERO innerHTML replacement during drag!) ----------
+      function updateL1DynamicDOM() {
+        const a = state.l1A, b = state.l1B, c = state.l1C;
+        const pA = document.getElementById('pill-l1A');
+        const pB = document.getElementById('pill-l1B');
+        const pC = document.getElementById('pill-l1C');
+        if (pA) pA.textContent = String(a);
+        if (pB) pB.textContent = String(b);
+        if (pC) pC.textContent = String(c);
+        const scene = L1_SCENES[state.l1Scene];
+        const stageData = scene.render(a, b, c, state.l1Stage);
+        const fEl = document.getElementById('l1-stage-formula');
+        const nEl = document.getElementById('l1-stage-note');
+        if (fEl) fEl.innerHTML = stageData.formula;
+        if (nEl) nEl.textContent = stageData.note;
+        const areaEl = document.getElementById('l1-area-svg');
+        if (areaEl) areaEl.innerHTML = buildAreaSVG(a, b, c, state.l1DistSplit);
+      }
+
+      function updateL2SysDOM() {
+        const n = state.l2N, S = state.l2S;
+        const pn = document.getElementById('pill-l2N');
+        const pS = document.getElementById('pill-l2S');
+        if (pn) pn.textContent = String(n);
+        if (pS) pS.textContent = String(S);
+        const out = document.getElementById('l2-sys-check');
+        if (!out) return;
+        const diff = S - 2 * n;
+        if (diff >= 0 && diff % 3 === 0 && diff / 3 <= n) {
+          const b = diff / 3, a = n - b;
+          out.innerHTML = `✅ 有合法整数解：<code>b = (${S} - 2×${n}) / 3 = ${b}</code>，<code>a = ${n} - ${b} = ${a}</code>（验：2×${a} + 5×${b} = ${2 * a + 5 * b} = S）`;
+          out.className = 'feedback-bar fb-ok';
+        } else {
+          out.innerHTML = `⚠️ 当前 <code>S - 2n = ${diff}</code>，${diff < 0 ? '小于 0（无非负解）' : diff % 3 !== 0 ? '不能被 3 整除（无整数解）' : '算出的 b 大于 n（导致 a < 0）'}——这就是为什么 OI 代码里必须加边界检查！`;
+          out.className = 'feedback-bar fb-warn';
+        }
+      }
+
+      function updateL3NumDOM() {
+        const P = state.l3P, t1 = state.l3T1, w1 = state.l3W1, t2 = state.l3T2, w2 = state.l3W2;
+        [['l3P', P], ['l3T1', t1], ['l3W1', w1], ['l3T2', t2], ['l3W2', w2]].forEach(([k, v]) => {
+          const el = document.getElementById(`pill-${k}`);
+          if (el) el.textContent = String(v);
+        });
+        const tbl = document.getElementById('l3-num-table');
+        const fin1A = P + t1, fin2A = P + t1 + t2;
+        const costA = fin1A * w1 + fin2A * w2;
+        const fin2B = P + t2, fin1B = P + t2 + t1;
+        const costB = fin2B * w2 + fin1B * w1;
+        const coreA = t1 * w2, coreB = t2 * w1;
+        if (tbl) {
+          tbl.innerHTML = `
+            <tr><th>排法</th><th>先做的任务（做完时刻 × 罚金）</th><th>后做的任务（做完时刻 × 罚金）</th><th>总罚金</th></tr>
+            <tr style="${costA < costB ? 'background:#ecfdf5;font-weight:700;' : ''}">
+              <td>甲：先 1 后 2</td>
+              <td>(${P}+${t1}) × ${w1} = ${fin1A * w1}</td>
+              <td>(${P}+${t1}+${t2}) × ${w2} = ${fin2A * w2}</td>
+              <td><strong>${costA}</strong></td>
+            </tr>
+            <tr style="${costB < costA ? 'background:#ecfdf5;font-weight:700;' : ''}">
+              <td>乙：先 2 后 1</td>
+              <td>(${P}+${t2}) × ${w2} = ${fin2B * w2}</td>
+              <td>(${P}+${t2}+${t1}) × ${w1} = ${fin1B * w1}</td>
+              <td><strong>${costB}</strong></td>
+            </tr>
+          `;
+        }
+        const bar = document.getElementById('l3-diff-bar');
+        if (bar) {
+          bar.innerHTML = `甲 - 乙 差值 = <strong>${costA - costB}</strong> ｜ 精简对比：<code>t₁·w₂ (${coreA}) - t₂·w₁ (${coreB})</code> = <strong>${coreA - coreB}</strong>（试着狂拖 <strong>P</strong> 滑块，差值纹丝不动！）`;
+        }
+      }
+
+      // ---------- Section Renderers ----------
+      function renderQuizSection(lessonId) {
+        const list = QUIZZES[lessonId];
+        let correctCount = 0, answeredCount = 0;
+        list.forEach((item, idx) => {
+          const picked = state.quizAnswers[`${lessonId}-${idx}`];
+          if (picked !== undefined) {
+            answeredCount++;
+            if (picked === item.ans) correctCount++;
+          }
+        });
+
+        const itemsHtml = list.map((item, idx) => {
+          const key = `${lessonId}-${idx}`;
+          const picked = state.quizAnswers[key];
+          const locked = picked !== undefined;
+          const optsHtml = item.options.map((opt, oi) => {
+            let cls = 'mcq-opt';
+            if (locked) {
+              if (oi === item.ans) cls += ' correct';
+              else if (oi === picked) cls += ' wrong';
+            }
+            return `<button class="${cls}" type="button" ${locked ? 'disabled' : ''} data-quiz="${lessonId}" data-qi="${idx}" data-oi="${oi}">${opt}</button>`;
+          }).join('');
+
+          // FIX P0 #2: Explain & oral prompt ONLY appear AFTER answering!
+          const afterHtml = locked
+            ? `
+              <div class="mcq-explain"><strong>${picked === item.ans ? '✅ 一次答对！' : '💡 差一点，看解析（首答已锁定）：'}</strong> ${item.explain}</div>
+              <div class="oral-prompt">
+                <strong>🗣️ 考考你（用 1 句话讲给爸爸/妈妈听）：</strong>${item.oral}
+                <div class="oral-rubric">👂 ${item.rubric}</div>
+              </div>
+            `
+            : `<div style="margin-top:8px;font-size:12px;color:#64748b;">🔒 选出你的判断后，会自动解锁解析和“口述挑战题”（每题锁定首答哦！）</div>`;
+
+          return `
+            <div class="mcq-item">
+              <p class="mcq-q">${item.q}</p>
+              <div class="mcq-options">${optsHtml}</div>
+              ${afterHtml}
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <section class="card no-print">
+            <span class="section-badge badge-amber">第 2 步 · 边做边讲小测验（首答锁定 · 答完解锁口述题）</span>
+            <div class="quiz-header">
+              <h2 style="margin:0;">挑出最靠谱的式子，再把理由讲给爸爸/妈妈听</h2>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <span class="score-pill">首答进度 ${answeredCount}/${list.length} · 一次答对 ${correctCount} 题</span>
+                <button class="btn btn-sm" type="button" data-reset-quiz="${lessonId}">重新挑战本题组</button>
+              </div>
+            </div>
+            ${itemsHtml}
+          </section>
+        `;
+      }
+
+      function renderWorksheetSection(lessonId) {
+        const ws = WORKSHEETS[lessonId];
+        const unlocked = state.parentUnlocked[lessonId];
+        const err = state.parentLockErr[lessonId];
+        return `
+          <section class="card">
+            <div class="no-print" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px;">
+              <div>
+                <span class="section-badge badge-green">第 3 步 · 拿笔写一写（严格 1 页 A4 闯关单）</span>
+                <h2 style="margin:0;">拿铅笔亲手写一遍，才算真正收入囊中</h2>
+              </div>
+              <button class="btn btn-primary" type="button" data-print-ws="1">🖨️ 打印本课 A4 闯关单</button>
+            </div>
+            <div class="worksheet-sheet">
+              <div class="ws-meta">
+                <div><strong>${ws.title}</strong></div>
+                <div>姓名：________ &nbsp; 日期：________ &nbsp; 用时：____ 分钟</div>
+              </div>
+              <p class="ws-goal"><strong>本页目标：</strong>${ws.goal}</p>
+              ${ws.tasksHtml}
+              <div class="ws-footer">
+                <span>读题五步法：① 剥故事+看N → ② 造小世界 → ③ 写算式 → ④ 挑刺验毒 → ⑤ 译代码</span>
+                <span>写完可贴进《麒麒的 OI 数学实验本》第 ____ 页</span>
+              </div>
+            </div>
+
+            <div class="parent-lock-bar no-print">
+              ${unlocked
+                ? `<span>🔓 家长参考答案已展开（打印时会自动隐藏）</span>
+                   <button class="btn btn-sm" type="button" data-lock-ans="${lessonId}">🔒 重新上锁</button>`
+                : `<span>🔒 <strong>家长核对参考答案：</strong>输入解锁口令（孩子出生年份 4 位）</span>
+                   <input type="password" inputmode="numeric" maxlength="4" placeholder="4位数字" id="parentPin-${lessonId}" />
+                   <button class="btn btn-sm btn-amber" type="button" data-unlock-ans="${lessonId}">解锁核对</button>
+                   ${err ? `<span style="color:#dc2626;font-weight:700;">${err}</span>` : ''}`}
+            </div>
+            <div class="parent-answers no-print ${unlocked ? '' : 'hidden'}">
+              <div style="font-weight:800;color:#92400e;margin-bottom:6px;">📋 家长 30 秒速查参考答案：</div>
+              <div>${ws.parentAnsHtml}</div>
+            </div>
+          </section>
+        `;
+      }
+
+      function renderL1() {
+        const scene = L1_SCENES[state.l1Scene];
+        const stageData = scene.render(state.l1A, state.l1B, state.l1C, state.l1Stage);
+        return `
+          <section class="card no-print">
+            <span class="section-badge badge-blue">第 1 步 · 动手实验</span>
+            <h2>第 1 课：从真实 OI 题面剥故事 → 多字母展开与合并同类项</h2>
+            <p class="lead">简单方程你早就会了，这一课直接升级：练习怎么把长长的 OI 故事剥成字母式子、怎么拆 3 项大括号、合并同类项，以及分清数学 <code>=</code> 和 C++ <code>==</code>！</p>
+
+            <div class="lab-box">
+              <div class="lab-title">
+                <span>🧪 动手玩一玩：把真实故事一步步变成字母式子和 C++</span>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  ${L1_SCENES.map((s, i) => `<button class="btn btn-sm ${state.l1Scene === i ? 'btn-active' : ''}" type="button" data-l1-scene="${i}">${s.name.split('：')[0]}</button>`).join('')}
+                </div>
+              </div>
+              <p style="margin:0 0 10px;font-size:13.5px;color:#334155;"><strong>当前题目：</strong>${scene.desc}</p>
+              <div class="controls-row">
+                <label class="slider-item">a = <input type="range" min="1" max="8" value="${state.l1A}" data-slider="l1A"/><span class="val-pill" id="pill-l1A">${state.l1A}</span></label>
+                <label class="slider-item">b = <input type="range" min="1" max="8" value="${state.l1B}" data-slider="l1B"/><span class="val-pill" id="pill-l1B">${state.l1B}</span></label>
+                <label class="slider-item">c = <input type="range" min="1" max="8" value="${state.l1C}" data-slider="l1C"/><span class="val-pill" id="pill-l1C">${state.l1C}</span></label>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:8px;">
+                ${['① 造小世界（数字）', '② 剥故事（盒子/过渡）', '③ 写字母式子', '④ 译成 C++'].map((lbl, i) =>
+                  `<button class="btn btn-sm ${state.l1Stage === i ? 'btn-active' : ''}" type="button" data-l1-stage="${i}">${lbl}</button>`
+                ).join('')}
+              </div>
+              <div class="stage-display">
+                <div class="stage-formula" id="l1-stage-formula">${stageData.formula}</div>
+                <div class="stage-note" id="l1-stage-note">${stageData.note}</div>
+              </div>
+            </div>
+
+            <div class="lab-box">
+              <div class="lab-title">
+                <span>🧩 拼图看透拆括号：为什么 a(b + c) = ab + ac，三项也一样？</span>
+                <button class="btn btn-sm ${state.l1DistSplit ? 'btn-green' : 'btn-primary'}" type="button" id="btnToggleSplit">
+                  ${state.l1DistSplit ? '🧲 合起来算 a×(b+c)' : '✂️ 拆开算 a×b + a×c'}
+                </button>
+              </div>
+              <p style="margin:0 0 8px;font-size:13px;color:#475569;">丝滑拖动上面的 <code>a, b, c</code> 滑块，再切换“合起来 / 拆开”，观察总格数。如果右边再拼第 3 块宽 <code>d</code>，就变成 <code>a(b+c+d) = ab+ac+ad</code>；相同字母块（如 <code>2ab + ab</code>）直接合起来写成 <code>3ab</code>！</p>
+              <div id="l1-area-svg">${buildAreaSVG(state.l1A, state.l1B, state.l1C, state.l1DistSplit)}</div>
+            </div>
+
+            <div class="lab-box">
+              <div class="lab-title"><span>📖 数学符号 ↔ C++ 双语小词典（含脚标与等号避坑）</span></div>
+              <div class="dict-grid">
+                <div class="dict-item"><div class="dict-math">A_i 或 t₁</div><div>第 i 个元素（脚标就是下标）</div><div class="dict-cpp">A[i] 或 t[1]</div></div>
+                <div class="dict-item"><div class="dict-math">∑ (i=1..n) A_i</div><div>A₁ + A₂ + … + Aₙ 简写</div><div class="dict-cpp">for(i=1..n) sum += A[i];</div></div>
+                <div class="dict-item"><div class="dict-math">数学里的 =</div><div>判断左右相等（不是赋值！）</div><div class="dict-cpp">left == right</div></div>
+                <div class="dict-item"><div class="dict-math">a · b 或 ab</div><div>乘法（C++ 先乘 1LL 防溢出）</div><div class="dict-cpp">1LL * a * b</div></div>
+              </div>
+            </div>
+          </section>
+          ${renderQuizSection('l1')}
+          ${renderWorksheetSection('l1')}
+        `;
+      }
+
+      function renderL2() {
+        const lv = L2_LEVELS[state.l2Level];
+        const cur = state.l2Current;
+        const solved = isL2Solved(lv, cur);
+        return `
+          <section class="card no-print">
+            <span class="section-badge badge-blue">第 1 步 · 进阶方程推导台</span>
+            <h2>第 2 课：升级解方程——双边 x、负项气球、全字母倒推与含参消元</h2>
+            <p class="lead">普通一元、二元数字方程你已经会了！在 OI 里真正拉分的是：<strong>两边都有未知数、带负项、题目根本不给具体数字只给字母 <code>L, d, k, n, S</code>，怎么用同样的天平规则推导出通用公式？</strong></p>
+
+            <div class="lab-box">
+              <div class="lab-title">
+                <span>⚖️ 进阶方程实验台（支持撤销 + 一键代回验毒）</span>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  ${L2_LEVELS.map((l, i) => `<button class="btn btn-sm ${state.l2Level === i ? 'btn-active' : ''}" type="button" data-l2-level="${i}">关卡 ${i + 1}</button>`).join('')}
+                  <button class="btn btn-sm" type="button" id="btnL2Undo" ${state.l2History.length === 0 ? 'disabled' : ''}>↩ 撤销一步</button>
+                  <button class="btn btn-sm" type="button" id="btnL2Reset">↺ 重置</button>
+                </div>
+              </div>
+              <p style="margin:0 0 10px;font-size:14px;font-weight:700;color:#1e293b;">${lv.title}</p>
+
+              <div class="balance-layout">
+                <div>
+                  ${buildBalanceSVG(lv, cur)}
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px;">
+                    ${lv.ops.map((op) => `<button class="btn btn-sm btn-primary" type="button" data-l2-op="${op.id}">${op.label}</button>`).join('')}
+                    ${solved && lv.type === 'linear' ? `<button class="btn btn-sm btn-green" type="button" id="btnL2Verify">🔍 代回原式验毒</button>` : ''}
+                  </div>
+                  <div class="feedback-bar ${state.l2FeedbackType}">${state.l2Feedback}</div>
+                  ${state.l2VerifiedMsg ? `<div class="feedback-bar fb-ok">${state.l2VerifiedMsg}</div>` : ''}
+                </div>
+                <div class="steps-log">
+                  <h4>📝 右侧自动记录：每一步的代数变形</h4>
+                  ${state.l2Steps.map((st, idx) => `
+                    <div class="step-line ${idx === state.l2Steps.length - 1 && solved ? 'done' : ''}">
+                      <span>${st.eq}</span>
+                      <span class="step-reason">${st.reason}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              ${lv.type === 'system' ? `
+                <div style="margin-top:14px;padding-top:12px;border-top:1px dashed #cbd5e1;">
+                  <div style="font-weight:700;font-size:13.5px;margin-bottom:8px;">🔬 拖动 n 和 S 滑块：亲眼测试 <code>b = (S - 2n) / 3</code> 什么时候有合法非负整数解！</div>
+                  <div class="controls-row">
+                    <label class="slider-item">总张数 n = <input type="range" min="2" max="20" value="${state.l2N}" data-slider="l2N"/><span class="val-pill" id="pill-l2N">${state.l2N}</span></label>
+                    <label class="slider-item">总分 S = <input type="range" min="4" max="80" value="${state.l2S}" data-slider="l2S"/><span class="val-pill" id="pill-l2S">${state.l2S}</span></label>
+                  </div>
+                  <div id="l2-sys-check" class="feedback-bar fb-ok"></div>
+                </div>
+              ` : ''}
+            </div>
+
+            <div class="callout callout-purple">
+              <strong>💡 为什么复杂题不要硬靠心算倒推？</strong> 一步两步的题心算确实快；一旦题目绕三圈，或者干脆不给具体数字只给字母 <code>n, S, L, k</code>，<strong>顺着故事顺序设字母列等式</strong>，再用天平/消元变形，大脑完全不用倒着绕弯，直接导出能写进 C++ 的公式！
+            </div>
+          </section>
+          ${renderQuizSection('l2')}
+          ${renderWorksheetSection('l2')}
+        `;
+      }
+
+      function renderL3() {
+        const allCommonCanceled = Object.values(state.l3Canceled).every(Boolean);
+        const P = state.l3P, t1 = state.l3T1, w1 = state.l3W1, t2 = state.l3T2, w2 = state.l3W2;
+        const leftTerms = [
+          { key: 'pw1', text: 'P·w₁', type: 'common' },
+          { key: 't1w1', text: 't₁·w₁', type: 'common' },
+          { key: 'pw2', text: 'P·w₂', type: 'common' },
+          { key: 'coreA', text: 't₁·w₂', type: 'core' },
+          { key: 't2w2', text: 't₂·w₂', type: 'common' },
+        ];
+        const rightTerms = [
+          { key: 'pw2', text: 'P·w₂', type: 'common' },
+          { key: 't2w2', text: 't₂·w₂', type: 'common' },
+          { key: 'pw1', text: 'P·w₁', type: 'common' },
+          { key: 'coreB', text: 't₂·w₁', type: 'core' },
+          { key: 't1w1', text: 't₁·w₁', type: 'common' },
+        ];
+        const renderTerms = (arr) => arr.map((t, i) => {
+          const canceled = t.type === 'common' && state.l3Canceled[t.key];
+          const cls = t.type === 'core' ? 'term-chip core' : `term-chip common ${canceled ? 'canceled' : ''}`;
+          const plus = i > 0 ? '<span style="color:#94a3b8;font-weight:700;">+</span>' : '';
+          return `${plus}<button type="button" class="${cls}" ${t.type === 'common' ? `data-cancel-term="${t.key}"` : ''}>${t.text}</button>`;
+        }).join('');
+
+        return `
+          <section class="card no-print">
+            <span class="section-badge badge-blue">第 1 步 · 动手实验（严格按“数字 → 盒子 → 拆括号 → 划相同块 → C++”五步爬坡！）</span>
+            <h2>第 3 课：不等式翻号 & 完整 5 步贪心交换证明</h2>
+            <p class="lead">这一课先用数轴彻底搞懂<strong>“乘负数为什么翻号”</strong>（直接接轨《烟花拦截》取负反转技巧），再用你最熟的<strong>造小世界 → 写算式 → 译代码</strong>五步法，把以前听着迷糊的贪心交换证明彻底打穿！</p>
+
+            <!-- Lab 3A: Number line hooked to -x sign flip in OI -->
+            <div class="lab-box">
+              <div class="lab-title">
+                <span>📏 实验 A：数轴翻转器——乘负数翻号（OI 里的“取负反转”神技）</span>
+                <button class="btn btn-sm" type="button" id="btnL3ResetLine">↺ 重置为 2 &lt; 5</button>
+              </div>
+              ${buildNumberLineSVG(state.l3A, state.l3B)}
+              <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px;">
+                <button class="btn btn-sm" type="button" data-l3-line="add3">两边 + 3（不变号）</button>
+                <button class="btn btn-sm" type="button" data-l3-line="sub4">两边 - 4（不变号）</button>
+                <button class="btn btn-sm" type="button" data-l3-line="mul2">两边 × 2（乘正不变号）</button>
+                <button class="btn btn-sm btn-amber" type="button" data-l3-line="mulNeg1">⚡ 两边 × (-1)（镜像翻号！）</button>
+                <button class="btn btn-sm btn-amber" type="button" data-l3-line="mulNeg2">⚡ 两边 × (-2)（拉长并翻号！）</button>
+              </div>
+              <div class="feedback-bar ${state.l3Flipped ? 'fb-warn' : 'fb-info'}">${state.l3History}</div>
+              <div class="callout"><strong>🔗 直连 OI 实战：</strong>比如《烟花拦截》要找“越来越矮（<code>h₁ ≥ h₂</code>）”的最长子序列，把所有高度全乘 <code>-1</code> 后不等号翻面变成 <code>-h₁ ≤ -h₂</code>，直接套递增模板就能秒杀！</div>
+            </div>
+
+            <!-- Lab 3B: Corrected Bottom-Up 5-Step Greedy Exchange Proof -->
+            <div class="lab-box">
+              <div class="lab-title">
+                <span>⚔️ 实验 B：按五步法亲手打穿“邻项交换贪心证明”</span>
+              </div>
+              <p style="margin:0 0 10px;font-size:13.5px;color:#334155;">
+                <strong>📖 故事规则（先读清定义！）：</strong>依次做两个相邻任务——任务 1 耗时 <code>t₁</code> 秒、每秒罚金 <code>w₁</code> 元；任务 2 耗时 <code>t₂</code> 秒、每秒罚金 <code>w₂</code> 元。前面已经过去 <code>P</code> 秒，<strong>每个任务在它【全部做完那一刻】按“做完时刻 × 每秒罚金”结算罚金</strong>。怎样排总罚金最少？
+              </p>
+
+              <div class="step-pill-bar">
+                ${[
+                  [1, '① 造小世界（先算具体数）'],
+                  [2, '② 中文盒子拼出式子'],
+                  [3, '③ 亲手逐项拆括号'],
+                  [4, '④ 划掉 4 组相同块'],
+                  [5, '⑤ 冒泡桥 & 译成 C++ cmp'],
+                ].map(([n, txt]) => `<button type="button" class="step-pill ${state.l3Step === n ? 'active' : (state.l3Step > n ? 'done' : '')}" data-l3-step="${n}">${txt}</button>`).join('')}
+              </div>
+
+              ${state.l3Step === 1 ? `
+                <div>
+                  <p style="margin:0 0 8px;font-size:13.5px;">先别看字母！自由拖动下面 5 个滑块（特别是拖动前置时间 <strong>P</strong> 从 0 变到 20），观察表格里“甲 - 乙”的差值发生了什么神奇变化：</p>
+                  <div class="controls-row">
+                    <label class="slider-item">前置 P=<input type="range" min="0" max="20" value="${P}" data-slider="l3P"/><span class="val-pill" id="pill-l3P">${P}</span></label>
+                    <label class="slider-item">t₁=<input type="range" min="1" max="10" value="${t1}" data-slider="l3T1"/><span class="val-pill" id="pill-l3T1">${t1}</span></label>
+                    <label class="slider-item">w₁=<input type="range" min="1" max="10" value="${w1}" data-slider="l3W1"/><span class="val-pill" id="pill-l3W1">${w1}</span></label>
+                    <label class="slider-item">t₂=<input type="range" min="1" max="10" value="${t2}" data-slider="l3T2"/><span class="val-pill" id="pill-l3T2">${t2}</span></label>
+                    <label class="slider-item">w₂=<input type="range" min="1" max="10" value="${w2}" data-slider="l3W2"/><span class="val-pill" id="pill-l3W2">${w2}</span></label>
+                  </div>
+                  <table class="mini-table" id="l3-num-table"></table>
+                  <div class="feedback-bar fb-info" id="l3-diff-bar"></div>
+                  <div style="text-align:right;margin-top:10px;"><button class="btn btn-primary btn-sm" type="button" data-l3-step="2">发现规律了！进下一步：② 用中文盒子拼式子 →</button></div>
+                </div>
+              ` : ''}
+
+              ${state.l3Step === 2 ? `
+                <div>
+                  <p style="margin:0 0 8px;font-size:13.5px;">刚才是具体数，现在把刚才表格里的算式装进中文盒子：<strong>[做完时刻] × [每秒罚金]</strong>！</p>
+                  <div class="stage-display">
+                    ${!state.l3BoxBuilt ? `
+                      <div style="font-size:15px;font-weight:700;margin-bottom:10px;">
+                        方案甲（先 1 后 2）：任务 1 做完时刻 = <span class="box-chip chip-a">[P + t₁]</span>，任务 2 做完时刻 = <span class="box-chip chip-b">[P + t₁ + t₂]</span>
+                      </div>
+                      <button class="btn btn-primary btn-sm" type="button" id="btnL3BuildBox">🧩 把两个任务的罚金拼成完整字母式</button>
+                    ` : `
+                      <div style="font-family:ui-monospace,monospace;font-size:15.5px;font-weight:800;line-height:2;">
+                        甲（先 1 后 2）= (P + t₁)·w₁ + (P + t₁ + t₂)·w₂<br/>
+                        乙（先 2 后 1）= (P + t₂)·w₂ + (P + t₂ + t₁)·w₁
+                      </div>
+                      <div class="stage-note">看！这个公式不是背来的，是你自己从“做完时刻 × 每秒罚金”拼出来的！</div>
+                    `}
+                  </div>
+                  <div style="text-align:right;margin-top:10px;"><button class="btn btn-primary btn-sm" type="button" data-l3-step="3">进下一步：③ 亲手逐项拆括号 →</button></div>
+                </div>
+              ` : ''}
+
+              ${state.l3Step === 3 ? `
+                <div>
+                  <p style="margin:0 0 8px;font-size:13.5px;">不要一键糊弄过去！请你分两步，亲手把甲、乙里的两个括号逐一用第 1 课学的分配律拆开：</p>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+                    <button class="btn btn-sm ${state.l3Expand1 ? 'btn-green' : 'btn-primary'}" type="button" id="btnL3Exp1">${state.l3Expand1 ? '✅ 已拆第 1 个括号' : '拆第 1 个括号：(P+t₁)·w₁ 与 (P+t₂)·w₂'}</button>
+                    <button class="btn btn-sm ${state.l3Expand2 ? 'btn-green' : 'btn-primary'}" type="button" id="btnL3Exp2">${state.l3Expand2 ? '✅ 已拆第 2 个三项括号' : '拆第 2 个括号：(P+t₁+t₂)·w₂ 与 (P+t₂+t₁)·w₁'}</button>
+                  </div>
+                  <div class="term-arena">
+                    <div class="term-side">
+                      <h4>方案甲（拆解进度）</h4>
+                      <div style="font-family:ui-monospace,monospace;font-size:14px;font-weight:700;line-height:1.9;">
+                        ${state.l3Expand1 ? '<span style="color:#059669;">P·w₁ + t₁·w₁</span>' : '(P + t₁)·w₁'}
+                        +
+                        ${state.l3Expand2 ? '<span style="color:#2563eb;">P·w₂ + t₁·w₂ + t₂·w₂</span>' : '(P + t₁ + t₂)·w₂'}
+                      </div>
+                    </div>
+                    <div class="vs-badge">vs</div>
+                    <div class="term-side">
+                      <h4>方案乙（拆解进度）</h4>
+                      <div style="font-family:ui-monospace,monospace;font-size:14px;font-weight:700;line-height:1.9;">
+                        ${state.l3Expand1 ? '<span style="color:#059669;">P·w₂ + t₂·w₂</span>' : '(P + t₂)·w₂'}
+                        +
+                        ${state.l3Expand2 ? '<span style="color:#2563eb;">P·w₁ + t₂·w₁ + t₁·w₁</span>' : '(P + t₂ + t₁)·w₁'}
+                      </div>
+                    </div>
+                  </div>
+                  <div style="text-align:right;margin-top:8px;"><button class="btn btn-primary btn-sm" type="button" data-l3-step="4" ${!(state.l3Expand1 && state.l3Expand2) ? 'disabled' : ''}>全部拆开啦！进下一步：④ 划掉相同块 →</button></div>
+                </div>
+              ` : ''}
+
+              ${state.l3Step === 4 ? `
+                <div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px;">
+                    <span style="font-size:13.5px;">不等式两边同时减去一样的块，大小关系不变！请亲手点击所有 4 组<strong>橙色公共块</strong>划掉它们：</span>
+                    <button class="btn btn-sm" type="button" id="btnL3ResetCancel">↺ 再划一遍</button>
+                  </div>
+                  <div class="term-arena">
+                    <div class="term-side">
+                      <h4>方案甲（点击橙色块）</h4>
+                      <div class="term-list">${renderTerms(leftTerms)}</div>
+                    </div>
+                    <div class="vs-badge">${allCommonCanceled ? '⚡' : 'vs'}</div>
+                    <div class="term-side">
+                      <h4>方案乙（两边同步抵消）</h4>
+                      <div class="term-list">${renderTerms(rightTerms)}</div>
+                    </div>
+                  </div>
+                  <div class="feedback-bar ${allCommonCanceled ? 'fb-ok' : 'fb-warn'}">
+                    ${allCommonCanceled
+                      ? '🎉 全部 4 组公共块都划掉啦！剩下干干净净的 <strong>t₁·w₂ &lt; t₂·w₁</strong>！（如果两边相等 t₁·w₂ == t₂·w₁，说明谁排前总罚金一样，平局无所谓先后。）'
+                      : '点击上面任意橙色块，把它从不等式左右两边同时减掉！'}
+                  </div>
+                  <div style="text-align:right;margin-top:10px;"><button class="btn btn-primary btn-sm" type="button" data-l3-step="5" ${!allCommonCanceled ? 'disabled' : ''}>最后一步：⑤ 怎么从相邻 2 个推到整队 + 写 C++ cmp →</button></div>
+                </div>
+              ` : ''}
+
+              ${state.l3Step === 5 ? `
+                <div>
+                  <div class="callout" style="margin-top:0;">
+                    <strong>🌉 桥梁 1（为什么只比相邻 2 个，就能推出整队全局最优？——冒泡排序思想）：</strong><br/>
+                    ① 交换相邻两个任务，对排在它们<strong>前面</strong>的人毫无影响；对排在<strong>后面</strong>的人来说，这俩人合起来占的总时间 <code>t₁ + t₂</code> 也没变，所以后面所有人也不受影响！<br/>
+                    ② 只要整队还没按 <code>t₁·w₂ &lt; t₂·w₁</code> 排好，队伍里一定存在至少一对相邻的“坏顺序”。把它们交换，总罚金只会降低（或不变）；一直交换到再也找不到坏顺序，就是全局最优顺序！
+                  </div>
+                  <div class="callout callout-purple">
+                    <strong>💻 桥梁 2（第 ⑤ 步译代码——C++ sort 的 1 行比较规则）：</strong><br/>
+                    <div class="code-strip">return 1LL * a.t * b.w &lt; 1LL * b.t * a.w;  // 乘法防精度误差，1LL 防爆 int，严格 &lt; 防 RE</div>
+                    <div style="margin-top:6px;font-size:12.5px;">（小贴士：如果以后有人把这式子写成比值 <code>t₁/w₁ &lt; t₂/w₂</code>，那需要前提 <code>w₁, w₂ &gt; 0</code>；在 C++ 里永远优先写交叉乘法！）</div>
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          </section>
+          ${renderQuizSection('l3')}
+          ${renderWorksheetSection('l3')}
+        `;
+      }
+
+      // ---------- Main Render ----------
+      function render() {
+        const pBody = document.getElementById('protocolBody');
+        const pLbl = document.getElementById('protocolToggleLabel');
+        if (state.protocolOpen) {
+          pBody.classList.remove('hidden');
+          pLbl.textContent = '收起 ▲';
+        } else {
+          pBody.classList.add('hidden');
+          pLbl.textContent = '展开 ▼';
+        }
+
+        document.querySelectorAll('.lesson-tab').forEach((btn) => {
+          btn.classList.toggle('active', btn.dataset.lesson === state.activeLesson);
+        });
+
+        const host = document.getElementById('lessonHost');
+        if (state.activeLesson === 'l1') {
+          host.innerHTML = renderL1();
+        } else if (state.activeLesson === 'l2') {
+          host.innerHTML = renderL2();
+          updateL2SysDOM();
+        } else {
+          host.innerHTML = renderL3();
+          if (state.l3Step === 1) updateL3NumDOM();
+        }
+      }
+
+      // ---------- Click Delegation ----------
+      document.addEventListener('click', (e) => {
+        const target = e.target.closest('button, #protocolHead');
+        if (!target) return;
+
+        if (target.id === 'protocolHead' || target.id === 'btnToggleProtocol') {
+          state.protocolOpen = !state.protocolOpen;
+          render();
+          return;
+        }
+        if (target.id === 'btnPrintTop' || target.dataset.printWs) {
+          window.print();
+          return;
+        }
+        if (target.dataset.lesson) {
+          state.activeLesson = target.dataset.lesson;
+          render();
+          return;
+        }
+        // L1
+        if (target.dataset.l1Scene !== undefined) {
+          state.l1Scene = Number(target.dataset.l1Scene);
+          render();
+          return;
+        }
+        if (target.dataset.l1Stage !== undefined) {
+          state.l1Stage = Number(target.dataset.l1Stage);
+          render();
+          return;
+        }
+        if (target.id === 'btnToggleSplit') {
+          state.l1DistSplit = !state.l1DistSplit;
+          render();
+          return;
+        }
+        // L2
+        if (target.dataset.l2Level !== undefined) {
+          initL2Level(Number(target.dataset.l2Level));
+          render();
+          return;
+        }
+        if (target.id === 'btnL2Reset') {
+          initL2Level(state.l2Level);
+          render();
+          return;
+        }
+        if (target.id === 'btnL2Undo') {
+          if (state.l2History.length > 0) {
+            state.l2Current = state.l2History.pop();
+            if (state.l2Steps.length > 1) state.l2Steps.pop();
+            state.l2Feedback = '已撤销上一步，再换个操作试试！';
+            state.l2FeedbackType = 'fb-info';
+            state.l2VerifiedMsg = '';
+            render();
+          }
+          return;
+        }
+        if (target.id === 'btnL2Verify') {
+          const lv = L2_LEVELS[state.l2Level];
+          if (lv.verifyFn) {
+            state.l2VerifiedMsg = '✅ ' + lv.verifyFn(state.l2Current.rc);
+            render();
+          }
+          return;
+        }
+        if (target.dataset.l2Op) {
+          applyL2Op(target.dataset.l2Op);
+          return;
+        }
+        // L3 number line
+        if (target.id === 'btnL3ResetLine') {
+          state.l3A = 2; state.l3B = 5; state.l3Flipped = false;
+          state.l3History = '已重置为 2 < 5（2 在 5 的左边）。';
+          render();
+          return;
+        }
+        if (target.dataset.l3Line) {
+          const op = target.dataset.l3Line;
+          const prevRel = state.l3A < state.l3B ? '<' : '>';
+          if (op === 'add3') { state.l3A += 3; state.l3B += 3; state.l3History = '两边同时 +3：两点一起右移 3 格，左右顺序没变！'; }
+          else if (op === 'sub4') { state.l3A -= 4; state.l3B -= 4; state.l3History = '两边同时 -4：两点一起左移 4 格，左右顺序没变！'; }
+          else if (op === 'mul2') { state.l3A *= 2; state.l3B *= 2; state.l3History = '两边同时 ×2：距原点拉长 2 倍，左右顺序依然没变！'; }
+          else if (op === 'mulNeg1') { state.l3A *= -1; state.l3B *= -1; state.l3History = '⚡ 两边同时 ×(-1)：以 0 为镜子左右翻转！原本在右边的跑到了左边，不等号必须翻面！'; }
+          else if (op === 'mulNeg2') { state.l3A *= -2; state.l3B *= -2; state.l3History = '⚡ 两边同时 ×(-2)：拉长 2 倍并左右翻转，不等号必须翻面！'; }
+          const newRel = state.l3A < state.l3B ? '<' : '>';
+          state.l3Flipped = (prevRel !== newRel);
+          if (Math.abs(state.l3A) > 40 || Math.abs(state.l3B) > 40) {
+            state.l3A = 2; state.l3B = 5; state.l3Flipped = false;
+            state.l3History = '数值超出视野，已自动重置回 2 < 5！';
+          }
+          render();
+          return;
+        }
+        // L3 5-step greedy proof
+        if (target.dataset.l3Step !== undefined) {
+          state.l3Step = Number(target.dataset.l3Step);
+          render();
+          return;
+        }
+        if (target.id === 'btnL3BuildBox') {
+          state.l3BoxBuilt = true;
+          render();
+          return;
+        }
+        if (target.id === 'btnL3Exp1') {
+          state.l3Expand1 = true;
+          render();
+          return;
+        }
+        if (target.id === 'btnL3Exp2') {
+          state.l3Expand2 = true;
+          render();
+          return;
+        }
+        if (target.id === 'btnL3ResetCancel') {
+          state.l3Canceled = { pw1: false, pw2: false, t1w1: false, t2w2: false };
+          render();
+          return;
+        }
+        if (target.dataset.cancelTerm) {
+          state.l3Canceled[target.dataset.cancelTerm] = true;
+          render();
+          return;
+        }
+        // Quiz (locked on first click!)
+        if (target.dataset.quiz) {
+          const lid = target.dataset.quiz;
+          const qi = Number(target.dataset.qi);
+          const oi = Number(target.dataset.oi);
+          const key = `${lid}-${qi}`;
+          if (state.quizAnswers[key] === undefined) {
+            state.quizAnswers[key] = oi;
+            render();
+          }
+          return;
+        }
+        if (target.dataset.resetQuiz) {
+          const lid = target.dataset.resetQuiz;
+          QUIZZES[lid].forEach((_, qi) => { delete state.quizAnswers[`${lid}-${qi}`]; });
+          render();
+          return;
+        }
+        // Parent answer lock
+        if (target.dataset.unlockAns) {
+          const lid = target.dataset.unlockAns;
+          const input = document.getElementById(`parentPin-${lid}`);
+          const pin = String(input?.value || '').trim();
+          if (pin === '2015') {
+            state.parentUnlocked[lid] = true;
+            state.parentLockErr[lid] = '';
+          } else {
+            state.parentLockErr[lid] = '口令不对哦（提示：孩子出生年份 4 位）';
+          }
+          render();
+          return;
+        }
+        if (target.dataset.lockAns) {
+          const lid = target.dataset.lockAns;
+          state.parentUnlocked[lid] = false;
+          state.parentLockErr[lid] = '';
+          render();
+          return;
+        }
+      });
+
+      // ---------- Slider Input Delegation (TARGETED DOM UPDATE ONLY — NEVER REBUILDS SLIDER!) ----------
+      document.addEventListener('input', (e) => {
+        const key = e.target?.dataset?.slider;
+        if (!key) return;
+        state[key] = Number(e.target.value);
+        if (key === 'l1A' || key === 'l1B' || key === 'l1C') updateL1DynamicDOM();
+        else if (key === 'l2N' || key === 'l2S') updateL2SysDOM();
+        else if (key.startsWith('l3')) updateL3NumDOM();
+      });
+
+      initL2Level(0);
+      render();
+    })();
+  </script>
+</body>
+</html>

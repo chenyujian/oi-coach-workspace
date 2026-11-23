@@ -1,0 +1,13 @@
+{
+  "platform": "好吧(cpptrain)",
+  "pid": "5236",
+  "title": "5236 树的直径",
+  "url": "https://haoba.vip/d/cpptrain/p/5236?tid=6adec35ebe5734213d7e2dc6",
+  "statement": "## T5 树的直径\n\n\n### 题目描述\n\n一棵**无根**的树有 $n$ 个节点（编号 $1 \\sim n$）和 $n-1$ 条无向边（每条边长度为 $1$），保证任意两个节点之间恰有一条简单路径相连。\n\n一个节点的**偏心距**，指它到树上最远节点的距离（边数）。偏心距**最小**的节点称为树的**中心**（可以让消息从这里出发最快传遍整棵树）。可以证明：任何一棵树的中心只有**一个或两个**。\n\n请找出这棵树的全部中心，按编号从小到大输出。\n\n### 输入格式\n\n第一行一个整数 $n$。\n\n接下来 $n-1$ 行，每行两个整数 $a$、$b$，表示节点 $a$ 与节点 $b$ 之间有一条边。（$n=1$ 时没有后续行。）\n\n### 输出格式\n\n一行若干个整数，以空格分隔，按编号从小到大输出全部中心节点的编号。\n\n### 样例\n\n#### 输入 1\n\n```text\n4\n1 2\n2 3\n3 4\n```\n\n#### 输出 1\n\n```text\n2 3\n```\n\n#### 输入 2\n\n```text\n4\n1 2\n1 3\n1 4\n```\n\n#### 输出 2\n\n```text\n1\n```\n\n#### 输入 3\n\n```text\n5\n1 2\n2 3\n2 4\n4 5\n```\n\n#### 输出 3\n\n```text\n2 4\n```\n\n#### 输入 4\n\n```text\n1\n```\n\n#### 输出 4\n\n```text\n1\n```\n\n样例 1 解释：链 $1-2-3-4$。$2$ 号的偏心距为 $2$（到 $4$ 号），$3$ 号的偏心距为 $2$（到 $1$ 号），其余节点的偏心距为 $3$。中心是 $2$ 号和 $3$ 号。\n\n样例 2 解释：星形树。$1$ 号的偏心距为 $1$，叶子节点的偏心距为 $2$，中心只有 $1$ 号。\n\n样例 3 解释：$2$ 号到最远节点（$3$ 或 $5$）的距离为 $2$；$4$ 号到最远节点（$3$ 号）的距离为 $2$；其余节点的偏心距为 $3$。中心是 $2$ 号和 $4$ 号。\n\n样例 4 解释：只有一个节点，它的偏心距为 $0$，是最小的，中心就是它本身。\n\n### 数据范围\n\n- $1 \\le n \\le 10^5$\n- $1 \\le a, b \\le n$，$a \\ne b$\n- 保证输入构成一棵树（连通且无环）\n\n时间限制：1 秒。内存限制：256 MB。",
+  "attempts": 3,
+  "best_score": 62,
+  "trajectory": "WA→WA→WA",
+  "latest_verdict": "WA",
+  "latest_score": 50,
+  "latest_code": "#include<bits/stdc++.h>\n#define int long long\nusing namespace std;\nvector<int>v[111111];\nint d[111111],f[111111];\nsigned main(){\n\tios::sync_with_stdio(0);cin.tie(0);cout.tie(0);\n\tint n;\n\tcin>>n;\n\tfor(int i=1;i<n;i++){\n\t\tint x,y;\n\t\tcin>>x>>y;\n\t\tv[x].push_back(y);\n\t\tv[y].push_back(x);\n\t\td[x]++,d[y]++;\n\t}\n\tqueue<int>q;\n\tint g=n;\n\tfor(int i=1;i<=n;i++){\n\t\tif(d[i]<=1){\n\t\t\tg--;\n\t\t\tf[i]=1;\n\t\t\td[i]=0;\n\t\t\tq.push(i);\n\t\t}\n\t}\n\twhile(!q.empty()){\n\t\tif(g<=2){\n\t\t\tbreak;\n\t\t}\n\t\tint x=q.front();\n\t\tq.pop();\n\t\tfor(int i=0;i<v[x].size();i++){\n\t\t\td[v[x][i]]--;\n\t\t\tif(d[v[x][i]]==1){\n\t\t\t\tg--;\n\t\t\t\tf[v[x][i]]=1;\n\t\t\t\tq.push(v[x][i]);\n\t\t\t}\n\t\t}\n\t}\n\tfor(int i=1;i<=n;i++){\n\t\tif(f[i]==0){\n\t\t\tcout<<i<<\" \";\n\t\t}\n\t}\n    return 0;\n}\n"
+}

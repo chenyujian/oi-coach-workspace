@@ -1,0 +1,4070 @@
+[
+  {
+    "tid": "6afd721b4c32f144c3403739",
+    "kind": "homework",
+    "title": "1118_1550_1720_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-11-17T16:00:00.000Z",
+    "endAt": "2026-11-27T16:00:00.000Z",
+    "startAt": "2026-11-18T12:02:53.534Z",
+    "dateSort": "2026-11-17T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "794",
+        "title": "[GESP202409 八级] 手套配对",
+        "tags": [
+          "组合数学",
+          "GESP八级"
+        ],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1366",
+        "title": "[ABC126E] 1 or 2",
+        "tags": [
+          "并查集",
+          "AtCoder"
+        ],
+        "submissions": 5,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1505",
+        "title": "[GESP202512 八级] 宝石项链",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "2667",
+        "title": "CF25D Roads not only in Berland",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "6af4401a493ebaaa91a9e198",
+    "kind": "homework",
+    "title": "1111_1640_1810_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-11-10T16:00:00.000Z",
+    "endAt": "2026-11-20T16:00:00.000Z",
+    "startAt": "2026-11-12T13:32:23.025Z",
+    "dateSort": "2026-11-10T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "3111",
+        "title": "杨辉三角与组合数查询",
+        "tags": [
+          "组合数学",
+          "递推",
+          "GESP八级"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "838",
+        "title": "[NOIP 2011 提高组] 计算系数",
+        "tags": [
+          "组合数学",
+          "快速幂",
+          "NOIP提高组"
+        ],
+        "submissions": 7,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "788",
+        "title": "[GESP202312 八级] 奖品分配",
+        "tags": [
+          "组合数学",
+          "GESP八级"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1505",
+        "title": "[GESP202512 八级] 宝石项链",
+        "tags": [
+          "贪心",
+          "双指针",
+          "GESP八级"
+        ],
+        "submissions": 1,
+        "bestScore": 65,
+        "bestStatus": "TLE",
+        "verdicts": [
+          "TLE"
+        ]
+      },
+      {
+        "pid": "800",
+        "title": "[GESP202506 八级] 树上旅行",
+        "tags": [
+          "模拟",
+          "图的存储与遍历",
+          "GESP八级"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6aeb0255aaf5a86f242688dc",
+    "kind": "homework",
+    "title": "1104_1630_1800_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-11-03T16:00:00.000Z",
+    "endAt": "2026-11-13T16:00:00.000Z",
+    "startAt": "2026-11-04T11:52:34.134Z",
+    "dateSort": "2026-11-03T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "799",
+        "title": "[GESP202503 八级] 割裂",
+        "tags": [
+          "LCA",
+          "树上差分",
+          "GESP八级"
+        ],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "RE",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1173",
+        "title": "[蓝桥杯 2023 省 B] 景区导游",
+        "tags": [
+          "LCA",
+          "蓝桥杯"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "806",
+        "title": "[JLOI2014] 松鼠的新家",
+        "tags": [
+          "树上差分",
+          "LCA"
+        ],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "TLE",
+          "TLE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "787",
+        "title": "[GESP样题 八级] 小杨的旅游",
+        "tags": [
+          "最短路",
+          "LCA",
+          "GESP八级"
+        ],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "CE",
+          "WA",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6ae1c5b4cd9b413a6d8bcd4b",
+    "kind": "homework",
+    "title": "1028_1620_1750_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-10-27T16:00:00.000Z",
+    "endAt": "2026-11-06T15:59:00.000Z",
+    "startAt": "2026-10-29T13:08:16.558Z",
+    "dateSort": "2026-10-27T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1171",
+        "title": "[POI 2002] 商务旅行",
+        "tags": [
+          "LCA",
+          "倍增"
+        ],
+        "submissions": 8,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1173",
+        "title": "[蓝桥杯 2023 省 B] 景区导游",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "789",
+        "title": "[GESP202312 八级] 大量的工作沟通",
+        "tags": [
+          "LCA",
+          "GESP八级"
+        ],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1525",
+        "title": "[USACO08OCT] Watering Hole G",
+        "tags": [
+          "最小生成树",
+          "USACO"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6abcdaa186fcf57c96dbaf7f",
+    "kind": "homework",
+    "title": "0930_1630_1800_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-09-29T16:00:00.000Z",
+    "endAt": "2026-10-29T15:59:00.000Z",
+    "startAt": "2026-10-26T13:24:14.622Z",
+    "dateSort": "2026-09-29T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1525",
+        "title": "[USACO08OCT] Watering Hole G",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "1524",
+        "title": "营救",
+        "tags": [
+          "最小生成树",
+          "二分"
+        ],
+        "submissions": 6,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "CE",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6aaa7ff2ddc254054b6e5789",
+    "kind": "homework",
+    "title": "0916_1615_1745_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-09-15T16:00:00.000Z",
+    "endAt": "2026-09-25T15:59:00.000Z",
+    "startAt": "2026-09-20T07:01:48.030Z",
+    "dateSort": "2026-09-15T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1504",
+        "title": "[GESP202512 八级] 猫和老鼠",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "6a97f11eddc254054b6ba50a",
+    "kind": "homework",
+    "title": "0902_1615_1745_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-09-01T16:00:00.000Z",
+    "endAt": "2026-09-13T15:59:00.000Z",
+    "startAt": "2026-09-03T11:24:26.166Z",
+    "dateSort": "2026-09-01T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1557",
+        "title": "[USACO17DEC] The Bovine Shuffle S",
+        "tags": [
+          "模拟",
+          "USACO"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1817",
+        "title": "[GESP202603 七级] 物流网络",
+        "tags": [
+          "最短路",
+          "枚举",
+          "GESP七级"
+        ],
+        "submissions": 8,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "CE",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "2234",
+        "title": "[ABC282D] Make Bipartite 2",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "2659",
+        "title": "[USACO01OPEN] 垃圾陷阱",
+        "tags": [
+          "背包",
+          "USACO"
+        ],
+        "submissions": 3,
+        "bestScore": 9,
+        "bestStatus": "TLE",
+        "verdicts": [
+          "TLE",
+          "TLE",
+          "TLE"
+        ]
+      },
+      {
+        "pid": "2655",
+        "title": "[USACO05FEB] Part Acquisition S",
+        "tags": [
+          "BFS",
+          "USACO"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1631",
+        "title": "[USACO11NOV] Tile Exchanging S",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "1139",
+        "title": "T3. 学习计划",
+        "tags": [
+          "线性DP",
+          "前缀和"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "2487",
+        "title": "[COCI 2021/2022 #3] Cijanobakterije",
+        "tags": [
+          "树的重心与直径",
+          "COCI"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6a8c6ce37c12fb8fc574e7b6",
+    "kind": "homework",
+    "title": "0824_2000_2130_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-08-23T16:00:00.000Z",
+    "endAt": "2026-09-03T15:59:00.000Z",
+    "startAt": "2026-08-30T07:46:37.867Z",
+    "dateSort": "2026-08-23T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1319",
+        "title": "[ABC226C] Martial artist",
+        "tags": [
+          "DFS",
+          "记忆化搜索",
+          "AtCoder"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "2234",
+        "title": "[ABC282D] Make Bipartite 2",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "875",
+        "title": "最低通行费",
+        "tags": [
+          "线性DP"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "666",
+        "title": "[GESP202503 七级] 等价消除",
+        "tags": [
+          "前缀和",
+          "哈希表",
+          "GESP七级"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6a8b36dd54b31ca6a6a00942",
+    "kind": "contest",
+    "title": "26年8月GESP5-8级编程题模拟赛(第二场)",
+    "rule": "strictioi",
+    "beginAt": "2026-08-24T00:00:00.000Z",
+    "endAt": "2026-09-01T08:00:00.000Z",
+    "startAt": "2026-08-24T10:21:53.463Z",
+    "dateSort": "2026-08-24T00:00:00.000Z",
+    "problems": [
+      {
+        "pid": "2614",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "2601",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "2602",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "2603",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "2604",
+        "title": "[GESP七级模拟]魔法括号串",
+        "tags": [
+          "线性DP",
+          "组合数学",
+          "GESP七级"
+        ],
+        "submissions": 3,
+        "bestScore": 50,
+        "bestStatus": "WA",
+        "verdicts": [
+          "TLE",
+          "TLE",
+          "WA"
+        ]
+      },
+      {
+        "pid": "2605",
+        "title": "[GESP七级模拟]旅行",
+        "tags": [
+          "拓扑排序",
+          "线性DP",
+          "GESP七级"
+        ],
+        "submissions": 1,
+        "bestScore": 65,
+        "bestStatus": "TLE",
+        "verdicts": [
+          "TLE"
+        ]
+      },
+      {
+        "pid": "2606",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "2607",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "6a87080b54b31ca6a69f2aae",
+    "kind": "homework",
+    "title": "0820_1950_2120_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-08-19T16:00:00.000Z",
+    "endAt": "2026-08-29T15:59:00.000Z",
+    "startAt": "2026-08-21T08:06:06.905Z",
+    "dateSort": "2026-08-19T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1514",
+        "title": "[GESP202512 七级] 城市规划",
+        "tags": [
+          "BFS",
+          "GESP七级"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "865",
+        "title": "[IOI 1999] 花店橱窗布置",
+        "tags": [
+          "线性DP"
+        ],
+        "submissions": 2,
+        "bestScore": 10,
+        "bestStatus": "TLE",
+        "verdicts": [
+          "TLE",
+          "TLE"
+        ]
+      },
+      {
+        "pid": "992",
+        "title": "排列的最长公共子序列长度",
+        "tags": [
+          "线性DP"
+        ],
+        "submissions": 6,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "CE",
+          "RE",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6a846d942b7e9970f2441076",
+    "kind": "contest",
+    "title": "26年8月GESP5-8级编程题模拟赛(第一场)",
+    "rule": "strictioi",
+    "beginAt": "2026-08-19T00:00:00.000Z",
+    "endAt": "2026-08-25T06:00:00.000Z",
+    "startAt": "2026-08-20T06:43:35.655Z",
+    "dateSort": "2026-08-19T00:00:00.000Z",
+    "problems": [
+      {
+        "pid": "2547",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "2548",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "2378",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "2377",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "2541",
+        "title": "[GESP七级模拟]小 W 的奇偶旅行",
+        "tags": [
+          "BFS",
+          "最短路",
+          "GESP七级"
+        ],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "RE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "2542",
+        "title": "[GESP七级模拟]乘积末尾的零",
+        "tags": [
+          "背包",
+          "GESP七级"
+        ],
+        "submissions": 5,
+        "bestScore": 30,
+        "bestStatus": "TLE",
+        "verdicts": [
+          "TLE",
+          "TLE",
+          "TLE",
+          "CE",
+          "WA"
+        ]
+      },
+      {
+        "pid": "2540",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "2539",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "6a8314652b7e9970f243bc83",
+    "kind": "homework",
+    "title": "0817_1940_2110_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-08-16T16:00:00.000Z",
+    "endAt": "2026-08-26T15:59:00.000Z",
+    "startAt": "2026-08-19T11:37:12.343Z",
+    "dateSort": "2026-08-16T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1343",
+        "title": "[GESP202509 七级] 金币收集",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "791",
+        "title": "[GESP202403 八级] 接竹竿",
+        "tags": [
+          "栈",
+          "模拟",
+          "GESP八级"
+        ],
+        "submissions": 2,
+        "bestScore": 97,
+        "bestStatus": "TLE",
+        "verdicts": [
+          "RE",
+          "TLE"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6a7dced8d5b9b128dfdf09ba",
+    "kind": "homework",
+    "title": "0813_2010_2140_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-08-12T16:00:00.000Z",
+    "endAt": "2026-08-22T15:59:00.000Z",
+    "startAt": "2026-08-14T12:29:06.586Z",
+    "dateSort": "2026-08-12T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "861",
+        "title": "友好城市",
+        "tags": [
+          "排序",
+          "线性DP"
+        ],
+        "submissions": 5,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "2090",
+        "title": "[USACO14DEC] Marathon S",
+        "tags": [
+          "线性DP",
+          "USACO"
+        ],
+        "submissions": 5,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1469",
+        "title": "[ABC216F] Max Sum Counting",
+        "tags": [
+          "背包",
+          "排序",
+          "AtCoder"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6a798e7b2008047507564b2d",
+    "kind": "homework",
+    "title": "0810_1440_1610_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-08-09T16:00:00.000Z",
+    "endAt": "2026-08-19T15:59:00.000Z",
+    "startAt": "2026-08-11T07:47:32.787Z",
+    "dateSort": "2026-08-09T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1451",
+        "title": "[USACO2.2] 集合 Subset Sums",
+        "tags": [
+          "背包",
+          "USACO"
+        ],
+        "submissions": 6,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "TLE",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "673",
+        "title": "[GESP202409 七级] 矩阵移动",
+        "tags": [
+          "线性DP",
+          "GESP七级"
+        ],
+        "submissions": 2,
+        "bestScore": 30,
+        "bestStatus": "WA",
+        "verdicts": [
+          "TLE",
+          "WA"
+        ]
+      },
+      {
+        "pid": "1412",
+        "title": "[ABC287C] Path Graph?",
+        "tags": [
+          "图的存储与遍历",
+          "AtCoder"
+        ],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1142",
+        "title": "Longest Path",
+        "tags": [
+          "拓扑排序",
+          "线性DP"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6a6c31ec1fede20f7aea0fa8",
+    "kind": "homework",
+    "title": "0731_1040_1210_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-07-30T16:00:00.000Z",
+    "endAt": "2026-08-11T15:59:00.000Z",
+    "startAt": "2026-07-31T13:27:57.086Z",
+    "dateSort": "2026-07-30T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1558",
+        "title": "[ABC315E] Prerequisites",
+        "tags": [
+          "DFS",
+          "AtCoder"
+        ],
+        "submissions": 7,
+        "bestScore": 37,
+        "bestStatus": "RE",
+        "verdicts": [
+          "RE",
+          "RE",
+          "RE",
+          "WA",
+          "RE",
+          "RE",
+          "WA"
+        ]
+      },
+      {
+        "pid": "667",
+        "title": "[GESP202506 七级] 线图",
+        "tags": [
+          "图的存储与遍历",
+          "GESP七级"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1393",
+        "title": "[USACO10OCT] Making Money G",
+        "tags": [
+          "背包",
+          "USACO"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1469",
+        "title": "[ABC216F] Max Sum Counting",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "2419",
+        "title": "A+B Problem（再升级）",
+        "tags": [
+          "背包",
+          "质数与筛法"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1451",
+        "title": "[USACO2.2] 集合 Subset Sums",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "6a66c5171fede20f7ae90242",
+    "kind": "homework",
+    "title": "0727_0900_1030_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-07-26T16:00:00.000Z",
+    "endAt": "2026-08-05T15:59:00.000Z",
+    "startAt": "2026-07-27T12:43:51.277Z",
+    "dateSort": "2026-07-26T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "997",
+        "title": "[NOI1995] 石子合并",
+        "tags": [
+          "区间DP"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "2320",
+        "title": "[GESP202606 七级] 消消乐",
+        "tags": [
+          "区间DP",
+          "GESP七级"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "667",
+        "title": "[GESP202506 七级] 线图",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "665",
+        "title": "[GESP202503 七级] 图上移动",
+        "tags": [
+          "线性DP",
+          "图的存储与遍历",
+          "GESP七级"
+        ],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1558",
+        "title": "[ABC315E] Prerequisites",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "1590",
+        "title": "「一本通 5.1 例 3」凸多边形的划分",
+        "tags": [
+          "区间DP",
+          "一本通"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6a62e63c1fede20f7ae81c70",
+    "kind": "homework",
+    "title": "0724_1040_1210_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-07-23T16:00:00.000Z",
+    "endAt": "2026-08-02T15:59:00.000Z",
+    "startAt": "2026-07-24T12:20:06.960Z",
+    "dateSort": "2026-07-23T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "795",
+        "title": "[GESP202409 八级] 美丽路径",
+        "tags": [
+          "树形DP",
+          "树的重心与直径",
+          "GESP八级"
+        ],
+        "submissions": 5,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1378",
+        "title": "投资的最大效益",
+        "tags": [
+          "背包"
+        ],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "RE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "2319",
+        "title": "[GESP202606 七级] 染色",
+        "tags": [
+          "二分图",
+          "GESP七级"
+        ],
+        "submissions": 8,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "CE",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1391",
+        "title": "[USACO08NOV] Buying Hay S",
+        "tags": [
+          "背包",
+          "USACO"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "667",
+        "title": "[GESP202506 七级] 线图",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "6a6241121fede20f7ae804b3",
+    "kind": "contest",
+    "title": "暑假CSP-J模拟赛第三场",
+    "rule": "oi",
+    "beginAt": "2026-07-24T05:00:00.000Z",
+    "endAt": "2026-08-02T15:00:00.000Z",
+    "startAt": "2026-07-26T12:45:09.937Z",
+    "dateSort": "2026-07-24T05:00:00.000Z",
+    "problems": [
+      {
+        "pid": "2412",
+        "title": "游戏（game）",
+        "tags": [
+          "数论"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "2413",
+        "title": "*",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "2414",
+        "title": "*",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 10,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "2415",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "6a602bd81fede20f7ae77ce1",
+    "kind": "homework",
+    "title": "0722_0900_1030_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-07-21T16:00:00.000Z",
+    "endAt": "2026-07-31T15:59:00.000Z",
+    "startAt": "2026-07-23T12:24:08.948Z",
+    "dateSort": "2026-07-21T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1224",
+        "title": "字串距离",
+        "tags": [
+          "线性DP",
+          "字符串处理"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "CE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1225",
+        "title": "相似基因",
+        "tags": [
+          "线性DP"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "795",
+        "title": "[GESP202409 八级] 美丽路径",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "976",
+        "title": "树的直径",
+        "tags": [
+          "树的重心与直径"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6a3dfb1af1553c2eccde17f4",
+    "kind": "homework",
+    "title": "0626_1040_1210_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-06-25T16:00:00.000Z",
+    "endAt": "2026-07-05T15:59:00.000Z",
+    "startAt": "2026-06-26T04:08:02.082Z",
+    "dateSort": "2026-06-25T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1151",
+        "title": "[HAOI2012] 音量调节",
+        "tags": [
+          "线性DP"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "991",
+        "title": "最长上升子序列方案数",
+        "tags": [
+          "线性DP"
+        ],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1657",
+        "title": "[ABC446D] Max Straight",
+        "tags": [
+          "哈希表",
+          "线性DP",
+          "AtCoder"
+        ],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1638",
+        "title": "[USACO08MAR] River Crossing S",
+        "tags": [
+          "线性DP",
+          "USACO"
+        ],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "TLE",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6a3cacacf1553c2eccddd687",
+    "kind": "homework",
+    "title": "0625_1040_1210_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-06-24T16:00:00.000Z",
+    "endAt": "2026-07-04T15:59:00.000Z",
+    "startAt": "2026-06-25T04:51:32.996Z",
+    "dateSort": "2026-06-24T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "843",
+        "title": "开餐馆",
+        "tags": [
+          "线性DP"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1030",
+        "title": "[USACO13DEC] Milk Scheduling S",
+        "tags": [
+          "贪心",
+          "排序",
+          "USACO"
+        ],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "871",
+        "title": "大盗阿福",
+        "tags": [
+          "线性DP"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1941",
+        "title": "[USACO16FEB] Milk Pails S",
+        "tags": [
+          "BFS",
+          "USACO"
+        ],
+        "submissions": 2,
+        "bestScore": 80,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA",
+          "WA"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6a326920f1553c2eccdbde19",
+    "kind": "homework",
+    "title": "0617_1630_1800_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-06-16T16:00:00.000Z",
+    "endAt": "2026-06-26T15:59:00.000Z",
+    "startAt": "2026-06-19T08:53:53.476Z",
+    "dateSort": "2026-06-16T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "2223",
+        "title": "紧急物资配送",
+        "tags": [
+          "DFS"
+        ],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "767",
+        "title": "[GESP202312 七级] 纸牌游戏",
+        "tags": [
+          "线性DP",
+          "GESP七级"
+        ],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "2151",
+        "title": "最多完全平方数拆分",
+        "tags": [
+          "背包"
+        ],
+        "submissions": 16,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "RE",
+          "CE",
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "814",
+        "title": "01背包输出方案",
+        "tags": [
+          "背包"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6a293661f1553c2eccdaad34",
+    "kind": "homework",
+    "title": "0610_1630_1800_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-06-09T16:00:00.000Z",
+    "endAt": "2026-06-19T15:59:00.000Z",
+    "startAt": "2026-06-12T13:13:35.123Z",
+    "dateSort": "2026-06-09T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "671",
+        "title": "[GESP202406 七级] 黑白翻转",
+        "tags": [
+          "图的存储与遍历",
+          "DFS",
+          "GESP七级"
+        ],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC",
+          "RE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "668",
+        "title": "[GESP202506 七级] 调味平衡",
+        "tags": [
+          "背包",
+          "GESP七级"
+        ],
+        "submissions": 5,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "WA",
+          "CE",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1499",
+        "title": "[GESP202512 六级] 道具商店",
+        "tags": [
+          "背包",
+          "GESP六级"
+        ],
+        "submissions": 6,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "RE",
+          "RE",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1814",
+        "title": "[GESP202603 六级] 选数",
+        "tags": [
+          "线性DP",
+          "GESP六级"
+        ],
+        "submissions": 2,
+        "bestScore": 40,
+        "bestStatus": "TLE",
+        "verdicts": [
+          "RE",
+          "TLE"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6a1ff16cf1553c2eccd998bf",
+    "kind": "homework",
+    "title": "0603_1630_1800_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-06-02T16:00:00.000Z",
+    "endAt": "2026-06-12T15:59:00.000Z",
+    "startAt": "2026-06-04T01:37:08.454Z",
+    "dateSort": "2026-06-02T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1223",
+        "title": "李老师玩积木",
+        "tags": [
+          "线性DP",
+          "排序"
+        ],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "768",
+        "title": "[GESP202403 七级] 交流问题",
+        "tags": [
+          "二分图",
+          "DFS",
+          "GESP七级"
+        ],
+        "submissions": 6,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "671",
+        "title": "[GESP202406 七级] 黑白翻转",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "2011",
+        "title": "Likecloud-吃、吃、吃",
+        "tags": [
+          "线性DP"
+        ],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "774",
+        "title": "[GESP202312 六级] 闯关游戏",
+        "tags": [
+          "线性DP",
+          "GESP六级"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6a1858d4f1553c2eccd8d02f",
+    "kind": "contest",
+    "title": "0529思维周赛3.5h(补题)",
+    "rule": "ioi",
+    "beginAt": "2026-05-29T08:00:00.000Z",
+    "endAt": "2026-06-05T14:00:00.000Z",
+    "startAt": "2026-06-02T13:45:49.910Z",
+    "dateSort": "2026-05-29T08:00:00.000Z",
+    "problems": [
+      {
+        "pid": "2180",
+        "title": "进制转换(change)",
+        "tags": [
+          "进制转换"
+        ],
+        "submissions": 1,
+        "bestScore": 0,
+        "bestStatus": "TLE",
+        "verdicts": [
+          "TLE"
+        ]
+      },
+      {
+        "pid": "2181",
+        "title": "最佳围栏(Fence)",
+        "tags": [
+          "双指针"
+        ],
+        "submissions": 1,
+        "bestScore": 70,
+        "bestStatus": "TLE",
+        "verdicts": [
+          "TLE"
+        ]
+      },
+      {
+        "pid": "2182",
+        "title": "机器人路径（robot）",
+        "tags": [
+          "组合数学"
+        ],
+        "submissions": 1,
+        "bestScore": 20,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "2183",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "6a1858cff1553c2eccd8d02c",
+    "kind": "contest",
+    "title": "0529思维周赛3.5h",
+    "rule": "oi",
+    "beginAt": "2026-05-29T08:00:00.000Z",
+    "endAt": "2026-06-05T14:00:00.000Z",
+    "startAt": "2026-05-30T13:33:38.274Z",
+    "dateSort": "2026-05-29T08:00:00.000Z",
+    "problems": [
+      {
+        "pid": "2180",
+        "title": "进制转换(change)",
+        "tags": [
+          "进制转换"
+        ],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "CE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "2181",
+        "title": "最佳围栏(Fence)",
+        "tags": [
+          "双指针"
+        ],
+        "submissions": 1,
+        "bestScore": 70,
+        "bestStatus": "TLE",
+        "verdicts": [
+          "TLE"
+        ]
+      },
+      {
+        "pid": "2182",
+        "title": "机器人路径（robot）",
+        "tags": [
+          "组合数学"
+        ],
+        "submissions": 1,
+        "bestScore": 20,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "2183",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "6a16bb6af1553c2eccd88d8b",
+    "kind": "homework",
+    "title": "0527_1630_1800_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-05-26T16:00:00.000Z",
+    "endAt": "2026-06-05T15:59:00.000Z",
+    "startAt": "2026-05-28T12:01:34.018Z",
+    "dateSort": "2026-05-26T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1130",
+        "title": "最大双子段和",
+        "tags": [
+          "线性DP"
+        ],
+        "submissions": 8,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1223",
+        "title": "李老师玩积木",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "994",
+        "title": "合唱队形",
+        "tags": [
+          "线性DP",
+          "NOIP提高组"
+        ],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "851",
+        "title": "最大上升子序列和",
+        "tags": [
+          "线性DP"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1571",
+        "title": "猫猫和企鹅",
+        "tags": [
+          "BFS"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6a0ea64bf1553c2eccd77949",
+    "kind": "homework",
+    "title": "0521_1300_1430_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-05-20T16:00:00.000Z",
+    "endAt": "2026-05-30T15:59:00.000Z",
+    "startAt": "2026-05-21T11:22:05.599Z",
+    "dateSort": "2026-05-20T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1815",
+        "title": "[GESP202603 六级] 完全二叉树",
+        "tags": [
+          "树形DP",
+          "DFS",
+          "GESP六级"
+        ],
+        "submissions": 8,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1816",
+        "title": "[GESP202603 七级] 拆分",
+        "tags": [
+          "贪心",
+          "数论",
+          "GESP七级"
+        ],
+        "submissions": 5,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "628",
+        "title": "[CSP-J2024] 小木棍",
+        "tags": [
+          "构造",
+          "贪心",
+          "CSP-J"
+        ],
+        "submissions": 5,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "804",
+        "title": "蜘蛛",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "6a0be3b5f1553c2eccd735c2",
+    "kind": "homework",
+    "title": "0519_1030_1200_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-05-18T16:00:00.000Z",
+    "endAt": "2026-05-28T15:59:00.000Z",
+    "startAt": "2026-05-19T13:29:35.771Z",
+    "dateSort": "2026-05-18T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1013",
+        "title": "[CCC 2025 Junior] Sunny Days",
+        "tags": [
+          "模拟"
+        ],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1016",
+        "title": "[USACO17JAN] Hoof, Paper, Scissor S",
+        "tags": [
+          "前缀和",
+          "枚举",
+          "USACO"
+        ],
+        "submissions": 23,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "CE",
+          "CE",
+          "AC",
+          "AC"
+        ]
+      },
+      {
+        "pid": "2023",
+        "title": "[ABC176D] Wizard in Maze",
+        "tags": [
+          "BFS",
+          "AtCoder"
+        ],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "2024",
+        "title": "[BalticOI 2011] Switch the Lamp On (Day1)",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "6a0ac5f2f1553c2eccd71344",
+    "kind": "homework",
+    "title": "0518_1400_1530_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-05-17T16:00:00.000Z",
+    "endAt": "2026-05-27T15:59:00.000Z",
+    "startAt": "2026-05-18T08:17:27.861Z",
+    "dateSort": "2026-05-17T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1216",
+        "title": "序列操作",
+        "tags": [
+          "模拟",
+          "同余与模运算"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1359",
+        "title": "T2. 选择排序",
+        "tags": [
+          "模拟",
+          "排序"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6a06b1d1f1553c2eccd67c5f",
+    "kind": "contest",
+    "title": "0515思维周赛3.5h",
+    "rule": "oi",
+    "beginAt": "2026-05-15T08:00:00.000Z",
+    "endAt": "2026-05-22T10:00:00.000Z",
+    "startAt": "2026-05-17T05:22:50.240Z",
+    "dateSort": "2026-05-15T08:00:00.000Z",
+    "problems": [
+      {
+        "pid": "2136",
+        "title": "闹钟（Clock）",
+        "tags": [
+          "枚举",
+          "模拟"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "2137",
+        "title": "宿舍夜查（art）",
+        "tags": [
+          "模拟"
+        ],
+        "submissions": 1,
+        "bestScore": 55,
+        "bestStatus": "RE",
+        "verdicts": [
+          "RE"
+        ]
+      },
+      {
+        "pid": "2138",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "2139",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "6a055bdff1553c2eccd6631d",
+    "kind": "homework",
+    "title": "0514_1300_1430_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-05-13T16:00:00.000Z",
+    "endAt": "2026-05-23T15:59:00.000Z",
+    "startAt": "2026-05-14T09:18:07.837Z",
+    "dateSort": "2026-05-13T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1118",
+        "title": "家族基金",
+        "tags": [
+          "树上差分",
+          "DFS"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1375",
+        "title": "[EC Final 2021] DFS Order",
+        "tags": [
+          "图的存储与遍历"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1322",
+        "title": "[GESP202509 六级] 货物运输",
+        "tags": [
+          "图的存储与遍历",
+          "树的重心与直径",
+          "GESP六级"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "766",
+        "title": "[GESP202312 七级] 商品交易",
+        "tags": [
+          "最短路",
+          "GESP七级"
+        ],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "RE",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6a02b722f1553c2eccd62af3",
+    "kind": "contest",
+    "title": "25年朝阳区信奥第二轮",
+    "rule": "oi",
+    "beginAt": "2026-05-12T00:00:00.000Z",
+    "endAt": "2026-05-20T08:00:00.000Z",
+    "startAt": "2026-05-17T06:46:00.821Z",
+    "dateSort": "2026-05-12T00:00:00.000Z",
+    "problems": [
+      {
+        "pid": "2128",
+        "title": "铺地板(board)",
+        "tags": [
+          "构造"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "2129",
+        "title": "货物分拣(goods)",
+        "tags": [
+          "队列",
+          "模拟"
+        ],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "TLE",
+          "TLE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "2130",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "2131",
+        "title": "三相众物(friend)",
+        "tags": [
+          "二分"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "6a02aee1f1553c2eccd62a78",
+    "kind": "homework",
+    "title": "0512_1030_1200_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-05-11T16:00:00.000Z",
+    "endAt": "2026-05-21T15:59:00.000Z",
+    "startAt": "2026-05-12T13:21:03.218Z",
+    "dateSort": "2026-05-11T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1102",
+        "title": "乘二加一",
+        "tags": [
+          "递归"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1434",
+        "title": "[NOIP 2016 提高组] 玩具谜题",
+        "tags": [
+          "模拟",
+          "NOIP提高组"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "2127",
+        "title": "21年海淀信奥T2最大的矩形(matrix)",
+        "tags": [
+          "最大公约数",
+          "海淀信奥"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "781",
+        "title": "[GESP202412 六级] 运送物资",
+        "tags": [
+          "贪心",
+          "排序",
+          "GESP六级"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1545",
+        "title": "[蓝桥杯 2019 省 B] 等差数列",
+        "tags": [
+          "最大公约数",
+          "排序",
+          "蓝桥杯"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1855",
+        "title": "[蓝桥杯 2014 省 AB] 地宫取宝",
+        "tags": [
+          "线性DP",
+          "蓝桥杯"
+        ],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "69fb1356f1553c2eccd55d24",
+    "kind": "homework",
+    "title": "0506_1630_1800_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-05-05T16:00:00.000Z",
+    "endAt": "2026-05-15T15:59:00.000Z",
+    "startAt": "2026-05-10T10:26:52.883Z",
+    "dateSort": "2026-05-05T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "767",
+        "title": "[GESP202312 七级] 纸牌游戏",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "1139",
+        "title": "T3. 学习计划",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "1100",
+        "title": "字符串弱等于",
+        "tags": [
+          "递归",
+          "字符串处理"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1177",
+        "title": "[NOIP 2004 普及组] FBI 树",
+        "tags": [
+          "递归",
+          "分治",
+          "NOIP普及组"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1101",
+        "title": "Kitty猫基因编码",
+        "tags": [
+          "递归",
+          "分治"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1102",
+        "title": "乘二加一",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "1099",
+        "title": "汉诺塔问题",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "69f9505cf1553c2eccd518af",
+    "kind": "homework",
+    "title": "0505_0900_1030_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-05-04T16:00:00.000Z",
+    "endAt": "2026-05-14T15:59:00.000Z",
+    "startAt": "2026-05-05T05:37:53.731Z",
+    "dateSort": "2026-05-04T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1003",
+        "title": "蛇形填数2",
+        "tags": [
+          "二维数组",
+          "模拟"
+        ],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1422",
+        "title": "[CSP-J 2025] 座位",
+        "tags": [
+          "模拟",
+          "二维数组",
+          "CSP-J"
+        ],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "RE",
+          "RE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1625",
+        "title": "[NOISG 2024 Prelim] School Photo",
+        "tags": [
+          "排序",
+          "滑动窗口"
+        ],
+        "submissions": 6,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "69f468a1f1553c2eccd49b2b",
+    "kind": "homework",
+    "title": "0501_1630_1800_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-04-30T16:00:00.000Z",
+    "endAt": "2026-05-10T15:59:00.000Z",
+    "startAt": "2026-05-02T01:31:21.419Z",
+    "dateSort": "2026-04-30T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "830",
+        "title": "[USACO1.4] 母亲的牛奶 Mother's Milk",
+        "tags": [
+          "BFS",
+          "USACO"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1087",
+        "title": "【24年第四题】最短字符串",
+        "tags": [
+          "滑动窗口",
+          "海淀信奥"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1024",
+        "title": "[蓝桥杯 2024 省 A] 训练士兵",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "1002",
+        "title": "蛇形填数",
+        "tags": [
+          "二维数组",
+          "模拟"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "69f391ebf1553c2eccd48aaa",
+    "kind": "contest",
+    "title": "0501OI思维赛",
+    "rule": "oi",
+    "beginAt": "2026-05-01T00:00:00.000Z",
+    "endAt": "2026-05-10T16:00:00.000Z",
+    "startAt": "2026-05-04T01:37:40.529Z",
+    "dateSort": "2026-05-01T00:00:00.000Z",
+    "problems": [
+      {
+        "pid": "2070",
+        "title": "字符串相等(string)",
+        "tags": [
+          "字符串处理"
+        ],
+        "submissions": 1,
+        "bestScore": 60,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "2071",
+        "title": "键盘又坏了(email)",
+        "tags": [
+          "字符串处理",
+          "模拟"
+        ],
+        "submissions": 1,
+        "bestScore": 65,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "2072",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "2073",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "69f1d3d0f1553c2eccd45728",
+    "kind": "homework",
+    "title": "0429_1630_1800_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-04-28T16:00:00.000Z",
+    "endAt": "2026-05-08T15:59:00.000Z",
+    "startAt": "2026-04-30T06:50:18.636Z",
+    "dateSort": "2026-04-28T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1017",
+        "title": "[USACO17JAN] Hoof, Paper, Scissor G",
+        "tags": [
+          "线性DP",
+          "USACO"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1119",
+        "title": "出生年",
+        "tags": [
+          "枚举",
+          "模拟"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1374",
+        "title": "[COCI 2009/2010 #2] KUTEVI",
+        "tags": [
+          "BFS",
+          "同余与模运算",
+          "COCI"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "2060",
+        "title": "UVA11572 唯一的雪花 Unique Snowflakes",
+        "tags": [
+          "滑动窗口",
+          "哈希表"
+        ],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "69eb1597f1553c2eccd39139",
+    "kind": "contest",
+    "title": "0424思维90min",
+    "rule": "oi",
+    "beginAt": "2026-04-24T10:00:00.000Z",
+    "endAt": "2026-05-01T12:00:00.000Z",
+    "startAt": "2026-04-26T05:36:37.242Z",
+    "dateSort": "2026-04-24T10:00:00.000Z",
+    "problems": [
+      {
+        "pid": "2038",
+        "title": "字符串操作(string)",
+        "tags": [
+          "字符串处理",
+          "贪心"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "2039",
+        "title": "画布(Canvas)",
+        "tags": [
+          "模拟"
+        ],
+        "submissions": 1,
+        "bestScore": 6,
+        "bestStatus": "TLE",
+        "verdicts": [
+          "TLE"
+        ]
+      },
+      {
+        "pid": "2040",
+        "title": "靴子(Boots)",
+        "tags": [
+          "线性DP"
+        ],
+        "submissions": 1,
+        "bestScore": 70,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "2041",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "69e8998cf1553c2eccd35c2f",
+    "kind": "homework",
+    "title": "0422_1630_1800_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-04-21T16:00:00.000Z",
+    "endAt": "2026-05-01T15:59:00.000Z",
+    "startAt": "2026-04-23T12:51:05.723Z",
+    "dateSort": "2026-04-21T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "2018",
+        "title": "[USACO05DEC] Knights of Ni S",
+        "tags": [
+          "BFS",
+          "USACO"
+        ],
+        "submissions": 13,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "WA",
+          "WA",
+          "WA",
+          "RE",
+          "RE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1655",
+        "title": "[ABC099C] Strange Bank",
+        "tags": [
+          "背包",
+          "AtCoder"
+        ],
+        "submissions": 6,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "TLE",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "825",
+        "title": "[USACO14MAR] Mooo Moo S",
+        "tags": [
+          "背包",
+          "模拟",
+          "USACO"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1638",
+        "title": "[USACO08MAR] River Crossing S",
+        "tags": [
+          "线性DP",
+          "USACO"
+        ],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "778",
+        "title": "[GESP202406 六级] 计算得分",
+        "tags": [
+          "线性DP",
+          "字符串处理",
+          "GESP六级"
+        ],
+        "submissions": 9,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "69e1fa7bf1553c2eccd29ef9",
+    "kind": "contest",
+    "title": "0417思维90min",
+    "rule": "oi",
+    "beginAt": "2026-04-17T10:00:00.000Z",
+    "endAt": "2026-04-24T12:00:00.000Z",
+    "startAt": "2026-04-19T07:58:30.109Z",
+    "dateSort": "2026-04-17T10:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1998",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "1999",
+        "title": "青蛙跳(Hop)",
+        "tags": [
+          "贪心"
+        ],
+        "submissions": 1,
+        "bestScore": 10,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "2000",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "2001",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "69df624df1553c2eccd268c5",
+    "kind": "homework",
+    "title": "0415_1630_1800_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-04-14T16:00:00.000Z",
+    "endAt": "2026-04-24T15:59:00.000Z",
+    "startAt": "2026-04-15T11:20:47.091Z",
+    "dateSort": "2026-04-14T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1668",
+        "title": "整除判定",
+        "tags": [
+          "质数与筛法"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1551",
+        "title": "两两互质",
+        "tags": [
+          "质数与筛法"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1913",
+        "title": "[USACO17OPEN] Paired Up S",
+        "tags": [
+          "贪心",
+          "双指针",
+          "USACO"
+        ],
+        "submissions": 9,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "996",
+        "title": "[USACO07NOV] Best Cow Line S",
+        "tags": [
+          "贪心",
+          "双指针",
+          "USACO"
+        ],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "785",
+        "title": "[GESP202506 六级] 最大因数",
+        "tags": [
+          "LCA",
+          "数论",
+          "GESP六级"
+        ],
+        "submissions": 7,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "RE",
+          "RE",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "69d87aedf1553c2eccd1bbcf",
+    "kind": "contest",
+    "title": "0410思维90min",
+    "rule": "oi",
+    "beginAt": "2026-04-10T10:00:00.000Z",
+    "endAt": "2026-04-17T12:00:00.000Z",
+    "startAt": "2026-04-12T12:31:24.176Z",
+    "dateSort": "2026-04-10T10:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1933",
+        "title": "图书馆借书(book)",
+        "tags": [
+          "模拟"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1934",
+        "title": "键盘(Keys)",
+        "tags": [
+          "模拟",
+          "字符串处理"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1935",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "1936",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "69d62e49f1553c2eccd190bf",
+    "kind": "homework",
+    "title": "0407_1630_1800_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-04-07T16:00:00.000Z",
+    "endAt": "2026-04-17T15:59:00.000Z",
+    "startAt": "2026-04-09T11:33:40.224Z",
+    "dateSort": "2026-04-07T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1803",
+        "title": "[PA 2020] Mieszanie kolorów",
+        "tags": [
+          "差分"
+        ],
+        "submissions": 7,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "CE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1175",
+        "title": "[蓝桥杯 2020 国 C] 重复字符串",
+        "tags": [
+          "字符串处理",
+          "枚举",
+          "蓝桥杯"
+        ],
+        "submissions": 6,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1090",
+        "title": "【24年第三题】拜访朋友",
+        "tags": [
+          "贪心",
+          "排序",
+          "海淀信奥"
+        ],
+        "submissions": 19,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "CE",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1921",
+        "title": "[CSP-X2024 山东] 刷题",
+        "tags": [
+          "二分",
+          "贪心",
+          "其他赛事",
+          "小学组"
+        ],
+        "submissions": 8,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "69cf543de0bf08899a1e2d75",
+    "kind": "contest",
+    "title": "0403思维90min补题",
+    "rule": "ioi",
+    "beginAt": "2026-04-03T10:00:00.000Z",
+    "endAt": "2026-04-10T12:00:00.000Z",
+    "startAt": "2026-04-08T13:36:29.235Z",
+    "dateSort": "2026-04-03T10:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1900",
+        "title": "更新编码(code)",
+        "tags": [
+          "字符串处理",
+          "模拟"
+        ],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "1901",
+        "title": "赞歌字符串(string)",
+        "tags": [
+          "线段树"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1902",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "1903",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "69cf535fe0bf08899a1e2d6a",
+    "kind": "contest",
+    "title": "0403思维90min",
+    "rule": "oi",
+    "beginAt": "2026-04-03T10:00:00.000Z",
+    "endAt": "2026-04-10T12:00:00.000Z",
+    "startAt": "2026-04-04T05:32:58.136Z",
+    "dateSort": "2026-04-03T10:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1900",
+        "title": "更新编码(code)",
+        "tags": [
+          "字符串处理",
+          "模拟"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1901",
+        "title": "赞歌字符串(string)",
+        "tags": [
+          "线段树"
+        ],
+        "submissions": 1,
+        "bestScore": 15,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "1902",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "1903",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "69cf2762e0bf08899a1e2ce0",
+    "kind": "homework",
+    "title": "0403_0900_1030_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-04-02T16:00:00.000Z",
+    "endAt": "2026-04-12T15:59:00.000Z",
+    "startAt": "2026-04-04T07:00:07.160Z",
+    "dateSort": "2026-04-02T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1500",
+        "title": "[GESP202512 五级] 数字移动",
+        "tags": [
+          "二分",
+          "贪心",
+          "GESP五级"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1433",
+        "title": "[蓝桥杯 2022 省 A] 求和",
+        "tags": [
+          "前缀和",
+          "蓝桥杯"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1432",
+        "title": "在你窗外闪耀的星星",
+        "tags": [
+          "前缀和",
+          "滑动窗口"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1793",
+        "title": "[ABC312C] Invisible Hand",
+        "tags": [
+          "二分",
+          "AtCoder"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "971",
+        "title": "[USACO05FEB] 进击的奶牛 Aggressive Cows G",
+        "tags": [
+          "二分",
+          "贪心",
+          "USACO"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "69cdd6fae0bf08899a1e15f4",
+    "kind": "homework",
+    "title": "0402_0900_1030_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-04-01T16:00:00.000Z",
+    "endAt": "2026-04-11T15:59:00.000Z",
+    "startAt": "2026-04-02T03:33:17.347Z",
+    "dateSort": "2026-04-01T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1787",
+        "title": "稀疏的高精度乘法",
+        "tags": [
+          "高精度"
+        ],
+        "submissions": 6,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1403",
+        "title": "[蓝桥杯 2017 省 AB] 分巧克力",
+        "tags": [
+          "二分",
+          "蓝桥杯"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "966",
+        "title": "和为给定数",
+        "tags": [
+          "双指针",
+          "排序"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "69cce889e0bf08899a1dfe04",
+    "kind": "homework",
+    "title": "0401_1630_1800_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-03-31T16:00:00.000Z",
+    "endAt": "2026-04-10T15:59:00.000Z",
+    "startAt": "2026-04-01T09:55:14.423Z",
+    "dateSort": "2026-03-31T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "614",
+        "title": "阶乘和",
+        "tags": [
+          "高精度"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1239",
+        "title": "B进制星球",
+        "tags": [
+          "高精度",
+          "进制转换"
+        ],
+        "submissions": 11,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "617",
+        "title": "回文数",
+        "tags": [
+          "高精度",
+          "进制转换",
+          "NOIP普及组"
+        ],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "TLE",
+          "TLE",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "69c8d879e0bf08899a1dafc1",
+    "kind": "homework",
+    "title": "0329_1440_1610_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-03-28T16:00:00.000Z",
+    "endAt": "2026-04-07T15:59:00.000Z",
+    "startAt": "2026-03-29T08:13:59.276Z",
+    "dateSort": "2026-03-28T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1021",
+        "title": "[USACO1.5] 八皇后 Checker Challenge",
+        "tags": [
+          "回溯",
+          "USACO"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "642",
+        "title": "魔板",
+        "tags": [
+          "BFS",
+          "哈希表"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1772",
+        "title": "小A的糖果",
+        "tags": [
+          "贪心"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "69c62a5ae0bf08899a1d5bf0",
+    "kind": "contest",
+    "title": "0327思维90min",
+    "rule": "oi",
+    "beginAt": "2026-03-27T08:30:00.000Z",
+    "endAt": "2026-04-03T05:30:00.000Z",
+    "startAt": "2026-03-29T12:18:10.557Z",
+    "dateSort": "2026-03-27T08:30:00.000Z",
+    "problems": [
+      {
+        "pid": "1856",
+        "title": "跑步(Race)",
+        "tags": [
+          "构造"
+        ],
+        "submissions": 2,
+        "bestScore": 8,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA",
+          "WA"
+        ]
+      },
+      {
+        "pid": "1857",
+        "title": "巧克力(Chocolate)",
+        "tags": [
+          "枚举",
+          "贪心"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1858",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "1859",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "69c3b5ace0bf08899a1d319a",
+    "kind": "homework",
+    "title": "0325_1630_1800_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-03-24T16:00:00.000Z",
+    "endAt": "2026-04-03T15:59:00.000Z",
+    "startAt": "2026-03-25T13:00:30.249Z",
+    "dateSort": "2026-03-24T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1153",
+        "title": "[USACO07DEC] Mud Puddles S",
+        "tags": [
+          "BFS",
+          "USACO"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1029",
+        "title": "[USACO08FEB] Meteor Shower S",
+        "tags": [
+          "BFS",
+          "USACO"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "827",
+        "title": "[IOI 1994 / USACO1.4] 时钟 The Clocks",
+        "tags": [
+          "枚举",
+          "BFS",
+          "USACO"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "69bbf27ce0bf08899a1c9cc6",
+    "kind": "contest",
+    "title": "0320思维60min",
+    "rule": "oi",
+    "beginAt": "2026-03-20T10:00:00.000Z",
+    "endAt": "2026-03-22T16:00:00.000Z",
+    "startAt": "2026-03-22T00:33:09.735Z",
+    "dateSort": "2026-03-20T10:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1818",
+        "title": "剪刀(Skare)",
+        "tags": [
+          "模拟",
+          "链表"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1819",
+        "title": "旋转和查询(Query)",
+        "tags": [
+          "前缀和"
+        ],
+        "submissions": 1,
+        "bestScore": 20,
+        "bestStatus": "RE",
+        "verdicts": [
+          "RE"
+        ]
+      },
+      {
+        "pid": "1820",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "1821",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "69ba774fe0bf08899a1c8485",
+    "kind": "homework",
+    "title": "0318_1630_1800_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-03-17T16:00:00.000Z",
+    "endAt": "2026-03-27T15:59:00.000Z",
+    "startAt": "2026-03-19T13:19:18.140Z",
+    "dateSort": "2026-03-17T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1061",
+        "title": "方格填数",
+        "tags": [
+          "回溯"
+        ],
+        "submissions": 9,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "AC",
+          "WA",
+          "WA"
+        ]
+      },
+      {
+        "pid": "1060",
+        "title": "取数游戏",
+        "tags": [
+          "状压DP"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "769",
+        "title": "[GESP202403 七级] 俄罗斯方块",
+        "tags": [
+          "DFS",
+          "哈希表",
+          "GESP七级"
+        ],
+        "submissions": 2,
+        "bestScore": 30,
+        "bestStatus": "WA",
+        "verdicts": [
+          "RE",
+          "WA"
+        ]
+      }
+    ]
+  },
+  {
+    "tid": "69b7f60ae0bf08899a1c6c16",
+    "kind": "homework",
+    "title": "陈彦旭第一次作业",
+    "rule": "homework",
+    "beginAt": "2026-03-15T16:00:00.000Z",
+    "endAt": "2026-03-25T15:59:00.000Z",
+    "startAt": "2026-03-16T12:22:58.513Z",
+    "dateSort": "2026-03-15T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "831",
+        "title": "素数环",
+        "tags": [
+          "回溯",
+          "质数与筛法"
+        ],
+        "submissions": 12,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "WA",
+          "RE",
+          "TLE",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "828",
+        "title": "神奇的等式",
+        "tags": [
+          "枚举",
+          "回溯"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "830",
+        "title": "[USACO1.4] 母亲的牛奶 Mother's Milk",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "693fc2a2a9e4fbd3b12e0589",
+    "kind": "homework",
+    "title": "海淀信奥第三轮准备",
+    "rule": "homework",
+    "beginAt": "2025-12-14T16:00:00.000Z",
+    "endAt": "2025-12-24T15:59:00.000Z",
+    "startAt": null,
+    "dateSort": "2025-12-14T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "1090",
+        "title": "【24年第三题】拜访朋友",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "1091",
+        "title": "【23年第四题】排座位(seats.cpp )",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "1087",
+        "title": "【24年第四题】最短字符串",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "1089",
+        "title": "【24年第六题】蜂窝网络",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  }
+]

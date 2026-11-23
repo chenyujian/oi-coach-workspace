@@ -1,0 +1,13 @@
+{
+  "platform": "好吧(cpptrain)",
+  "pid": "5219",
+  "title": "5219 分糖果",
+  "url": "https://haoba.vip/d/cpptrain/p/5219?tid=6ad59d772245702f9da48dce",
+  "statement": "## 分糖果\n\n\n### 题目描述\n\n$ n $ 个孩子**围成一圈**做游戏，第 $i$ 个孩子的表现分为 $r_i$（$i$ 号与 $i+1$ 号相邻，$n$ 号还与 $1$ 号相邻）。老师要给他们分糖果，规则如下：\n\n- 每个孩子至少分到 $1$ 颗糖；\n- 如果一个孩子的表现分比**相邻**的孩子高，那么他分到的糖必须比那个相邻的孩子**多**；\n- 若两个相邻孩子分数**相同**，则他们之间没有限制（糖数可以相等）。\n\n请计算：老师最少要准备多少颗糖？\n\n### 输入格式\n\n第一行一个整数 $n$。\n\n第二行 $n$ 个整数 $r_1, r_2, \\ldots, r_n$，以空格分隔，按圆圈顺序给出每个孩子的表现分。\n\n### 输出格式\n\n一行一个整数，表示所需糖果的最少总数。\n\n### 样例\n\n#### 输入 1\n\n```text\n5\n1 2 3 2 1\n```\n\n#### 输出 1\n\n```text\n9\n```\n\n#### 输入 2\n\n```text\n3\n5 5 5\n```\n\n#### 输出 2\n\n```text\n3\n```\n\n#### 输入 3\n\n```text\n4\n1 3 2 4\n```\n\n#### 输出 3\n\n```text\n6\n```\n\n#### 输入 4\n\n```text\n3\n3 1 2\n```\n\n#### 输出 4\n\n```text\n6\n```\n\n样例 1 解释：分糖数为 $1, 2, 3, 2, 1$，共 $9$ 颗（$1$ 号与 $5$ 号同为 $1$ 分，相邻但分数相同，没有额外限制）。\n\n样例 3 解释：分糖数为 $1, 2, 1, 2$，共 $6$ 颗（$4$ 号 $4$ 分比相邻的 $3$ 号与 $1$ 号都高，$2$ 颗已满足）。\n\n样例 4 解释：圆圈上 $1$ 号（$3$ 分）比 $2$ 号（$1$ 分）高、也比 $3$ 号（$2$ 分）高，所以 $1$ 号必须比两边都多；最少分法为 $3, 1, 2$，共 $6$ 颗。注意：如果不围成圈（只看直线上的相邻），$2, 1, 2$ 只要 $5$ 颗——围成圈后 $1$ 号同时受两边约束，必须更多。\n\n### 数据范围\n\n- $2 \\le n \\le 10^5$\n- $1 \\le r_i \\le 10^4$\n- 答案最大可达 $n(n+1)/2$（约 $5 \\times 10^9$），请使用 64 位整数类型\n\n时间限制：1 秒。内存限制：256 MB。",
+  "attempts": 1,
+  "best_score": 40,
+  "trajectory": "WA",
+  "latest_verdict": "WA",
+  "latest_score": 40,
+  "latest_code": "#include<bits/stdc++.h>\n#define int long long\nusing namespace std;\nint a[111111],b[111111];\nsigned main(){\n\tios::sync_with_stdio(0);cin.tie(0);cout.tie(0);\n\tint n;\n\tcin>>n;\n\tfor(int i=1;i<=n;i++){\n\t\tcin>>a[i];\n\t\tb[i]=1;\n\t}\n\tif(a[1]>a[n]){\n\t\tb[1]=max(b[1],b[n]+1);\n\t}\n\tif(a[1]>a[2]){\n\t\tb[1]=max(b[1],b[2]+1);\n\t}\n\tfor(int i=2;i<n;i++){\n\t\tif(a[i]>a[i-1]){\n\t\t\tb[i]=max(b[i],b[i-1]+1);\n\t\t}\n\t\tif(a[i]>a[i+1]){\n\t\t\tb[i]=max(b[i],b[i+1]+1);\n\t\t}\n\t}\n\tif(a[n]>a[1]){\n\t\tb[n]=max(b[n],b[1]+1);\n\t}\n\tif(a[n]>a[n-1]){\n\t\tb[n]=max(b[n],b[n-1]+1);\n\t}\n\tint ans=0;\n\tfor(int i=1;i<=n;i++){\n\t\tans+=b[i];\n\t}\n\tcout<<ans;\n    return 0;\n}\n"
+}

@@ -1,0 +1,13 @@
+{
+  "platform": "信奥李拜天",
+  "pid": "803",
+  "title": "803 二分图模板",
+  "url": "https://www.oilibaitian.cn/p/803",
+  "statement": "\n## 题目描述\n\n给定一个具有 $n$ 个顶点的图。要给图上每个顶点染色，并且要使相邻的顶点颜色不同。问能否使用最多2个颜色进行染色？题目保证没有重边和自环。\n限制：$1 \\le n \\le 10000$\n\n## 输入格式\n\n第一行两个整数 $n, m$，表示节点数和边数；$n$ 为正整数，$m$ 可以为 $0$。\n接下来 $m$ 行，每行两个整数 $u, v$，表示点 $u$ 到点 $v$ 之间有边相连。\n\n## 输出格式\n\n如果可以，输出“yes\",不行输出\"no\"\n\n## 输入输出样例 #1\n\n### 输入 #1\n\n```\n5 5\n1 2\n1 3\n1 4\n2 3\n3 5\n\n```\n\n### 输出 #1\n\n```\nno\n\n```\n![](file://xlUbfgDQ4_jrJwnL1TrQL.png)\n\n## 输入输出样例 #2\n\n### 输入 #2\n\n```\n5 4\n1 3\n1 4\n2 3\n3 5\n```\n\n### 输出 #2\n\n```\nyes\n```\n\n![](file://h3Gav8ofz-AIykM0YU7uq.png)\n\n\n\n\n## 说明/提示\n\n【数据规模】   \n对于 $100\\%$ 的数据，$1 \\le n \\le 10^4$，$0 \\le m \\le 10^5$，保证没有重边。\n允许零边；单个孤立结点也属于一个连通分量。\n",
+  "attempts": 1,
+  "best_score": 66,
+  "trajectory": "WA",
+  "latest_verdict": "WA",
+  "latest_score": 66,
+  "latest_code": "#include<bits/stdc++.h>\r\n#define int long long\r\nusing namespace std;\r\nint c[11111];\r\nvector<int>v[11111];\r\nint dfs(int p,int ce){\r\n\tfor(int i=0;i<v[p].size();i++){\r\n\t\tif(c[v[p][i]]==0){\r\n\t\t\tc[v[p][i]]=2-ce+1;\r\n\t\t\treturn dfs(v[p][i],2-ce+1);\r\n\t\t}else if(c[v[p][i]]==c[p]){\r\n\t\t\treturn 0;\r\n\t\t}\r\n\t}\r\n\treturn 1;\r\n}\r\nsigned main() {\r\n\tios::sync_with_stdio(0);cin.tie(0);cout.tie(0);\r\n\tint n,m;\r\n\tcin>>n>>m;\r\n\tfor(int i=1;i<=m;i++){\r\n\t\tint x,y;\r\n\t\tcin>>x>>y;\r\n\t\tv[x].push_back(y);\r\n\t\tv[y].push_back(x);\r\n\t}\r\n\tc[1]=1;\r\n\tcout<<(dfs(1,1)?\"yes\":\"no\");\r\n\treturn 0;\r\n}\r\n\r\n"
+}

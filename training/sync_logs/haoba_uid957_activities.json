@@ -1,0 +1,5011 @@
+[
+  {
+    "domain": "cpptrain",
+    "tid": "6afabb40e725d44e22f640df",
+    "kind": "course",
+    "rule": "course",
+    "title": "26秋PJ第11次模拟",
+    "beginAt": "2026-11-15T16:00:00.000Z",
+    "endAt": "2027-02-01T15:59:00.000Z",
+    "startAt": "2026-11-18T12:03:46.210Z",
+    "progress": 50,
+    "dateSort": "2026-11-18T13:57:20.632Z",
+    "problems": [
+      {
+        "pid": "5310",
+        "title": "数位和",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "5311",
+        "title": "多彩糖果",
+        "tags": [],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5312",
+        "title": "传送器",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "5313",
+        "title": "切木头",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5314",
+        "title": "路径最大边权之和",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5315",
+        "title": "最贵的旅行",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "6af13f078061aad4ad884e36",
+    "kind": "course",
+    "rule": "course",
+    "title": "26秋PJ第十次模拟",
+    "beginAt": "2026-11-08T16:00:00.000Z",
+    "endAt": "2027-02-01T15:59:00.000Z",
+    "startAt": "2026-11-14T11:21:38.717Z",
+    "progress": 83,
+    "dateSort": "2026-11-15T14:36:54.263Z",
+    "problems": [
+      {
+        "pid": "5272",
+        "title": "ISBN 校验码",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "5273",
+        "title": "两数之和",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5274",
+        "title": "下一个更大元素",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5275",
+        "title": "迷宫最短路",
+        "tags": [],
+        "submissions": 9,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5276",
+        "title": "质数计数",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5277",
+        "title": "烟花拦截",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "6ae735bf4ad1293f8547a80c",
+    "kind": "course",
+    "rule": "course",
+    "title": "26秋PJ第九次模拟",
+    "beginAt": "2026-11-01T16:00:00.000Z",
+    "endAt": "2027-02-01T15:59:00.000Z",
+    "startAt": "2026-11-05T13:50:04.127Z",
+    "progress": 50,
+    "dateSort": "2026-11-07T03:04:39.873Z",
+    "problems": [
+      {
+        "pid": "5248",
+        "title": "蜗牛爬井",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5249",
+        "title": "排名次",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "5250",
+        "title": "最长回文子串",
+        "tags": [],
+        "submissions": 6,
+        "bestScore": 86,
+        "bestStatus": "TLE",
+        "verdicts": [
+          "TLE",
+          "MLE",
+          "CE",
+          "TLE",
+          "TLE",
+          "TLE"
+        ]
+      },
+      {
+        "pid": "5251",
+        "title": "黑板擦写",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5252",
+        "title": "最大子矩阵和",
+        "tags": [],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5253",
+        "title": "小红造公园",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "6adec35ebe5734213d7e2dc6",
+    "kind": "course",
+    "rule": "course",
+    "title": "26秋PJ第八次模拟",
+    "beginAt": "2026-10-25T16:00:00.000Z",
+    "endAt": "2027-02-01T15:59:00.000Z",
+    "startAt": "2026-10-27T09:48:34.167Z",
+    "progress": 83,
+    "dateSort": "2026-11-05T13:50:56.417Z",
+    "problems": [
+      {
+        "pid": "5232",
+        "title": "回文数",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "5233",
+        "title": "三连击",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "5234",
+        "title": "恰好装满",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5235",
+        "title": "翻卡片",
+        "tags": [],
+        "submissions": 5,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5236",
+        "title": "树的直径",
+        "tags": [],
+        "submissions": 3,
+        "bestScore": 62,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA"
+        ]
+      },
+      {
+        "pid": "5237",
+        "title": "编辑距离",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "6ad59d772245702f9da48dce",
+    "kind": "course",
+    "rule": "course",
+    "title": "26秋PJ第七次模拟",
+    "beginAt": "2026-10-18T16:00:00.000Z",
+    "endAt": "2027-02-01T15:59:00.000Z",
+    "startAt": "2026-10-25T08:30:55.722Z",
+    "progress": 50,
+    "dateSort": "2026-10-25T13:22:52.878Z",
+    "problems": [
+      {
+        "pid": "5217",
+        "title": "密码强度",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "5218",
+        "title": "打印排队",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "5219",
+        "title": "分糖果",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 40,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "5220",
+        "title": "逆序对",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 7,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "5221",
+        "title": "数字变换",
+        "tags": [],
+        "submissions": 6,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "WA",
+          "WA",
+          "WA",
+          "RE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5222",
+        "title": "数字花园的修剪游戏",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "6acc9ceb4401d695f649c85d",
+    "kind": "course",
+    "rule": "course",
+    "title": "26秋PJ第六次模拟",
+    "beginAt": "2026-10-11T16:00:00.000Z",
+    "endAt": "2027-02-01T15:59:00.000Z",
+    "startAt": "2026-10-19T02:59:13.083Z",
+    "progress": 0,
+    "dateSort": "2026-10-19T02:59:13.083Z",
+    "problems": [
+      {
+        "pid": "5185",
+        "title": "找零",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5186",
+        "title": "孤勇者",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5187",
+        "title": "阶乘末位零",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5188",
+        "title": "K 倍区间",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5189",
+        "title": "树苗间隔",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5190",
+        "title": "树上染色",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "6ac30c1aa5f58c02b6bb6549",
+    "kind": "course",
+    "rule": "course",
+    "title": "26秋PJ第五次模拟",
+    "beginAt": "2026-10-04T16:00:00.000Z",
+    "endAt": "2027-02-01T15:59:00.000Z",
+    "startAt": "2026-10-10T05:14:05.232Z",
+    "progress": 66,
+    "dateSort": "2026-10-10T06:47:40.861Z",
+    "problems": [
+      {
+        "pid": "5157",
+        "title": "时钟角度",
+        "tags": [],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5158",
+        "title": "自动浇水",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "5159",
+        "title": "最短达标段",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "5160",
+        "title": "钱币凑数",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5161",
+        "title": "课程先后",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "5162",
+        "title": "走廊泼水节",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "6aba36d2d1ab2d758aa0ac86",
+    "kind": "course",
+    "rule": "course",
+    "title": "26秋第四PJ次模拟",
+    "beginAt": "2026-09-27T16:00:00.000Z",
+    "endAt": "2027-02-01T15:59:00.000Z",
+    "startAt": "2026-10-01T08:32:24.809Z",
+    "progress": 66,
+    "dateSort": "2026-10-04T08:33:18.412Z",
+    "problems": [
+      {
+        "pid": "5110",
+        "title": "队报缩写",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "5111",
+        "title": "活动覆盖",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5112",
+        "title": "摘草莓",
+        "tags": [],
+        "submissions": 5,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5113",
+        "title": "幸运倍数",
+        "tags": [],
+        "submissions": 5,
+        "bestScore": 82,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA",
+          "CE",
+          "WA",
+          "WA",
+          "WA"
+        ]
+      },
+      {
+        "pid": "5114",
+        "title": "单词接龙",
+        "tags": [],
+        "submissions": 5,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5115",
+        "title": "树",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "6ab0652a82cff2fe675549a9",
+    "kind": "course",
+    "rule": "course",
+    "title": "26秋PJ第三次模拟",
+    "beginAt": "2026-09-20T16:00:00.000Z",
+    "endAt": "2027-02-01T15:59:00.000Z",
+    "startAt": "2026-09-26T04:03:47.136Z",
+    "progress": 0,
+    "dateSort": "2026-09-26T04:03:47.136Z",
+    "problems": [
+      {
+        "pid": "5057",
+        "title": "停车场收费",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5058",
+        "title": "人气之星",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5059",
+        "title": "果园分区",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5060",
+        "title": "主题展廊",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5061",
+        "title": "考察装备",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5062",
+        "title": "紧急通知",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "6aa7439f5ee0445aa3a6334f",
+    "kind": "course",
+    "rule": "course",
+    "title": "26秋PJ第二次模拟",
+    "beginAt": "2026-09-13T16:00:00.000Z",
+    "endAt": "2027-02-01T15:59:00.000Z",
+    "startAt": "2026-09-16T02:00:25.534Z",
+    "progress": 50,
+    "dateSort": "2026-09-20T08:23:37.566Z",
+    "problems": [
+      {
+        "pid": "5025",
+        "title": "电报压缩",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5026",
+        "title": "分组搭档",
+        "tags": [],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5027",
+        "title": "合唱团排练",
+        "tags": [],
+        "submissions": 9,
+        "bestScore": 76,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "TLE"
+        ]
+      },
+      {
+        "pid": "5028",
+        "title": "分蛋糕",
+        "tags": [],
+        "submissions": 6,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5029",
+        "title": "限时送达",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5030",
+        "title": "分组方案数",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "6aa4d0485ee0445aa3a2a8c1",
+    "kind": "course",
+    "rule": "course",
+    "title": "【A】第二课",
+    "beginAt": "2026-09-13T10:00:00.000Z",
+    "endAt": "2027-02-01T15:59:00.000Z",
+    "startAt": "2026-09-13T10:47:00.094Z",
+    "progress": 3,
+    "dateSort": "2026-09-13T12:30:23.810Z",
+    "problems": [
+      {
+        "pid": "4995",
+        "title": "取数游戏",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "4996",
+        "title": "等和集合划分",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4997",
+        "title": "山脉滑行",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4998",
+        "title": "最长递增子序列",
+        "tags": [],
+        "submissions": 3,
+        "bestScore": 0,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA"
+        ]
+      },
+      {
+        "pid": "4999",
+        "title": "项目选择",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5000",
+        "title": "电梯运输",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5001",
+        "title": "多米诺铺法计数",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5002",
+        "title": "相邻数位不同的整数",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5003",
+        "title": "递增子序列计数",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 0,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "5009",
+        "title": "部门签字",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4169",
+        "title": "火枪手",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4686",
+        "title": "Ferris Wheel",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5109",
+        "title": "ccbs",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5042",
+        "title": "漂亮的 IP 地址",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5044",
+        "title": "装备世界",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5118",
+        "title": "书写数字",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5119",
+        "title": "互异元素分段",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5120",
+        "title": "固定平均值的子集",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5050",
+        "title": "文档索引",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5051",
+        "title": "基金管理",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4421",
+        "title": "[NOIP 2016 普及组] 海港",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5156",
+        "title": "历史事件",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4710",
+        "title": "加油站",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5048",
+        "title": "无关的元素",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5116",
+        "title": "主教计数",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4799",
+        "title": "宴会",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5303",
+        "title": "文件系统（简化版v2）",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5304",
+        "title": "文件系统（简化版v1）",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "6aa4d0255ee0445aa3a2a894",
+    "kind": "course",
+    "rule": "course",
+    "title": "【A】第二课",
+    "beginAt": "2026-09-12T05:00:00.000Z",
+    "endAt": "2027-02-01T15:59:00.000Z",
+    "startAt": "2026-09-12T14:11:30.475Z",
+    "progress": 21,
+    "dateSort": "2026-11-21T08:00:25.463Z",
+    "problems": [
+      {
+        "pid": "4995",
+        "title": "取数游戏",
+        "tags": [],
+        "submissions": 3,
+        "bestScore": 0,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA"
+        ]
+      },
+      {
+        "pid": "4996",
+        "title": "等和集合划分",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4997",
+        "title": "山脉滑行",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4998",
+        "title": "最长递增子序列",
+        "tags": [],
+        "submissions": 3,
+        "bestScore": 0,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA"
+        ]
+      },
+      {
+        "pid": "4999",
+        "title": "项目选择",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5000",
+        "title": "电梯运输",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5001",
+        "title": "多米诺铺法计数",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5002",
+        "title": "相邻数位不同的整数",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5003",
+        "title": "递增子序列计数",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5035",
+        "title": "直线上的点",
+        "tags": [],
+        "submissions": 5,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "CE",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5036",
+        "title": "时髦的数字",
+        "tags": [],
+        "submissions": 6,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "CE",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5037",
+        "title": "幸运数字（简单版）",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5038",
+        "title": "T 质数",
+        "tags": [],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "TLE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "4686",
+        "title": "Ferris Wheel",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5122",
+        "title": "书店进阶",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5123",
+        "title": "程序员分组",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "5124",
+        "title": "学校旅行",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5125",
+        "title": "减去数位进阶",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5044",
+        "title": "装备世界",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "5151",
+        "title": "跳房子",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4798",
+        "title": "小熊的果篮",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4799",
+        "title": "宴会",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4421",
+        "title": "[NOIP 2016 普及组] 海港",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5052",
+        "title": "标识符命名转换",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5049",
+        "title": "探索金字塔",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5041",
+        "title": "序列格式化",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5244",
+        "title": "火星运河（Mars Canals）",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5245",
+        "title": "收集瓶盖（Bottle Taps）",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5246",
+        "title": "周年晚会（Anniversary Party）",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5247",
+        "title": "铁路车票（Railway Tickets）",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4348",
+        "title": "全排列问题",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4013",
+        "title": "数独2",
+        "tags": [],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "TLE",
+          "AC",
+          "TLE"
+        ]
+      },
+      {
+        "pid": "5261",
+        "title": "bunny",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5289",
+        "title": "严格语序",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5290",
+        "title": "排列做差",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "5296",
+        "title": "两组点",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5297",
+        "title": "一条顺子",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "6a9f4c15ec4b1392ad05b9af",
+    "kind": "course",
+    "rule": "course",
+    "title": "26秋PJ第一次模拟",
+    "beginAt": "2026-09-07T16:00:00.000Z",
+    "endAt": "2027-02-01T15:59:00.000Z",
+    "startAt": "2026-09-09T01:19:45.848Z",
+    "progress": 100,
+    "dateSort": "2026-11-17T13:51:01.661Z",
+    "problems": [
+      {
+        "pid": "4957",
+        "title": "呜哇",
+        "tags": [],
+        "submissions": 6,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "4958",
+        "title": "Making Mexes B",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "4959",
+        "title": "数组划分",
+        "tags": [],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "TLE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "4960",
+        "title": "Many Digits",
+        "tags": [],
+        "submissions": 6,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "6a9bb2ebec4b1392ad03823a",
+    "kind": "course",
+    "rule": "course",
+    "title": "第一课",
+    "beginAt": "2026-09-05T05:00:00.000Z",
+    "endAt": "2027-02-01T15:59:00.000Z",
+    "startAt": "2026-09-06T06:17:13.077Z",
+    "progress": 0,
+    "dateSort": "2026-09-06T06:17:13.077Z",
+    "problems": [
+      {
+        "pid": "4939",
+        "title": "瑞士轮",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "884",
+        "title": "儒略日 (Julian Day)",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "6a489b1e8ccf4aded06c4c33",
+    "kind": "course",
+    "rule": "course",
+    "title": "练习题",
+    "beginAt": "2026-07-03T16:00:00.000Z",
+    "endAt": "2026-08-31T15:59:00.000Z",
+    "startAt": "2026-07-04T05:40:34.012Z",
+    "progress": 50,
+    "dateSort": "2026-07-05T05:36:48.323Z",
+    "problems": [
+      {
+        "pid": "4685",
+        "title": "Apartments",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "4686",
+        "title": "Ferris Wheel",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "4687",
+        "title": "Concert Tickets",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "4688",
+        "title": "Movie Festival",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "4689",
+        "title": "Movie Festival II",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4690",
+        "title": "Tasks and Deadlines",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4691",
+        "title": "Missing Coin Sum",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4692",
+        "title": "Room Allocation",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "6a1a2e5afd1f5c8abee85fab",
+    "kind": "course",
+    "rule": "course",
+    "title": "【pre】week13",
+    "beginAt": "2026-05-30T01:00:00.000Z",
+    "endAt": "2026-06-30T15:59:00.000Z",
+    "startAt": "2026-05-30T01:12:24.698Z",
+    "progress": 57,
+    "dateSort": "2026-06-13T01:22:35.578Z",
+    "problems": [
+      {
+        "pid": "4555",
+        "title": "受限排列",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "4556",
+        "title": "树度平方和的期望",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4519",
+        "title": "赞助商的T恤",
+        "tags": [],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "TLE",
+          "TLE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "4521",
+        "title": "三个儿子",
+        "tags": [],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "4636",
+        "title": "类型补全",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC",
+          "AC"
+        ]
+      },
+      {
+        "pid": "4523",
+        "title": "井字棋",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4650",
+        "title": "文学课",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "6a07c119fabc80240d779137",
+    "kind": "course",
+    "rule": "course",
+    "title": "【pre】week11",
+    "beginAt": "2026-05-16T01:00:00.000Z",
+    "endAt": "2026-06-30T15:59:00.000Z",
+    "startAt": "2026-05-16T01:57:09.564Z",
+    "progress": 100,
+    "dateSort": "2026-05-16T07:11:16.549Z",
+    "problems": [
+      {
+        "pid": "4513",
+        "title": "图形匹配",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "69f93df1662ec29d87eaa632",
+    "kind": "course",
+    "rule": "course",
+    "title": "【pre】week10",
+    "beginAt": "2026-05-05T01:00:00.000Z",
+    "endAt": "2026-06-30T15:59:00.000Z",
+    "startAt": "2026-06-13T01:19:14.332Z",
+    "progress": 0,
+    "dateSort": "2026-06-13T01:19:14.332Z",
+    "problems": [
+      {
+        "pid": "4505",
+        "title": "旅程",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "69eda3fd2ece218594a6bd05",
+    "kind": "course",
+    "rule": "course",
+    "title": "【B】week08",
+    "beginAt": "2026-04-25T01:00:00.000Z",
+    "endAt": "2026-06-30T15:59:00.000Z",
+    "startAt": "2026-05-01T01:33:34.684Z",
+    "progress": 0,
+    "dateSort": "2026-05-01T01:33:34.684Z",
+    "problems": [
+      {
+        "pid": "4495",
+        "title": "区间调度",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "69e2d26a2ece218594a01d96",
+    "kind": "course",
+    "rule": "course",
+    "title": "【pre】week07",
+    "beginAt": "2026-04-18T01:00:00.000Z",
+    "endAt": "2026-06-30T15:59:00.000Z",
+    "startAt": "2026-04-18T01:05:39.868Z",
+    "progress": 25,
+    "dateSort": "2026-04-18T07:25:16.941Z",
+    "problems": [
+      {
+        "pid": "4485",
+        "title": "狐狸与名字",
+        "tags": [],
+        "submissions": 19,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "AC",
+          "AC",
+          "WA"
+        ]
+      },
+      {
+        "pid": "4007",
+        "title": "Longest Path",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC",
+          "AC"
+        ]
+      },
+      {
+        "pid": "4486",
+        "title": "不公平游戏",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4487",
+        "title": "删除子数组",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "69cfdfb474412482cc66e8c6",
+    "kind": "course",
+    "rule": "course",
+    "title": "【pre】week04",
+    "beginAt": "2026-04-04T01:00:00.000Z",
+    "endAt": "2026-06-30T15:59:00.000Z",
+    "startAt": "2026-04-04T01:08:04.294Z",
+    "progress": 0,
+    "dateSort": "2026-04-04T01:08:04.294Z",
+    "problems": []
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "69bd765a925f3528a83b57a8",
+    "kind": "course",
+    "rule": "course",
+    "title": "【pre】week3",
+    "beginAt": "2026-03-21T01:00:00.000Z",
+    "endAt": "2026-06-30T15:59:00.000Z",
+    "startAt": "2026-03-21T01:11:58.630Z",
+    "progress": 0,
+    "dateSort": "2026-03-21T01:11:58.630Z",
+    "problems": [
+      {
+        "pid": "4042",
+        "title": "TypoCoderDiv1",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4043",
+        "title": "SplitStoneGame",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4044",
+        "title": "RandomPancakeStack",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4045",
+        "title": "FiringEmployees",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4046",
+        "title": "AstronomicalRecords",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "69b41f7a07e38446b20f2ec4",
+    "kind": "course",
+    "rule": "course",
+    "title": "【pre】week2",
+    "beginAt": "2026-03-14T01:00:00.000Z",
+    "endAt": "2026-06-30T15:59:00.000Z",
+    "startAt": "2026-03-14T02:21:45.208Z",
+    "progress": 25,
+    "dateSort": "2026-03-20T14:39:28.507Z",
+    "problems": [
+      {
+        "pid": "4051",
+        "title": "足球史",
+        "tags": [],
+        "submissions": 18,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "CE",
+          "TLE",
+          "AC",
+          "TLE",
+          "TLE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "4037",
+        "title": "NumberofFiboCalls",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4038",
+        "title": "ProblemsToSolve",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4039",
+        "title": "ChangingSounds",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "69aadb4726f89c3f9ad5aa1f",
+    "kind": "course",
+    "rule": "course",
+    "title": "【pre】week01",
+    "beginAt": "2026-03-07T01:00:00.000Z",
+    "endAt": "2026-06-30T15:59:00.000Z",
+    "startAt": "2026-03-07T02:54:13.524Z",
+    "progress": 16,
+    "dateSort": "2026-03-07T05:54:36.094Z",
+    "problems": [
+      {
+        "pid": "4014",
+        "title": "[dp_h] Grid 1",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "4015",
+        "title": "[dp_i] Coins",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4016",
+        "title": "[dp_j] Sushi",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4017",
+        "title": "[dp_k] Stones",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4018",
+        "title": "[dp_l] Deque",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "4019",
+        "title": "[dp_m] Candies",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "68fb2f671f2535caf8649ecb",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "20251025",
+    "beginAt": "2025-10-25T01:00:00.000Z",
+    "endAt": "2025-11-08T15:59:00.000Z",
+    "startAt": "2025-10-25T02:26:01.546Z",
+    "progress": null,
+    "dateSort": "2025-10-30T13:19:27.225Z",
+    "problems": [
+      {
+        "pid": "1452",
+        "title": "[ABC165C] Many Requirements",
+        "tags": [],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1454",
+        "title": "[ABC054C] One-stroke Path",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1455",
+        "title": "[ABC211E] Red Polyomino",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "68ce0d1d1f2535caf856e879",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "20250920",
+    "beginAt": "2025-09-20T02:00:00.000Z",
+    "endAt": "2025-09-29T15:59:00.000Z",
+    "startAt": "2025-09-20T02:11:35.818Z",
+    "progress": null,
+    "dateSort": "2025-09-27T02:35:08.138Z",
+    "problems": [
+      {
+        "pid": "1392",
+        "title": "STL",
+        "tags": [],
+        "submissions": 9,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC",
+          "TLE",
+          "TLE",
+          "WA",
+          "WA",
+          "WA",
+          "AC",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "68c556571f2535caf8550538",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "20250913",
+    "beginAt": "2025-09-12T16:00:00.000Z",
+    "endAt": "2025-09-22T15:59:00.000Z",
+    "startAt": "2025-09-18T14:17:50.148Z",
+    "progress": null,
+    "dateSort": "2025-09-19T14:45:39.651Z",
+    "problems": [
+      {
+        "pid": "1386",
+        "title": "Plant",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "68bbec1a1f2535caf8518da2",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "20250906",
+    "beginAt": "2025-09-05T16:00:00.000Z",
+    "endAt": "2025-09-15T15:59:00.000Z",
+    "startAt": "2025-09-07T07:42:41.802Z",
+    "progress": null,
+    "dateSort": "2025-09-11T13:58:39.500Z",
+    "problems": [
+      {
+        "pid": "1377",
+        "title": "基数 - 2",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "68bbebe41f2535caf8518d7e",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "20250906",
+    "beginAt": "2025-09-05T16:00:00.000Z",
+    "endAt": "2025-09-15T15:59:00.000Z",
+    "startAt": "2025-09-07T07:43:01.327Z",
+    "progress": null,
+    "dateSort": "2025-09-11T13:58:19.282Z",
+    "problems": [
+      {
+        "pid": "1377",
+        "title": "基数 - 2",
+        "tags": [],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "MLE",
+          "WA",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "688875152b666df97e2cba51",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "25暑假 打卡营",
+    "beginAt": "2025-08-01T00:00:00.000Z",
+    "endAt": "2025-09-11T15:59:00.000Z",
+    "startAt": "2025-08-01T09:16:19.374Z",
+    "progress": null,
+    "dateSort": "2025-08-31T10:13:57.206Z",
+    "problems": [
+      {
+        "pid": "1269",
+        "title": "铁路车站",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1288",
+        "title": "士兵站队",
+        "tags": [],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "RE",
+          "MLE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1267",
+        "title": "数数",
+        "tags": [],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "TLE",
+          "RE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1358",
+        "title": "mex",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1356",
+        "title": "优惠券",
+        "tags": [],
+        "submissions": 13,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1268",
+        "title": "找卡牌",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1277",
+        "title": "推演",
+        "tags": [],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "RE",
+          "RE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1283",
+        "title": "双减",
+        "tags": [],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "RE",
+          "AC",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1271",
+        "title": "回文串",
+        "tags": [],
+        "submissions": 12,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1266",
+        "title": "另类2进制",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1278",
+        "title": "栈",
+        "tags": [],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1284",
+        "title": "搬物品",
+        "tags": [],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "RE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1285",
+        "title": "带修数abc",
+        "tags": [],
+        "submissions": 8,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1280",
+        "title": "六子棋",
+        "tags": [],
+        "submissions": 13,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1281",
+        "title": "配对",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1265",
+        "title": "最远点对",
+        "tags": [],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1270",
+        "title": "矩阵转置",
+        "tags": [],
+        "submissions": 10,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "RE",
+          "RE",
+          "CE",
+          "CE",
+          "RE",
+          "RE",
+          "CE",
+          "CE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1282",
+        "title": "碰撞",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1357",
+        "title": "排箱子",
+        "tags": [],
+        "submissions": 13,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "1366",
+        "title": "公交车",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "681568d4681f0a0309332861",
+    "kind": "contest",
+    "rule": "oi",
+    "title": "五一“信息与未来”模拟赛3",
+    "beginAt": "2025-05-03T05:00:00.000Z",
+    "endAt": "2025-05-03T07:30:00.000Z",
+    "startAt": "2025-05-03T05:00:17.715Z",
+    "progress": null,
+    "dateSort": "2025-05-03T06:37:59.053Z",
+    "problems": [
+      {
+        "pid": "1241",
+        "title": "鸣人与火把",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1242",
+        "title": "鸣人与护盾",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1243",
+        "title": "*",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 0,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "1244",
+        "title": "*",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 55,
+        "bestStatus": "TLE",
+        "verdicts": [
+          "TLE",
+          "TLE"
+        ]
+      },
+      {
+        "pid": "1246",
+        "title": "*",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 5,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "1245",
+        "title": "*",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 0,
+        "bestStatus": "CE",
+        "verdicts": [
+          "CE"
+        ]
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "681368e2681f0a0309324fea",
+    "kind": "contest",
+    "rule": "oi",
+    "title": "五一“信息与未来”模拟赛2",
+    "beginAt": "2025-05-02T05:00:00.000Z",
+    "endAt": "2025-05-02T07:30:00.000Z",
+    "startAt": "2025-05-02T05:00:27.855Z",
+    "progress": null,
+    "dateSort": "2025-05-02T07:23:49.209Z",
+    "problems": [
+      {
+        "pid": "1236",
+        "title": "大河与数字游戏",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1237",
+        "title": "大河与缩写",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1238",
+        "title": "*",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 0,
+        "bestStatus": "CE",
+        "verdicts": [
+          "CE"
+        ]
+      },
+      {
+        "pid": "1239",
+        "title": "*",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 7,
+        "bestStatus": "TLE",
+        "verdicts": [
+          "TLE"
+        ]
+      },
+      {
+        "pid": "1235",
+        "title": "*",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 0,
+        "bestStatus": "RE",
+        "verdicts": [
+          "RE"
+        ]
+      },
+      {
+        "pid": "1240",
+        "title": "*",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 0,
+        "bestStatus": "RE",
+        "verdicts": [
+          "RE"
+        ]
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
+    "tid": "681092f6681f0a030930714c",
+    "kind": "contest",
+    "rule": "oi",
+    "title": "五一“信息与未来”模拟赛1",
+    "beginAt": "2025-05-01T05:00:00.000Z",
+    "endAt": "2025-05-01T07:30:00.000Z",
+    "startAt": "2025-05-01T05:00:05.335Z",
+    "progress": null,
+    "dateSort": "2025-05-01T06:48:26.705Z",
+    "problems": [
+      {
+        "pid": "1249",
+        "title": "空白的划分",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1247",
+        "title": "空白的删帖策略",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "1248",
+        "title": "*",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 25,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "1252",
+        "title": "*",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 0,
+        "bestStatus": "TLE",
+        "verdicts": [
+          "TLE"
+        ]
+      },
+      {
+        "pid": "1251",
+        "title": "*",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 70,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "1250",
+        "title": "*",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 40,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "6a0464aa7c7840fac58db77c",
+    "kind": "contest",
+    "rule": "strictioi",
+    "title": "2026 信息与未来市赛（民间数据）",
+    "beginAt": "2026-05-13T11:00:00.000Z",
+    "endAt": "2026-05-17T11:00:00.000Z",
+    "startAt": "2026-05-13T13:45:54.431Z",
+    "progress": null,
+    "dateSort": "2026-05-13T13:45:54.431Z",
+    "problems": [
+      {
+        "pid": "796",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "797",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "798",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "799",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "800",
+        "title": "寻找直角三角形",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "801",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "69f60837662ec29d87e8e8e7",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "2026.5.3",
+    "beginAt": "2026-05-02T16:00:00.000Z",
+    "endAt": "2026-05-24T15:59:00.000Z",
+    "startAt": "2026-05-03T09:55:52.968Z",
+    "progress": null,
+    "dateSort": "2026-05-03T13:18:42.333Z",
+    "problems": [
+      {
+        "pid": "786",
+        "title": "走迷宫",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "788",
+        "title": "网格重涂",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "794",
+        "title": "两个按钮",
+        "tags": [],
+        "submissions": 5,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "MLE",
+          "RE",
+          "MLE",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "793",
+        "title": "森林再燃",
+        "tags": [],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "792",
+        "title": "比里迪安森林",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "791",
+        "title": "最短路计数",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "795",
+        "title": "集市",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "790",
+        "title": "第三大道",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "789",
+        "title": "迷宫魔法师",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "69ce268974412482cc6635cd",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "2026.4.5",
+    "beginAt": "2026-04-04T16:00:00.000Z",
+    "endAt": "2026-05-18T15:59:00.000Z",
+    "startAt": "2026-04-05T09:59:57.937Z",
+    "progress": null,
+    "dateSort": "2026-04-05T10:19:42.432Z",
+    "problems": [
+      {
+        "pid": "784",
+        "title": "阶乘",
+        "tags": [],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "AC",
+          "TLE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "785",
+        "title": "斐波那契数",
+        "tags": [],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "TLE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "779",
+        "title": "奇数约数",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "780",
+        "title": "递归洗牌",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "778",
+        "title": "黑色连通块",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "781",
+        "title": "连通图改造",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "782",
+        "title": "被零包围的矩形",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "783",
+        "title": "折纸序列",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "69ca82f074412482cc64bfe9",
+    "kind": "contest",
+    "rule": "oi",
+    "title": "2026.5.4",
+    "beginAt": "2026-05-03T16:00:00.000Z",
+    "endAt": "2026-05-04T11:00:00.000Z",
+    "startAt": "2026-05-04T06:09:51.405Z",
+    "progress": null,
+    "dateSort": "2026-05-04T09:35:52.201Z",
+    "problems": [
+      {
+        "pid": "772",
+        "title": "丁字形计数",
+        "tags": [
+          "实现",
+          "矩阵"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "773",
+        "title": "相似单词",
+        "tags": [
+          "字符串",
+          "前缀",
+          "后缀"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC",
+          "AC"
+        ]
+      },
+      {
+        "pid": "776",
+        "title": "不公平游戏",
+        "tags": [
+          "排序",
+          "贪心",
+          "线性动态规划"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "775",
+        "title": "交换置换",
+        "tags": [
+          "贪心",
+          "排列"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "777",
+        "title": "平衡最小值配对",
+        "tags": [
+          "排序",
+          "贪心",
+          "构造"
+        ],
+        "submissions": 1,
+        "bestScore": 0,
+        "bestStatus": "RE",
+        "verdicts": [
+          "RE"
+        ]
+      },
+      {
+        "pid": "787",
+        "title": "中位数划分",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 0,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "69ca82aa74412482cc64bf6c",
+    "kind": "contest",
+    "rule": "oi",
+    "title": "2026.4.19",
+    "beginAt": "2026-04-18T16:00:00.000Z",
+    "endAt": "2026-04-19T11:00:00.000Z",
+    "startAt": "2026-04-19T06:11:38.147Z",
+    "progress": null,
+    "dateSort": "2026-04-19T08:38:34.656Z",
+    "problems": [
+      {
+        "pid": "766",
+        "title": "支配点",
+        "tags": [
+          "实现",
+          "坐标"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "767",
+        "title": "相邻和替换",
+        "tags": [
+          "实现",
+          "数组"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "768",
+        "title": "变位词",
+        "tags": [
+          "哈希",
+          "字符串",
+          "排序"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "769",
+        "title": "取一个字母",
+        "tags": [
+          "字符串",
+          "排序",
+          "贪心"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "770",
+        "title": "单词排序",
+        "tags": [
+          "字符串",
+          "排序",
+          "自定义字典序"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "771",
+        "title": "宝可梦对战",
+        "tags": [
+          "排序",
+          "贪心",
+          "双指针"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "69ca820274412482cc64bedb",
+    "kind": "contest",
+    "rule": "oi",
+    "title": "2026.4.6",
+    "beginAt": "2026-04-05T16:00:00.000Z",
+    "endAt": "2026-04-06T11:00:00.000Z",
+    "startAt": "2026-04-06T05:13:11.759Z",
+    "progress": null,
+    "dateSort": "2026-04-06T09:34:01.588Z",
+    "problems": [
+      {
+        "pid": "760",
+        "title": "最大公约数",
+        "tags": [
+          "数学",
+          "最大公约数"
+        ],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "AC"
+        ]
+      },
+      {
+        "pid": "761",
+        "title": "和是三的倍数的数对",
+        "tags": [
+          "数学",
+          "计数"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "762",
+        "title": "最值子数组",
+        "tags": [
+          "实现",
+          "双指针"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "763",
+        "title": "单词置换",
+        "tags": [
+          "字符串",
+          "排序",
+          "排列"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "764",
+        "title": "在线最大公约数",
+        "tags": [
+          "实现",
+          "最大公约数"
+        ],
+        "submissions": 1,
+        "bestScore": 90,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "765",
+        "title": "约数团",
+        "tags": [
+          "排序",
+          "动态规划",
+          "数论"
+        ],
+        "submissions": 1,
+        "bestScore": 90,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "69ca80c574412482cc64bdbb",
+    "kind": "contest",
+    "rule": "oi",
+    "title": "2026.4.2",
+    "beginAt": "2026-04-01T16:00:00.000Z",
+    "endAt": "2026-04-02T11:00:00.000Z",
+    "startAt": "2026-04-02T04:55:42.876Z",
+    "progress": null,
+    "dateSort": "2026-04-02T07:22:41.106Z",
+    "problems": [
+      {
+        "pid": "754",
+        "title": "加法",
+        "tags": [
+          "实现"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "755",
+        "title": "矩阵旋转",
+        "tags": [
+          "实现",
+          "矩阵"
+        ],
+        "submissions": 1,
+        "bestScore": 0,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "756",
+        "title": "长按输入名字",
+        "tags": [
+          "字符串",
+          "双指针"
+        ],
+        "submissions": 1,
+        "bestScore": 90,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "757",
+        "title": "字典序最大的波浪数组",
+        "tags": [
+          "其他",
+          "排序",
+          "贪心",
+          "构造"
+        ],
+        "submissions": 1,
+        "bestScore": 30,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "758",
+        "title": "排序划分",
+        "tags": [
+          "贪心",
+          "前缀"
+        ],
+        "submissions": 2,
+        "bestScore": 90,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA",
+          "WA"
+        ]
+      },
+      {
+        "pid": "759",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "6986d3e4d57ae7ce90087039",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "2026.2.27",
+    "beginAt": "2026-02-26T16:00:00.000Z",
+    "endAt": "2026-10-29T15:59:00.000Z",
+    "startAt": "2026-02-27T09:40:42.780Z",
+    "progress": null,
+    "dateSort": "2026-02-28T11:25:30.636Z",
+    "problems": [
+      {
+        "pid": "753",
+        "title": "mad scientist",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "741",
+        "title": "坏三角形",
+        "tags": [],
+        "submissions": 7,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "742",
+        "title": "替换元素",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "740",
+        "title": "豹豹碰碰大作战",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "750",
+        "title": "Abbreviation",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 0,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "6986ac9bd57ae7ce90083d6b",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "2026.2.25",
+    "beginAt": "2026-02-24T16:00:00.000Z",
+    "endAt": "2026-10-29T15:59:00.000Z",
+    "startAt": "2026-02-25T10:00:38.568Z",
+    "progress": null,
+    "dateSort": "2026-02-25T12:34:48.821Z",
+    "problems": [
+      {
+        "pid": "748",
+        "title": "购买整数",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "739",
+        "title": "切割木棍",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC",
+          "AC"
+        ]
+      },
+      {
+        "pid": "752",
+        "title": "aggressive cows",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "751",
+        "title": "逃离敌境",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "744",
+        "title": "找数",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 72,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "738",
+        "title": "成绩排名",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "749",
+        "title": "区间计数查询",
+        "tags": [],
+        "submissions": 5,
+        "bestScore": 5,
+        "bestStatus": "TLE",
+        "verdicts": [
+          "RE",
+          "RE",
+          "TLE",
+          "TLE",
+          "TLE"
+        ]
+      },
+      {
+        "pid": "658",
+        "title": "完美字符串",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "69869bdad57ae7ce90081017",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "2026.2.23",
+    "beginAt": "2026-02-22T16:00:00.000Z",
+    "endAt": "2026-10-28T16:00:00.000Z",
+    "startAt": "2026-02-24T09:40:17.619Z",
+    "progress": null,
+    "dateSort": "2026-02-25T04:19:50.579Z",
+    "problems": [
+      {
+        "pid": "735",
+        "title": "发糖",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "733",
+        "title": "省钱旅行",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC",
+          "AC"
+        ]
+      },
+      {
+        "pid": "746",
+        "title": "公交换乘 (Bus Transfer)",
+        "tags": [],
+        "submissions": 7,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "TLE",
+          "AC",
+          "AC"
+        ]
+      },
+      {
+        "pid": "736",
+        "title": "有趣",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "734",
+        "title": "糖果",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "737",
+        "title": "最长平衡子段",
+        "tags": [],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "743",
+        "title": "平衡子段·改",
+        "tags": [],
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "698560d1cc86cc1dea71b028",
+    "kind": "contest",
+    "rule": "oi",
+    "title": "2026.2.28",
+    "beginAt": "2026-02-28T00:00:00.000Z",
+    "endAt": "2026-02-28T09:00:00.000Z",
+    "startAt": "2026-02-28T04:07:29.226Z",
+    "progress": null,
+    "dateSort": "2026-02-28T06:11:09.677Z",
+    "problems": [
+      {
+        "pid": "635",
+        "title": "deadline",
+        "tags": [
+          "小学比赛真题"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "731",
+        "title": "懒惰的信仰",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "659",
+        "title": "简单线性二分类",
+        "tags": [
+          "小学比赛真题"
+        ],
+        "submissions": 1,
+        "bestScore": 56,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA"
+        ]
+      },
+      {
+        "pid": "643",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "745",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "720",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "6985534bcc86cc1dea718c4f",
+    "kind": "contest",
+    "rule": "oi",
+    "title": "2026.2.22",
+    "beginAt": "2026-02-22T00:00:00.000Z",
+    "endAt": "2026-02-22T09:00:00.000Z",
+    "startAt": "2026-02-22T03:19:10.638Z",
+    "progress": null,
+    "dateSort": "2026-02-22T04:24:16.584Z",
+    "problems": [
+      {
+        "pid": "713",
+        "title": "选择你的卡牌",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "725",
+        "title": "俳句",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "714",
+        "title": "猪存钱",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "721",
+        "title": "宠物店",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "724",
+        "title": "无聊的猪宝宝",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "729",
+        "title": "",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "664f5f111553ea68d73b969a",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "第二次模拟",
+    "beginAt": "2025-05-16T04:00:00.000Z",
+    "endAt": "2025-07-01T04:00:00.000Z",
+    "startAt": "2025-05-26T08:32:08.875Z",
+    "progress": null,
+    "dateSort": "2025-05-26T08:32:08.875Z",
+    "problems": [
+      {
+        "pid": "668",
+        "title": "采购",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "669",
+        "title": "人员核对",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "670",
+        "title": "Star Chat",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "671",
+        "title": "数学",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "672",
+        "title": "数学？",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "673",
+        "title": "不是数学",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "66462f811553ea68d7399caa",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "第一次模拟",
+    "beginAt": "2025-05-16T04:00:00.000Z",
+    "endAt": "2025-07-01T04:00:00.000Z",
+    "startAt": "2025-05-16T14:06:13.047Z",
+    "progress": null,
+    "dateSort": "2025-05-16T14:06:13.047Z",
+    "problems": [
+      {
+        "pid": "662",
+        "title": "仓库",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "663",
+        "title": "奇巧零食",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "665",
+        "title": "星际版图",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "664",
+        "title": "球笼轨道",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "666",
+        "title": "缺失的密码",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "667",
+        "title": "最后的关卡？",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "64769b0eaa731717b5c32c7a",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "2022小学省赛试题",
+    "beginAt": "2025-05-08T16:00:00.000Z",
+    "endAt": "2025-06-08T15:59:00.000Z",
+    "startAt": "2024-05-08T14:30:33.453Z",
+    "progress": null,
+    "dateSort": "2024-05-08T14:30:33.453Z",
+    "problems": [
+      {
+        "pid": "656",
+        "title": "幸运数字",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "657",
+        "title": "沙滩面积",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "658",
+        "title": "完美字符串",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "659",
+        "title": "简单线性二分类",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "660",
+        "title": "mathler",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "661",
+        "title": "俄罗斯方块",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "64752209aa731717b5c2f986",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "2021小学省赛试题",
+    "beginAt": "2025-05-08T16:00:00.000Z",
+    "endAt": "2025-06-08T15:59:00.000Z",
+    "startAt": "2024-05-07T14:01:59.150Z",
+    "progress": null,
+    "dateSort": "2024-05-07T14:01:59.150Z",
+    "problems": [
+      {
+        "pid": "650",
+        "title": "幸运数字",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "651",
+        "title": "摩尔斯密码",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "652",
+        "title": "括号序列",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "653",
+        "title": "文本分类",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "654",
+        "title": "掷骰子",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "655",
+        "title": "三角魔方",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "6464a140aa731717b5c11ce4",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "2023小学市赛",
+    "beginAt": "2026-04-26T06:00:00.000Z",
+    "endAt": "2026-05-16T15:59:00.000Z",
+    "startAt": "2024-05-05T06:51:36.077Z",
+    "progress": null,
+    "dateSort": "2024-05-05T06:51:36.077Z",
+    "problems": [
+      {
+        "pid": "644",
+        "title": "队列",
+        "tags": [],
+        "submissions": 5,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "AC",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "645",
+        "title": "重组",
+        "tags": [],
+        "submissions": 6,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "WA",
+          "AC",
+          "AC"
+        ]
+      },
+      {
+        "pid": "646",
+        "title": "chat",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "647",
+        "title": "闯关者",
+        "tags": [],
+        "submissions": 9,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "RE",
+          "AC",
+          "AC"
+        ]
+      },
+      {
+        "pid": "648",
+        "title": "创队形",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "649",
+        "title": "巧分配",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 25,
+        "bestStatus": "TLE",
+        "verdicts": [
+          "TLE"
+        ]
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "64466be5aa731717b5bb83ed",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "2018小学省赛题",
+    "beginAt": "2026-01-17T16:00:00.000Z",
+    "endAt": "2026-05-30T15:59:00.000Z",
+    "startAt": "2026-02-28T09:35:37.043Z",
+    "progress": null,
+    "dateSort": "2026-02-28T09:35:37.043Z",
+    "problems": [
+      {
+        "pid": "638",
+        "title": "圣诞树",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "639",
+        "title": "最大公约数",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "640",
+        "title": "双十一",
+        "tags": [],
+        "submissions": 5,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "CE",
+          "WA",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "641",
+        "title": "素数方阵",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "642",
+        "title": "整数乘方",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "643",
+        "title": "黑白",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "64466492aa731717b5bb8196",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "2016小学省赛题",
+    "beginAt": "2026-01-17T16:00:00.000Z",
+    "endAt": "2026-05-30T15:59:00.000Z",
+    "startAt": "2025-05-06T05:08:44.060Z",
+    "progress": null,
+    "dateSort": "2025-05-06T05:08:44.060Z",
+    "problems": [
+      {
+        "pid": "626",
+        "title": "数列求和",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "627",
+        "title": "幸运数字",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "628",
+        "title": "洗牌",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "629",
+        "title": "字符串替换",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "630",
+        "title": "方格取数",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "631",
+        "title": "素数分解",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "643e1408aa731717b5ba7c54",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "2014小学省赛题",
+    "beginAt": "2026-01-17T16:00:00.000Z",
+    "endAt": "2026-05-30T15:59:00.000Z",
+    "startAt": "2024-05-07T13:03:28.294Z",
+    "progress": null,
+    "dateSort": "2024-05-07T13:03:28.294Z",
+    "problems": [
+      {
+        "pid": "610",
+        "title": "小旗手（2014）",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "611",
+        "title": "奇数及偶数和",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "612",
+        "title": "连续非素数的最长长度",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "613",
+        "title": "奇怪的车牌号",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "614",
+        "title": "简单单词接龙",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "615",
+        "title": "最大部分和",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "616",
+        "title": "关灯",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "617",
+        "title": "取数",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "643e0df3aa731717b5ba7bb6",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "2012小学省赛",
+    "beginAt": "2026-01-17T16:00:00.000Z",
+    "endAt": "2026-05-30T15:59:00.000Z",
+    "startAt": "2024-05-08T14:09:55.088Z",
+    "progress": null,
+    "dateSort": "2024-05-08T14:09:55.088Z",
+    "problems": [
+      {
+        "pid": "602",
+        "title": "小旗手（2012）",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "603",
+        "title": "倒数和",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "604",
+        "title": "姐妹数对",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "605",
+        "title": "配方",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "606",
+        "title": "奇怪的数",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "607",
+        "title": "二叉树的深度和宽度",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "608",
+        "title": "哨兵",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "609",
+        "title": "堆木头",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "64297c55d2da3ac599414283",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "2011年小学省赛真题",
+    "beginAt": "2026-01-17T16:00:00.000Z",
+    "endAt": "2026-05-16T15:59:00.000Z",
+    "startAt": "2025-04-04T12:56:29.587Z",
+    "progress": null,
+    "dateSort": "2025-04-04T12:56:29.587Z",
+    "problems": [
+      {
+        "pid": "594",
+        "title": "夏令营旗手（2011）",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "595",
+        "title": "评最优志愿者",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "596",
+        "title": "求完全数的个数",
+        "tags": [],
+        "submissions": 5,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "WA",
+          "AC",
+          "TLE"
+        ]
+      },
+      {
+        "pid": "597",
+        "title": "最大和与最小和",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "598",
+        "title": "优美连接",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "599",
+        "title": "加入数",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "600",
+        "title": "最大乘积",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "601",
+        "title": "H数",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "6422eb67fbe304d3ae00c067",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "2007年小学省赛真题",
+    "beginAt": "2026-01-17T16:00:00.000Z",
+    "endAt": "2026-05-16T15:59:00.000Z",
+    "startAt": "2025-03-27T14:16:23.661Z",
+    "progress": null,
+    "dateSort": "2025-03-27T14:16:23.661Z",
+    "problems": [
+      {
+        "pid": "576",
+        "title": "选夏令营旗手",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "577",
+        "title": "整数拆段",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "578",
+        "title": "压缩数据的解压",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "579",
+        "title": "求数位上的数字",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "580",
+        "title": "移动纸牌",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "6422e431fbe304d3ae00bd41",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "2004年小学省赛",
+    "beginAt": "2026-01-17T16:00:00.000Z",
+    "endAt": "2026-05-16T15:59:00.000Z",
+    "startAt": "2025-04-02T08:56:22.226Z",
+    "progress": null,
+    "dateSort": "2025-04-02T08:56:22.226Z",
+    "problems": [
+      {
+        "pid": "563",
+        "title": "蛇形矩阵",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "564",
+        "title": "找最长单词",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "565",
+        "title": "n的阶乘值问题",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "566",
+        "title": "求长度为素数的路径个数",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "641c52f19073fec738d6c56b",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "2003年小学省赛",
+    "beginAt": "2026-01-17T16:00:00.000Z",
+    "endAt": "2026-05-16T15:59:00.000Z",
+    "startAt": "2025-03-10T08:08:43.496Z",
+    "progress": null,
+    "dateSort": "2025-03-10T08:08:43.496Z",
+    "problems": [
+      {
+        "pid": "559",
+        "title": "无暇素数",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "560",
+        "title": "最大公因子最小公倍数",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "561",
+        "title": "均匀划分",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "562",
+        "title": "回文数列",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "641c364d9073fec738d6c187",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "2001年小学比赛真题",
+    "beginAt": "2026-01-17T16:00:00.000Z",
+    "endAt": "2026-05-16T15:59:00.000Z",
+    "startAt": "2025-03-24T09:33:05.400Z",
+    "progress": null,
+    "dateSort": "2025-03-24T09:33:05.400Z",
+    "problems": [
+      {
+        "pid": "551",
+        "title": "数的排序",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "552",
+        "title": "字符串操作",
+        "tags": [],
+        "submissions": 7,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "RE",
+          "WA",
+          "RE",
+          "WA",
+          "AC",
+          "AC"
+        ]
+      },
+      {
+        "pid": "553",
+        "title": "印度国王的棋盘",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "554",
+        "title": "算24",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "Cpp2023",
+    "tid": "641b99c59073fec738d6bd5d",
+    "kind": "homework",
+    "rule": "homework",
+    "title": "2000年小学比赛真题",
+    "beginAt": "2026-01-17T16:00:00.000Z",
+    "endAt": "2026-05-16T15:59:00.000Z",
+    "startAt": "2025-03-10T08:15:41.800Z",
+    "progress": null,
+    "dateSort": "2025-03-10T08:15:41.800Z",
+    "problems": [
+      {
+        "pid": "547",
+        "title": "数字之和",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "548",
+        "title": "分数计算",
+        "tags": [],
+        "submissions": 2,
+        "bestScore": 60,
+        "bestStatus": "WA",
+        "verdicts": [
+          "WA",
+          "WA"
+        ]
+      },
+      {
+        "pid": "549",
+        "title": "高精度整数的减法",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "550",
+        "title": "求数组元素",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  }
+]

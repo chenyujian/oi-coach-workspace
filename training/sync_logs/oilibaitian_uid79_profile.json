@@ -1,0 +1,3195 @@
+{
+  "fetchedAt": "2026-11-22T06:16:59.321235+00:00",
+  "udoc": {
+    "_id": 79,
+    "uname": "陈彦旭",
+    "mail": "198710200@qq.com",
+    "perm": "BigInt::10715086071862673209484250490600018105614048117055336074437503883703510511249361224931983788156958581275946729175531468251871452856923140435984577574698574803934567774824230985421074605062371141877954182153046474983581941267398767559165543946077062914571196477686542167660429831652892527330520044602049",
+    "role": "学员",
+    "priv": 16842756,
+    "regat": "2026-03-15T02:18:17.642Z",
+    "loginat": "2026-11-16T09:19:55.594Z",
+    "tfa": false,
+    "authn": false,
+    "displayName": "大香蕉917825",
+    "school": "",
+    "studentId": ""
+  },
+  "tags": [
+    [
+      "线性DP",
+      42
+    ],
+    [
+      "USACO",
+      25
+    ],
+    [
+      "贪心",
+      24
+    ],
+    [
+      "背包",
+      23
+    ],
+    [
+      "模拟",
+      22
+    ],
+    [
+      "GESP七级",
+      20
+    ],
+    [
+      "GESP六级",
+      19
+    ],
+    [
+      "排序",
+      18
+    ],
+    [
+      "BFS",
+      17
+    ],
+    [
+      "DFS",
+      15
+    ],
+    [
+      "二分",
+      14
+    ],
+    [
+      "AtCoder",
+      13
+    ],
+    [
+      "枚举",
+      12
+    ],
+    [
+      "字符串处理",
+      11
+    ],
+    [
+      "前缀和",
+      10
+    ],
+    [
+      "高精度",
+      9
+    ],
+    [
+      "图的存储与遍历",
+      9
+    ],
+    [
+      "LCA",
+      9
+    ],
+    [
+      "GESP八级",
+      9
+    ],
+    [
+      "树形DP",
+      8
+    ]
+  ],
+  "lbProfileKnowledge": {
+    "groups": [
+      {
+        "name": "语言基础",
+        "count": 9,
+        "children": [
+          {
+            "name": "输入输出",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "变量与类型",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "运算符",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "分支结构",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "循环",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "一维数组",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "二维数组",
+            "count": 5,
+            "children": []
+          },
+          {
+            "name": "字符与字符串",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "字符串函数",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "函数",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "结构体",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "指针与引用",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "类与对象",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "进制转换",
+            "count": 4,
+            "children": []
+          },
+          {
+            "name": "数据编码",
+            "count": 0,
+            "children": []
+          }
+        ]
+      },
+      {
+        "name": "基础算法",
+        "count": 101,
+        "children": [
+          {
+            "name": "模拟",
+            "count": 22,
+            "children": []
+          },
+          {
+            "name": "枚举",
+            "count": 12,
+            "children": []
+          },
+          {
+            "name": "排序",
+            "count": 18,
+            "children": []
+          },
+          {
+            "name": "二分",
+            "count": 14,
+            "children": [
+              {
+                "name": "二分答案",
+                "count": 0,
+                "children": []
+              }
+            ]
+          },
+          {
+            "name": "三分查找",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "双指针",
+            "count": 5,
+            "children": []
+          },
+          {
+            "name": "滑动窗口",
+            "count": 7,
+            "children": []
+          },
+          {
+            "name": "差分与前缀和",
+            "count": 12,
+            "children": [
+              {
+                "name": "前缀和",
+                "count": 10,
+                "children": []
+              },
+              {
+                "name": "差分",
+                "count": 2,
+                "children": []
+              },
+              {
+                "name": "前后缀极值",
+                "count": 0,
+                "children": []
+              }
+            ]
+          },
+          {
+            "name": "递推",
+            "count": 2,
+            "children": []
+          },
+          {
+            "name": "递归",
+            "count": 5,
+            "children": []
+          },
+          {
+            "name": "分治",
+            "count": 2,
+            "children": []
+          },
+          {
+            "name": "倍增",
+            "count": 2,
+            "children": []
+          },
+          {
+            "name": "高精度",
+            "count": 9,
+            "children": []
+          },
+          {
+            "name": "位运算",
+            "count": 2,
+            "children": []
+          },
+          {
+            "name": "离散化",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "构造",
+            "count": 3,
+            "children": []
+          },
+          {
+            "name": "打表",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "复杂度分析",
+            "count": 0,
+            "children": []
+          }
+        ]
+      },
+      {
+        "name": "贪心",
+        "count": 24,
+        "children": []
+      },
+      {
+        "name": "搜索",
+        "count": 39,
+        "children": [
+          {
+            "name": "DFS",
+            "count": 15,
+            "children": []
+          },
+          {
+            "name": "BFS",
+            "count": 17,
+            "children": []
+          },
+          {
+            "name": "回溯",
+            "count": 4,
+            "children": []
+          },
+          {
+            "name": "剪枝",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "搜索与剪枝",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "双向搜索",
+            "count": 3,
+            "children": []
+          },
+          {
+            "name": "折半搜索",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "记忆化搜索",
+            "count": 1,
+            "children": []
+          },
+          {
+            "name": "迭代加深",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "启发式搜索",
+            "count": 0,
+            "children": []
+          }
+        ]
+      },
+      {
+        "name": "动态规划",
+        "count": 81,
+        "children": [
+          {
+            "name": "线性DP",
+            "count": 42,
+            "children": []
+          },
+          {
+            "name": "区间DP",
+            "count": 7,
+            "children": []
+          },
+          {
+            "name": "背包",
+            "count": 23,
+            "children": [
+              {
+                "name": "多重背包",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "价值维度背包",
+                "count": 0,
+                "children": []
+              }
+            ]
+          },
+          {
+            "name": "树形DP",
+            "count": 8,
+            "children": []
+          },
+          {
+            "name": "状态压缩DP",
+            "count": 1,
+            "children": []
+          },
+          {
+            "name": "数位DP",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "概率期望DP",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "单调队列优化",
+            "count": 1,
+            "children": []
+          },
+          {
+            "name": "单调性DP",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "环形DP",
+            "count": 0,
+            "children": []
+          }
+        ]
+      },
+      {
+        "name": "数据结构",
+        "count": 19,
+        "children": [
+          {
+            "name": "栈",
+            "count": 1,
+            "children": []
+          },
+          {
+            "name": "单调栈",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "队列",
+            "count": 1,
+            "children": []
+          },
+          {
+            "name": "双端队列",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "单调队列",
+            "count": 1,
+            "children": []
+          },
+          {
+            "name": "优先队列",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "堆",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "链表",
+            "count": 1,
+            "children": []
+          },
+          {
+            "name": "双向链表",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "并查集",
+            "count": 6,
+            "children": []
+          },
+          {
+            "name": "哈希表",
+            "count": 7,
+            "children": []
+          },
+          {
+            "name": "平衡树",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "线段树",
+            "count": 1,
+            "children": []
+          },
+          {
+            "name": "树状数组",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "树套树",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "主席树",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "莫队",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "分块",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "ST表",
+            "count": 1,
+            "children": []
+          },
+          {
+            "name": "扫描线",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "四分树",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "划分树",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "归并树",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "替罪羊树",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "左偏树",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "k-d树",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "块状链表",
+            "count": 0,
+            "children": []
+          }
+        ]
+      },
+      {
+        "name": "树与树上算法",
+        "count": 16,
+        "children": [
+          {
+            "name": "LCA",
+            "count": 9,
+            "children": []
+          },
+          {
+            "name": "树上倍增",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "树上差分",
+            "count": 4,
+            "children": []
+          },
+          {
+            "name": "DFS序列",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "树的分治",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "树链剖分",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "树的重心与直径",
+            "count": 5,
+            "children": []
+          },
+          {
+            "name": "树的重心",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "树的直径",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "Link-Cut-Tree",
+            "count": 0,
+            "children": []
+          }
+        ]
+      },
+      {
+        "name": "图论",
+        "count": 22,
+        "children": [
+          {
+            "name": "图的存储与遍历",
+            "count": 9,
+            "children": []
+          },
+          {
+            "name": "最短路",
+            "count": 5,
+            "children": [
+              {
+                "name": "Floyd",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "Dijkstra",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "SPFA",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "0-1 BFS",
+                "count": 0,
+                "children": []
+              }
+            ]
+          },
+          {
+            "name": "生成树",
+            "count": 2,
+            "children": [
+              {
+                "name": "最小生成树",
+                "count": 2,
+                "children": []
+              },
+              {
+                "name": "次小生成树",
+                "count": 0,
+                "children": []
+              }
+            ]
+          },
+          {
+            "name": "拓扑排序",
+            "count": 3,
+            "children": []
+          },
+          {
+            "name": "二分图",
+            "count": 3,
+            "children": []
+          },
+          {
+            "name": "二分图匹配",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "强连通分量",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "割点与桥",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "网络流",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "差分约束",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "欧拉回路",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "2-SAT",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "负权边",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "平面图",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "离线连通性",
+            "count": 0,
+            "children": []
+          }
+        ]
+      },
+      {
+        "name": "字符串",
+        "count": 11,
+        "children": [
+          {
+            "name": "字符与字符串",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "字符串处理",
+            "count": 11,
+            "children": []
+          },
+          {
+            "name": "字符串函数",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "字符串哈希",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "字典树",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "KMP",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "AC自动机",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "Manacher",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "后缀数据结构",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "表达式处理",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "最小表示法",
+            "count": 0,
+            "children": []
+          }
+        ]
+      },
+      {
+        "name": "数学",
+        "count": 23,
+        "children": [
+          {
+            "name": "数论",
+            "count": 19,
+            "children": [
+              {
+                "name": "质数与筛法",
+                "count": 7,
+                "children": []
+              },
+              {
+                "name": "素数判定",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "筛法与批量分解",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "最大公约数",
+                "count": 3,
+                "children": []
+              },
+              {
+                "name": "欧几里得算法",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "同余与模运算",
+                "count": 4,
+                "children": []
+              },
+              {
+                "name": "快速幂",
+                "count": 1,
+                "children": []
+              },
+              {
+                "name": "不定方程",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "解线性同余方程",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "大整数质因数分解",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "积性函数",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "数位统计",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "baby-step-giant-step",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "Pell方程",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "勾股方程",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "Fibonacci数列",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "质因数分解",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "整除分块",
+                "count": 0,
+                "children": []
+              }
+            ]
+          },
+          {
+            "name": "组合数学",
+            "count": 5,
+            "children": [
+              {
+                "name": "基础组合计数",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "大参数组合数",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "容斥原理",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "鸽笼",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "生成函数",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "康托展开",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "Catalan数列",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "Stirling数",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "Polya定理",
+                "count": 0,
+                "children": []
+              }
+            ]
+          },
+          {
+            "name": "线性代数",
+            "count": 0,
+            "children": [
+              {
+                "name": "矩阵运算",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "矩阵乘法",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "高斯消元",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "线性规划",
+                "count": 0,
+                "children": []
+              }
+            ]
+          },
+          {
+            "name": "计算几何",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "概率与期望",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "博弈论",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "计数与数学应用",
+            "count": 0,
+            "children": [
+              {
+                "name": "计数",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "分类计数",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "简单计数",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "周期计数",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "奇偶性",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "奇偶性与贪心",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "倍增与二进制规律",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "整数除法与边界",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "整除与分段验证",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "二元方程",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "日期判断",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "连续分段",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "映射与模拟",
+                "count": 0,
+                "children": []
+              },
+              {
+                "name": "计数与标记",
+                "count": 0,
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "STL",
+        "count": 3,
+        "children": [
+          {
+            "name": "栈",
+            "count": 1,
+            "children": []
+          },
+          {
+            "name": "队列",
+            "count": 1,
+            "children": []
+          },
+          {
+            "name": "双端队列",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "优先队列",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "字符与字符串",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "链表",
+            "count": 1,
+            "children": []
+          },
+          {
+            "name": "vector",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "map/set",
+            "count": 0,
+            "children": []
+          },
+          {
+            "name": "queue/deque",
+            "count": 0,
+            "children": []
+          }
+        ]
+      }
+    ],
+    "common": [
+      {
+        "name": "线性DP",
+        "count": 42
+      },
+      {
+        "name": "贪心",
+        "count": 24
+      },
+      {
+        "name": "背包",
+        "count": 23
+      },
+      {
+        "name": "模拟",
+        "count": 22
+      },
+      {
+        "name": "排序",
+        "count": 18
+      },
+      {
+        "name": "BFS",
+        "count": 17
+      },
+      {
+        "name": "DFS",
+        "count": 15
+      },
+      {
+        "name": "二分",
+        "count": 14
+      }
+    ]
+  },
+  "pdocs": [
+    {
+      "pid": "2",
+      "title": "跳跃机器人(记录路径版本)",
+      "tag": [
+        "BFS"
+      ]
+    },
+    {
+      "pid": "607",
+      "title": "最长公共子序列长度",
+      "tag": [
+        "线性DP"
+      ]
+    },
+    {
+      "pid": "609",
+      "title": "大整数加法",
+      "tag": [
+        "高精度"
+      ]
+    },
+    {
+      "pid": "610",
+      "title": "大整数减法",
+      "tag": [
+        "高精度"
+      ]
+    },
+    {
+      "pid": "612",
+      "title": "大整数的因子",
+      "tag": [
+        "高精度"
+      ]
+    },
+    {
+      "pid": "614",
+      "title": "阶乘和",
+      "tag": [
+        "高精度"
+      ]
+    },
+    {
+      "pid": "615",
+      "title": "大整数乘法",
+      "tag": [
+        "高精度"
+      ]
+    },
+    {
+      "pid": "616",
+      "title": "除以13",
+      "tag": [
+        "高精度"
+      ]
+    },
+    {
+      "pid": "617",
+      "title": "回文数",
+      "tag": [
+        "高精度",
+        "进制转换",
+        "NOIP普及组"
+      ]
+    },
+    {
+      "pid": "621",
+      "title": "[CSP-J2022] 上升点列",
+      "tag": [
+        "线性DP",
+        "排序",
+        "CSP-J"
+      ]
+    },
+    {
+      "pid": "623",
+      "title": "[CSP-J2023] 公路",
+      "tag": [
+        "贪心",
+        "CSP-J"
+      ]
+    },
+    {
+      "pid": "628",
+      "title": "[CSP-J2024] 小木棍",
+      "tag": [
+        "构造",
+        "贪心",
+        "CSP-J"
+      ]
+    },
+    {
+      "pid": "631",
+      "title": "[CSP-J2019] 加工零件",
+      "tag": [
+        "BFS",
+        "最短路",
+        "CSP-J"
+      ]
+    },
+    {
+      "pid": "637",
+      "title": "[CSP-J 2021] 插入排序",
+      "tag": [
+        "排序",
+        "模拟",
+        "CSP-J"
+      ]
+    },
+    {
+      "pid": "642",
+      "title": "魔板",
+      "tag": [
+        "BFS",
+        "哈希表"
+      ]
+    },
+    {
+      "pid": "643",
+      "title": "最小倍数",
+      "tag": [
+        "BFS",
+        "同余与模运算"
+      ]
+    },
+    {
+      "pid": "644",
+      "title": "买可乐",
+      "tag": [
+        "贪心",
+        "模拟"
+      ]
+    },
+    {
+      "pid": "663",
+      "title": "[GESP202409 六级] 小杨和整数拆分",
+      "tag": [
+        "背包",
+        "线性DP",
+        "GESP六级"
+      ]
+    },
+    {
+      "pid": "664",
+      "title": "[GESP202409 六级] 算法学习",
+      "tag": [
+        "贪心",
+        "排序",
+        "GESP六级"
+      ]
+    },
+    {
+      "pid": "665",
+      "title": "[GESP202503 七级] 图上移动",
+      "tag": [
+        "线性DP",
+        "图的存储与遍历",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "666",
+      "title": "[GESP202503 七级] 等价消除",
+      "tag": [
+        "前缀和",
+        "哈希表",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "667",
+      "title": "[GESP202506 七级] 线图",
+      "tag": [
+        "图的存储与遍历",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "668",
+      "title": "[GESP202506 七级] 调味平衡",
+      "tag": [
+        "背包",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "669",
+      "title": "[GESP202412 七级] 燃烧",
+      "tag": [
+        "树形DP",
+        "DFS",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "670",
+      "title": "[GESP202412 七级] 武器购买",
+      "tag": [
+        "背包",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "671",
+      "title": "[GESP202406 七级] 黑白翻转",
+      "tag": [
+        "图的存储与遍历",
+        "DFS",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "672",
+      "title": "[GESP202406 七级] 区间乘积",
+      "tag": [
+        "前缀和",
+        "哈希表",
+        "数论",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "677",
+      "title": "[GESP202309 五级] 因数分解",
+      "tag": [
+        "质数与筛法",
+        "GESP五级"
+      ]
+    },
+    {
+      "pid": "680",
+      "title": "[GESP202312 五级] 烹饪问题",
+      "tag": [
+        "位运算",
+        "贪心",
+        "GESP五级"
+      ]
+    },
+    {
+      "pid": "711",
+      "title": "跳跃机器人",
+      "tag": [
+        "BFS"
+      ]
+    },
+    {
+      "pid": "766",
+      "title": "[GESP202312 七级] 商品交易",
+      "tag": [
+        "最短路",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "767",
+      "title": "[GESP202312 七级] 纸牌游戏",
+      "tag": [
+        "线性DP",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "768",
+      "title": "[GESP202403 七级] 交流问题",
+      "tag": [
+        "二分图",
+        "DFS",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "769",
+      "title": "[GESP202403 七级] 俄罗斯方块",
+      "tag": [
+        "DFS",
+        "哈希表",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "774",
+      "title": "[GESP202312 六级] 闯关游戏",
+      "tag": [
+        "线性DP",
+        "GESP六级"
+      ]
+    },
+    {
+      "pid": "778",
+      "title": "[GESP202406 六级] 计算得分",
+      "tag": [
+        "线性DP",
+        "字符串处理",
+        "GESP六级"
+      ]
+    },
+    {
+      "pid": "779",
+      "title": "[GESP202406 六级] 二叉树",
+      "tag": [
+        "树上差分",
+        "DFS",
+        "GESP六级"
+      ]
+    },
+    {
+      "pid": "780",
+      "title": "[GESP202412 六级] 树上游走",
+      "tag": [
+        "模拟",
+        "GESP六级"
+      ]
+    },
+    {
+      "pid": "781",
+      "title": "[GESP202412 六级] 运送物资",
+      "tag": [
+        "贪心",
+        "排序",
+        "GESP六级"
+      ]
+    },
+    {
+      "pid": "782",
+      "title": "[GESP202503 六级] 树上漫步",
+      "tag": [
+        "DFS",
+        "图的存储与遍历",
+        "GESP六级"
+      ]
+    },
+    {
+      "pid": "783",
+      "title": "[GESP202503 六级] 环线",
+      "tag": [
+        "线性DP",
+        "GESP六级"
+      ]
+    },
+    {
+      "pid": "784",
+      "title": "[GESP202506 六级] 学习小组",
+      "tag": [
+        "背包",
+        "GESP六级"
+      ]
+    },
+    {
+      "pid": "785",
+      "title": "[GESP202506 六级] 最大因数",
+      "tag": [
+        "LCA",
+        "数论",
+        "GESP六级"
+      ]
+    },
+    {
+      "pid": "787",
+      "title": "[GESP样题 八级] 小杨的旅游",
+      "tag": [
+        "最短路",
+        "LCA",
+        "GESP八级"
+      ]
+    },
+    {
+      "pid": "788",
+      "title": "[GESP202312 八级] 奖品分配",
+      "tag": [
+        "组合数学",
+        "GESP八级"
+      ]
+    },
+    {
+      "pid": "789",
+      "title": "[GESP202312 八级] 大量的工作沟通",
+      "tag": [
+        "LCA",
+        "GESP八级"
+      ]
+    },
+    {
+      "pid": "791",
+      "title": "[GESP202403 八级] 接竹竿",
+      "tag": [
+        "栈",
+        "模拟",
+        "GESP八级"
+      ]
+    },
+    {
+      "pid": "794",
+      "title": "[GESP202409 八级] 手套配对",
+      "tag": [
+        "组合数学",
+        "GESP八级"
+      ]
+    },
+    {
+      "pid": "795",
+      "title": "[GESP202409 八级] 美丽路径",
+      "tag": [
+        "树形DP",
+        "树的重心与直径",
+        "GESP八级"
+      ]
+    },
+    {
+      "pid": "799",
+      "title": "[GESP202503 八级] 割裂",
+      "tag": [
+        "LCA",
+        "树上差分",
+        "GESP八级"
+      ]
+    },
+    {
+      "pid": "800",
+      "title": "[GESP202506 八级] 树上旅行",
+      "tag": [
+        "模拟",
+        "图的存储与遍历",
+        "GESP八级"
+      ]
+    },
+    {
+      "pid": "802",
+      "title": "Colorful Candies",
+      "tag": [
+        "滑动窗口",
+        "哈希表"
+      ]
+    },
+    {
+      "pid": "803",
+      "title": "二分图模板",
+      "tag": [
+        "图结构",
+        "二分图",
+        "DFS"
+      ]
+    },
+    {
+      "pid": "806",
+      "title": "[JLOI2014] 松鼠的新家",
+      "tag": [
+        "树上差分",
+        "LCA"
+      ]
+    },
+    {
+      "pid": "814",
+      "title": "01背包输出方案",
+      "tag": [
+        "背包"
+      ]
+    },
+    {
+      "pid": "817",
+      "title": "01背包问题",
+      "tag": [
+        "背包"
+      ]
+    },
+    {
+      "pid": "819",
+      "title": "庆功会（多重背包）",
+      "tag": [
+        "背包"
+      ]
+    },
+    {
+      "pid": "823",
+      "title": "装箱问题（装箱剩余空间）",
+      "tag": [
+        "背包"
+      ]
+    },
+    {
+      "pid": "825",
+      "title": "[USACO14MAR] Mooo Moo S",
+      "tag": [
+        "背包",
+        "模拟",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "827",
+      "title": "[IOI 1994 / USACO1.4] 时钟 The Clocks",
+      "tag": [
+        "枚举",
+        "BFS",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "828",
+      "title": "神奇的等式",
+      "tag": [
+        "枚举",
+        "回溯"
+      ]
+    },
+    {
+      "pid": "829",
+      "title": "凑n",
+      "tag": [
+        "枚举",
+        "DFS"
+      ]
+    },
+    {
+      "pid": "830",
+      "title": "[USACO1.4] 母亲的牛奶 Mother's Milk",
+      "tag": [
+        "BFS",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "831",
+      "title": "素数环",
+      "tag": [
+        "回溯",
+        "质数与筛法"
+      ]
+    },
+    {
+      "pid": "835",
+      "title": "[NOIP 2010 提高组] 乌龟棋",
+      "tag": [
+        "线性DP",
+        "NOIP提高组"
+      ]
+    },
+    {
+      "pid": "838",
+      "title": "[NOIP 2011 提高组] 计算系数",
+      "tag": [
+        "组合数学",
+        "快速幂",
+        "NOIP提高组"
+      ]
+    },
+    {
+      "pid": "843",
+      "title": "开餐馆",
+      "tag": [
+        "线性DP"
+      ]
+    },
+    {
+      "pid": "845",
+      "title": "计算字符串距离",
+      "tag": [
+        "线性DP",
+        "字符串处理"
+      ]
+    },
+    {
+      "pid": "849",
+      "title": "编辑距离",
+      "tag": [
+        "线性DP",
+        "字符串处理"
+      ]
+    },
+    {
+      "pid": "851",
+      "title": "最大上升子序列和",
+      "tag": [
+        "线性DP"
+      ]
+    },
+    {
+      "pid": "859",
+      "title": "石子合并（弱化版）",
+      "tag": [
+        "区间DP"
+      ]
+    },
+    {
+      "pid": "861",
+      "title": "友好城市",
+      "tag": [
+        "排序",
+        "线性DP"
+      ]
+    },
+    {
+      "pid": "868",
+      "title": "双子段最大和（无间隔）",
+      "tag": [
+        "线性DP"
+      ]
+    },
+    {
+      "pid": "871",
+      "title": "大盗阿福",
+      "tag": [
+        "线性DP"
+      ]
+    },
+    {
+      "pid": "875",
+      "title": "最低通行费",
+      "tag": [
+        "线性DP"
+      ]
+    },
+    {
+      "pid": "876",
+      "title": "【模板】拓扑排序 / 家谱树",
+      "tag": [
+        "拓扑排序"
+      ]
+    },
+    {
+      "pid": "950",
+      "title": "血色先锋队",
+      "tag": [
+        "BFS"
+      ]
+    },
+    {
+      "pid": "953",
+      "title": "纪念品分组",
+      "tag": [
+        "贪心",
+        "双指针",
+        "NOIP普及组"
+      ]
+    },
+    {
+      "pid": "966",
+      "title": "和为给定数",
+      "tag": [
+        "双指针",
+        "排序"
+      ]
+    },
+    {
+      "pid": "968",
+      "title": "二分查找2",
+      "tag": [
+        "二分"
+      ]
+    },
+    {
+      "pid": "971",
+      "title": "[USACO05FEB] 进击的奶牛 Aggressive Cows G",
+      "tag": [
+        "二分",
+        "贪心",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "974",
+      "title": "数列分段 Section II",
+      "tag": [
+        "二分",
+        "贪心"
+      ]
+    },
+    {
+      "pid": "976",
+      "title": "树的直径",
+      "tag": [
+        "树的重心与直径"
+      ]
+    },
+    {
+      "pid": "977",
+      "title": "奶牛晒衣服",
+      "tag": [
+        "二分"
+      ]
+    },
+    {
+      "pid": "985",
+      "title": "最长公共子序列",
+      "tag": [
+        "线性DP",
+        "字符串处理",
+        "AtCoder"
+      ]
+    },
+    {
+      "pid": "986",
+      "title": "最长上升子序列长度（简单版）",
+      "tag": [
+        "线性DP"
+      ]
+    },
+    {
+      "pid": "987",
+      "title": "最长上升子序列长度",
+      "tag": [
+        "线性DP",
+        "二分"
+      ]
+    },
+    {
+      "pid": "991",
+      "title": "最长上升子序列方案数",
+      "tag": [
+        "线性DP"
+      ]
+    },
+    {
+      "pid": "992",
+      "title": "排列的最长公共子序列长度",
+      "tag": [
+        "线性DP"
+      ]
+    },
+    {
+      "pid": "994",
+      "title": "合唱队形",
+      "tag": [
+        "线性DP",
+        "NOIP提高组"
+      ]
+    },
+    {
+      "pid": "996",
+      "title": "[USACO07NOV] Best Cow Line S",
+      "tag": [
+        "贪心",
+        "双指针",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "997",
+      "title": "[NOI1995] 石子合并",
+      "tag": [
+        "区间DP"
+      ]
+    },
+    {
+      "pid": "998",
+      "title": "[CCC 2023 S2] Symmetric Mountains",
+      "tag": [
+        "枚举"
+      ]
+    },
+    {
+      "pid": "1000",
+      "title": "斜行方阵",
+      "tag": [
+        "二维数组"
+      ]
+    },
+    {
+      "pid": "1002",
+      "title": "蛇形填数",
+      "tag": [
+        "二维数组",
+        "模拟"
+      ]
+    },
+    {
+      "pid": "1003",
+      "title": "蛇形填数2",
+      "tag": [
+        "二维数组",
+        "模拟"
+      ]
+    },
+    {
+      "pid": "1009",
+      "title": "[CCC 2014] 燃料搜集",
+      "tag": [
+        "贪心",
+        "排序"
+      ]
+    },
+    {
+      "pid": "1013",
+      "title": "[CCC 2025 Junior] Sunny Days",
+      "tag": [
+        "模拟"
+      ]
+    },
+    {
+      "pid": "1016",
+      "title": "[USACO17JAN] Hoof, Paper, Scissor S",
+      "tag": [
+        "前缀和",
+        "枚举",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "1017",
+      "title": "[USACO17JAN] Hoof, Paper, Scissor G",
+      "tag": [
+        "线性DP",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "1021",
+      "title": "[USACO1.5] 八皇后 Checker Challenge",
+      "tag": [
+        "回溯",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "1029",
+      "title": "[USACO08FEB] Meteor Shower S",
+      "tag": [
+        "BFS",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "1030",
+      "title": "[USACO13DEC] Milk Scheduling S",
+      "tag": [
+        "贪心",
+        "排序",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "1032",
+      "title": "[USACO06FEB] Treats for the Cows G/S",
+      "tag": [
+        "区间DP",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "1035",
+      "title": "逛画展",
+      "tag": [
+        "滑动窗口"
+      ]
+    },
+    {
+      "pid": "1057",
+      "title": "[CSP-S2019] 格雷码",
+      "tag": [
+        "递归",
+        "位运算",
+        "CSP-S"
+      ]
+    },
+    {
+      "pid": "1058",
+      "title": "分组背包",
+      "tag": [
+        "背包"
+      ]
+    },
+    {
+      "pid": "1060",
+      "title": "取数游戏",
+      "tag": [
+        "状压DP"
+      ]
+    },
+    {
+      "pid": "1061",
+      "title": "方格填数",
+      "tag": [
+        "回溯"
+      ]
+    },
+    {
+      "pid": "1062",
+      "title": "蛇行三角形",
+      "tag": [
+        "二维数组",
+        "模拟"
+      ]
+    },
+    {
+      "pid": "1079",
+      "title": "滑动窗口 /【模板】单调队列",
+      "tag": [
+        "单调队列",
+        "滑动窗口"
+      ]
+    },
+    {
+      "pid": "1081",
+      "title": "琪露诺",
+      "tag": [
+        "单调队列优化"
+      ]
+    },
+    {
+      "pid": "1087",
+      "title": "【24年第四题】最短字符串",
+      "tag": [
+        "滑动窗口",
+        "海淀信奥"
+      ]
+    },
+    {
+      "pid": "1089",
+      "title": "【24年第六题】蜂窝网络",
+      "tag": [
+        "二分",
+        "海淀信奥"
+      ]
+    },
+    {
+      "pid": "1090",
+      "title": "【24年第三题】拜访朋友",
+      "tag": [
+        "贪心",
+        "排序",
+        "海淀信奥"
+      ]
+    },
+    {
+      "pid": "1100",
+      "title": "字符串弱等于",
+      "tag": [
+        "递归",
+        "字符串处理"
+      ]
+    },
+    {
+      "pid": "1101",
+      "title": "Kitty猫基因编码",
+      "tag": [
+        "递归",
+        "分治"
+      ]
+    },
+    {
+      "pid": "1102",
+      "title": "乘二加一",
+      "tag": [
+        "递归"
+      ]
+    },
+    {
+      "pid": "1118",
+      "title": "家族基金",
+      "tag": [
+        "树上差分",
+        "DFS"
+      ]
+    },
+    {
+      "pid": "1119",
+      "title": "出生年",
+      "tag": [
+        "枚举",
+        "模拟"
+      ]
+    },
+    {
+      "pid": "1127",
+      "title": "台阶问题",
+      "tag": [
+        "递推"
+      ]
+    },
+    {
+      "pid": "1130",
+      "title": "最大双子段和",
+      "tag": [
+        "线性DP"
+      ]
+    },
+    {
+      "pid": "1139",
+      "title": "T3. 学习计划",
+      "tag": [
+        "线性DP",
+        "前缀和"
+      ]
+    },
+    {
+      "pid": "1141",
+      "title": "添加括号III",
+      "tag": [
+        "数论",
+        "最大公约数"
+      ]
+    },
+    {
+      "pid": "1142",
+      "title": "Longest Path",
+      "tag": [
+        "拓扑排序",
+        "线性DP"
+      ]
+    },
+    {
+      "pid": "1151",
+      "title": "[HAOI2012] 音量调节",
+      "tag": [
+        "线性DP"
+      ]
+    },
+    {
+      "pid": "1153",
+      "title": "[USACO07DEC] Mud Puddles S",
+      "tag": [
+        "BFS",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "1156",
+      "title": "购买帽子",
+      "tag": [
+        "贪心",
+        "排序",
+        "双指针"
+      ]
+    },
+    {
+      "pid": "1168",
+      "title": "【模板】最近公共祖先（LCA）",
+      "tag": [
+        "LCA",
+        "倍增"
+      ]
+    },
+    {
+      "pid": "1169",
+      "title": "【模板】ST 表 & RMQ 问题",
+      "tag": [
+        "ST表"
+      ]
+    },
+    {
+      "pid": "1171",
+      "title": "[POI 2002] 商务旅行",
+      "tag": [
+        "LCA",
+        "倍增"
+      ]
+    },
+    {
+      "pid": "1173",
+      "title": "[蓝桥杯 2023 省 B] 景区导游",
+      "tag": [
+        "LCA",
+        "蓝桥杯"
+      ]
+    },
+    {
+      "pid": "1175",
+      "title": "[蓝桥杯 2020 国 C] 重复字符串",
+      "tag": [
+        "字符串处理",
+        "枚举",
+        "蓝桥杯"
+      ]
+    },
+    {
+      "pid": "1177",
+      "title": "[NOIP 2004 普及组] FBI 树",
+      "tag": [
+        "递归",
+        "分治",
+        "NOIP普及组"
+      ]
+    },
+    {
+      "pid": "1216",
+      "title": "序列操作",
+      "tag": [
+        "模拟",
+        "同余与模运算"
+      ]
+    },
+    {
+      "pid": "1222",
+      "title": "[HNOI2004] 打鼹鼠",
+      "tag": [
+        "线性DP",
+        "排序"
+      ]
+    },
+    {
+      "pid": "1223",
+      "title": "李老师玩积木",
+      "tag": [
+        "线性DP",
+        "排序"
+      ]
+    },
+    {
+      "pid": "1224",
+      "title": "字串距离",
+      "tag": [
+        "线性DP",
+        "字符串处理"
+      ]
+    },
+    {
+      "pid": "1225",
+      "title": "相似基因",
+      "tag": [
+        "线性DP"
+      ]
+    },
+    {
+      "pid": "1239",
+      "title": "B进制星球",
+      "tag": [
+        "高精度",
+        "进制转换"
+      ]
+    },
+    {
+      "pid": "1319",
+      "title": "[ABC226C] Martial artist",
+      "tag": [
+        "DFS",
+        "记忆化搜索",
+        "AtCoder"
+      ]
+    },
+    {
+      "pid": "1322",
+      "title": "[GESP202509 六级] 货物运输",
+      "tag": [
+        "图的存储与遍历",
+        "树的重心与直径",
+        "GESP六级"
+      ]
+    },
+    {
+      "pid": "1323",
+      "title": "[GESP202509 六级] 划分字符串",
+      "tag": [
+        "线性DP",
+        "GESP六级"
+      ]
+    },
+    {
+      "pid": "1342",
+      "title": "[GESP202509 七级] 连通图",
+      "tag": [
+        "并查集",
+        "图的存储与遍历",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "1343",
+      "title": "[GESP202509 七级] 金币收集",
+      "tag": [
+        "贪心",
+        "线性DP",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "1359",
+      "title": "T2. 选择排序",
+      "tag": [
+        "模拟",
+        "排序"
+      ]
+    },
+    {
+      "pid": "1361",
+      "title": "[COCI 2021/2022 #2] Kutije",
+      "tag": [
+        "并查集",
+        "COCI"
+      ]
+    },
+    {
+      "pid": "1366",
+      "title": "[ABC126E] 1 or 2",
+      "tag": [
+        "并查集",
+        "AtCoder"
+      ]
+    },
+    {
+      "pid": "1374",
+      "title": "[COCI 2009/2010 #2] KUTEVI",
+      "tag": [
+        "BFS",
+        "同余与模运算",
+        "COCI"
+      ]
+    },
+    {
+      "pid": "1375",
+      "title": "[EC Final 2021] DFS Order",
+      "tag": [
+        "图的存储与遍历"
+      ]
+    },
+    {
+      "pid": "1376",
+      "title": "[ABC333D] Erase Leaves",
+      "tag": [
+        "树形DP",
+        "AtCoder"
+      ]
+    },
+    {
+      "pid": "1378",
+      "title": "投资的最大效益",
+      "tag": [
+        "背包"
+      ]
+    },
+    {
+      "pid": "1391",
+      "title": "[USACO08NOV] Buying Hay S",
+      "tag": [
+        "背包",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "1393",
+      "title": "[USACO10OCT] Making Money G",
+      "tag": [
+        "背包",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "1403",
+      "title": "[蓝桥杯 2017 省 AB] 分巧克力",
+      "tag": [
+        "二分",
+        "蓝桥杯"
+      ]
+    },
+    {
+      "pid": "1412",
+      "title": "[ABC287C] Path Graph?",
+      "tag": [
+        "图的存储与遍历",
+        "AtCoder"
+      ]
+    },
+    {
+      "pid": "1414",
+      "title": "【模板】并查集",
+      "tag": [
+        "并查集"
+      ]
+    },
+    {
+      "pid": "1415",
+      "title": "修复公路",
+      "tag": [
+        "并查集",
+        "排序"
+      ]
+    },
+    {
+      "pid": "1420",
+      "title": "[USACO08JAN] Running S",
+      "tag": [
+        "线性DP",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "1422",
+      "title": "[CSP-J 2025] 座位",
+      "tag": [
+        "模拟",
+        "二维数组",
+        "CSP-J"
+      ]
+    },
+    {
+      "pid": "1424",
+      "title": "[CSP-J 2025] 多边形",
+      "tag": [
+        "排序",
+        "枚举",
+        "组合数学",
+        "CSP-J"
+      ]
+    },
+    {
+      "pid": "1429",
+      "title": "语文成绩",
+      "tag": [
+        "差分"
+      ]
+    },
+    {
+      "pid": "1430",
+      "title": "[蓝桥杯 2017 省 B] k 倍区间",
+      "tag": [
+        "前缀和",
+        "同余与模运算",
+        "蓝桥杯"
+      ]
+    },
+    {
+      "pid": "1432",
+      "title": "在你窗外闪耀的星星",
+      "tag": [
+        "前缀和",
+        "滑动窗口"
+      ]
+    },
+    {
+      "pid": "1433",
+      "title": "[蓝桥杯 2022 省 A] 求和",
+      "tag": [
+        "前缀和",
+        "蓝桥杯"
+      ]
+    },
+    {
+      "pid": "1434",
+      "title": "[NOIP 2016 提高组] 玩具谜题",
+      "tag": [
+        "模拟",
+        "NOIP提高组"
+      ]
+    },
+    {
+      "pid": "1451",
+      "title": "[USACO2.2] 集合 Subset Sums",
+      "tag": [
+        "背包",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "1469",
+      "title": "[ABC216F] Max Sum Counting",
+      "tag": [
+        "背包",
+        "排序",
+        "AtCoder"
+      ]
+    },
+    {
+      "pid": "1496",
+      "title": "八进制转十六进制",
+      "tag": [
+        "进制转换",
+        "字符串处理"
+      ]
+    },
+    {
+      "pid": "1499",
+      "title": "[GESP202512 六级] 道具商店",
+      "tag": [
+        "背包",
+        "GESP六级"
+      ]
+    },
+    {
+      "pid": "1500",
+      "title": "[GESP202512 五级] 数字移动",
+      "tag": [
+        "二分",
+        "贪心",
+        "GESP五级"
+      ]
+    },
+    {
+      "pid": "1503",
+      "title": "[GESP202512 六级] 路径覆盖",
+      "tag": [
+        "树形DP",
+        "GESP六级"
+      ]
+    },
+    {
+      "pid": "1514",
+      "title": "[GESP202512 七级] 城市规划",
+      "tag": [
+        "BFS",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "1524",
+      "title": "营救",
+      "tag": [
+        "最小生成树",
+        "二分"
+      ]
+    },
+    {
+      "pid": "1525",
+      "title": "[USACO08OCT] Watering Hole G",
+      "tag": [
+        "最小生成树",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "1529",
+      "title": "阶乘分解",
+      "tag": [
+        "质数与筛法",
+        "数论"
+      ]
+    },
+    {
+      "pid": "1531",
+      "title": "[NOI2011] 道路修建",
+      "tag": [
+        "DFS"
+      ]
+    },
+    {
+      "pid": "1545",
+      "title": "[蓝桥杯 2019 省 B] 等差数列",
+      "tag": [
+        "最大公约数",
+        "排序",
+        "蓝桥杯"
+      ]
+    },
+    {
+      "pid": "1551",
+      "title": "两两互质",
+      "tag": [
+        "质数与筛法"
+      ]
+    },
+    {
+      "pid": "1555",
+      "title": "[USACO13FEB] Milk Scheduling S",
+      "tag": [
+        "拓扑排序",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "1557",
+      "title": "[USACO17DEC] The Bovine Shuffle S",
+      "tag": [
+        "模拟",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "1571",
+      "title": "猫猫和企鹅",
+      "tag": [
+        "BFS"
+      ]
+    },
+    {
+      "pid": "1576",
+      "title": "没有上司的舞会",
+      "tag": [
+        "树形DP"
+      ]
+    },
+    {
+      "pid": "1578",
+      "title": "最大子树和",
+      "tag": [
+        "树形DP"
+      ]
+    },
+    {
+      "pid": "1589",
+      "title": "[IOI 2000] 回文字串",
+      "tag": [
+        "区间DP"
+      ]
+    },
+    {
+      "pid": "1590",
+      "title": "「一本通 5.1 例 3」凸多边形的划分",
+      "tag": [
+        "区间DP",
+        "一本通"
+      ]
+    },
+    {
+      "pid": "1619",
+      "title": "子数组和查询",
+      "tag": [
+        "前缀和",
+        "二分"
+      ]
+    },
+    {
+      "pid": "1625",
+      "title": "[NOISG 2024 Prelim] School Photo",
+      "tag": [
+        "排序",
+        "滑动窗口"
+      ]
+    },
+    {
+      "pid": "1626",
+      "title": "[ABC271C] Manga",
+      "tag": [
+        "贪心",
+        "二分",
+        "AtCoder"
+      ]
+    },
+    {
+      "pid": "1635",
+      "title": "拯救oibh总部",
+      "tag": [
+        "DFS"
+      ]
+    },
+    {
+      "pid": "1638",
+      "title": "[USACO08MAR] River Crossing S",
+      "tag": [
+        "线性DP",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "1650",
+      "title": "树上任意两个点的距离",
+      "tag": [
+        "LCA"
+      ]
+    },
+    {
+      "pid": "1655",
+      "title": "[ABC099C] Strange Bank",
+      "tag": [
+        "背包",
+        "AtCoder"
+      ]
+    },
+    {
+      "pid": "1657",
+      "title": "[ABC446D] Max Straight",
+      "tag": [
+        "哈希表",
+        "线性DP",
+        "AtCoder"
+      ]
+    },
+    {
+      "pid": "1668",
+      "title": "整除判定",
+      "tag": [
+        "质数与筛法"
+      ]
+    },
+    {
+      "pid": "1772",
+      "title": "小A的糖果",
+      "tag": [
+        "贪心"
+      ]
+    },
+    {
+      "pid": "1787",
+      "title": "稀疏的高精度乘法",
+      "tag": [
+        "高精度"
+      ]
+    },
+    {
+      "pid": "1792",
+      "title": "[ABC070D] Transit Tree Path",
+      "tag": [
+        "DFS",
+        "AtCoder"
+      ]
+    },
+    {
+      "pid": "1793",
+      "title": "[ABC312C] Invisible Hand",
+      "tag": [
+        "二分",
+        "AtCoder"
+      ]
+    },
+    {
+      "pid": "1803",
+      "title": "[PA 2020] Mieszanie kolorów",
+      "tag": [
+        "差分"
+      ]
+    },
+    {
+      "pid": "1814",
+      "title": "[GESP202603 六级] 选数",
+      "tag": [
+        "线性DP",
+        "GESP六级"
+      ]
+    },
+    {
+      "pid": "1815",
+      "title": "[GESP202603 六级] 完全二叉树",
+      "tag": [
+        "树形DP",
+        "DFS",
+        "GESP六级"
+      ]
+    },
+    {
+      "pid": "1816",
+      "title": "[GESP202603 七级] 拆分",
+      "tag": [
+        "贪心",
+        "数论",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "1817",
+      "title": "[GESP202603 七级] 物流网络",
+      "tag": [
+        "最短路",
+        "枚举",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "1818",
+      "title": "剪刀(Skare)",
+      "tag": [
+        "模拟",
+        "链表"
+      ]
+    },
+    {
+      "pid": "1819",
+      "title": "旋转和查询(Query)",
+      "tag": [
+        "前缀和"
+      ]
+    },
+    {
+      "pid": "1841",
+      "title": "猫粮规划",
+      "tag": [
+        "双向搜索",
+        "枚举"
+      ]
+    },
+    {
+      "pid": "1855",
+      "title": "[蓝桥杯 2014 省 AB] 地宫取宝",
+      "tag": [
+        "线性DP",
+        "蓝桥杯"
+      ]
+    },
+    {
+      "pid": "1856",
+      "title": "跑步(Race)",
+      "tag": [
+        "构造"
+      ]
+    },
+    {
+      "pid": "1857",
+      "title": "巧克力(Chocolate)",
+      "tag": [
+        "枚举",
+        "贪心"
+      ]
+    },
+    {
+      "pid": "1900",
+      "title": "更新编码(code)",
+      "tag": [
+        "字符串处理",
+        "模拟"
+      ]
+    },
+    {
+      "pid": "1901",
+      "title": "赞歌字符串(string)",
+      "tag": [
+        "线段树"
+      ]
+    },
+    {
+      "pid": "1913",
+      "title": "[USACO17OPEN] Paired Up S",
+      "tag": [
+        "贪心",
+        "双指针",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "1921",
+      "title": "[CSP-X2024 山东] 刷题",
+      "tag": [
+        "二分",
+        "贪心",
+        "其他赛事",
+        "小学组"
+      ]
+    },
+    {
+      "pid": "1933",
+      "title": "图书馆借书(book)",
+      "tag": [
+        "模拟"
+      ]
+    },
+    {
+      "pid": "1934",
+      "title": "键盘(Keys)",
+      "tag": [
+        "模拟",
+        "字符串处理"
+      ]
+    },
+    {
+      "pid": "1999",
+      "title": "青蛙跳(Hop)",
+      "tag": [
+        "贪心"
+      ]
+    },
+    {
+      "pid": "2011",
+      "title": "Likecloud-吃、吃、吃",
+      "tag": [
+        "线性DP"
+      ]
+    },
+    {
+      "pid": "2015",
+      "title": "[CEOI 2015] 世界冰球锦标赛 (Day2)",
+      "tag": [
+        "双向搜索"
+      ]
+    },
+    {
+      "pid": "2018",
+      "title": "[USACO05DEC] Knights of Ni S",
+      "tag": [
+        "BFS",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "2023",
+      "title": "[ABC176D] Wizard in Maze",
+      "tag": [
+        "BFS",
+        "AtCoder"
+      ]
+    },
+    {
+      "pid": "2038",
+      "title": "字符串操作(string)",
+      "tag": [
+        "字符串处理",
+        "贪心"
+      ]
+    },
+    {
+      "pid": "2042",
+      "title": "[ABC271F] XOR on Grid Path",
+      "tag": [
+        "双向搜索",
+        "AtCoder"
+      ]
+    },
+    {
+      "pid": "2060",
+      "title": "UVA11572 唯一的雪花 Unique Snowflakes",
+      "tag": [
+        "滑动窗口",
+        "哈希表"
+      ]
+    },
+    {
+      "pid": "2090",
+      "title": "[USACO14DEC] Marathon S",
+      "tag": [
+        "线性DP",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "2127",
+      "title": "21年海淀信奥T2最大的矩形(matrix)",
+      "tag": [
+        "最大公约数",
+        "海淀信奥"
+      ]
+    },
+    {
+      "pid": "2128",
+      "title": "铺地板(board)",
+      "tag": [
+        "构造"
+      ]
+    },
+    {
+      "pid": "2129",
+      "title": "货物分拣(goods)",
+      "tag": [
+        "队列",
+        "模拟"
+      ]
+    },
+    {
+      "pid": "2131",
+      "title": "三相众物(friend)",
+      "tag": [
+        "二分"
+      ]
+    },
+    {
+      "pid": "2136",
+      "title": "闹钟（Clock）",
+      "tag": [
+        "枚举",
+        "模拟"
+      ]
+    },
+    {
+      "pid": "2150",
+      "title": "[信息与未来 2016] 素数分解",
+      "tag": [
+        "背包",
+        "质数与筛法"
+      ]
+    },
+    {
+      "pid": "2151",
+      "title": "最多完全平方数拆分",
+      "tag": [
+        "背包"
+      ]
+    },
+    {
+      "pid": "2180",
+      "title": "进制转换(change)",
+      "tag": [
+        "进制转换"
+      ]
+    },
+    {
+      "pid": "2223",
+      "title": "紧急物资配送",
+      "tag": [
+        "DFS"
+      ]
+    },
+    {
+      "pid": "2319",
+      "title": "[GESP202606 七级] 染色",
+      "tag": [
+        "二分图",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "2320",
+      "title": "[GESP202606 七级] 消消乐",
+      "tag": [
+        "区间DP",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "2337",
+      "title": "树的直径带权值",
+      "tag": [
+        "树的重心与直径"
+      ]
+    },
+    {
+      "pid": "2412",
+      "title": "游戏（game）",
+      "tag": [
+        "数论"
+      ]
+    },
+    {
+      "pid": "2418",
+      "title": "小 A 点菜",
+      "tag": [
+        "背包"
+      ]
+    },
+    {
+      "pid": "2419",
+      "title": "A+B Problem（再升级）",
+      "tag": [
+        "背包",
+        "质数与筛法"
+      ]
+    },
+    {
+      "pid": "2427",
+      "title": "最大倍数",
+      "tag": [
+        "背包"
+      ]
+    },
+    {
+      "pid": "2487",
+      "title": "[COCI 2021/2022 #3] Cijanobakterije",
+      "tag": [
+        "树的重心与直径",
+        "COCI"
+      ]
+    },
+    {
+      "pid": "2541",
+      "title": "[GESP七级模拟]小 W 的奇偶旅行",
+      "tag": [
+        "BFS",
+        "最短路",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "2655",
+      "title": "[USACO05FEB] Part Acquisition S",
+      "tag": [
+        "BFS",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "2660",
+      "title": "[USACO09MAR] Cow Frisbee Team S",
+      "tag": [
+        "背包",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "2681",
+      "title": "CF1132F Clear the String",
+      "tag": [
+        "区间DP",
+        "Codeforces"
+      ]
+    },
+    {
+      "pid": "2695",
+      "title": "[GESP202609 六级]数组划分",
+      "tag": [
+        "线性DP",
+        "前缀和",
+        "GESP六级"
+      ]
+    },
+    {
+      "pid": "2696",
+      "title": "[GESP202609 六级]分树规划",
+      "tag": [
+        "树形DP",
+        "GESP六级"
+      ]
+    },
+    {
+      "pid": "3111",
+      "title": "杨辉三角与组合数查询",
+      "tag": [
+        "组合数学",
+        "递推",
+        "GESP八级"
+      ]
+    },
+    {
+      "pid": "3241",
+      "title": "逐次加边的连通统计",
+      "tag": [
+        "基础补练",
+        "GESP8级",
+        "并查集"
+      ]
+    }
+  ],
+  "sdoc": {
+    "createAt": "2026-11-09T13:56:51.907Z",
+    "updateAt": "2026-11-22T07:53:22.059Z"
+  },
+  "extraPdocs": [
+    {
+      "pid": "1243",
+      "title": "[AHOI2008] 紧急集合 / 聚会",
+      "tag": [
+        "LCA"
+      ]
+    },
+    {
+      "pid": "2200",
+      "title": "[COCI 2019/2020 #5] Putovanje",
+      "tag": [
+        "树上差分",
+        "COCI"
+      ]
+    },
+    {
+      "pid": "674",
+      "title": "[GESP202409 七级] 小杨寻宝",
+      "tag": [
+        "树的重心与直径",
+        "DFS",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "689",
+      "title": "[GESP202506 五级] 奖品兑换",
+      "tag": [
+        "二分",
+        "GESP五级"
+      ]
+    },
+    {
+      "pid": "1939",
+      "title": "三倍经验",
+      "tag": [
+        "线性DP"
+      ]
+    }
+  ]
+}

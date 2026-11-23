@@ -2,12 +2,43 @@
   "name": "dsh-oi-coach",
   "version": "0.1.0",
   "private": true,
-  "description": "DeepSeek Harness (dsh) plugin bundle scaffold for OI AI Coach workspace",
+  "description": "麒麒 OI 学习台：面向小学六年级 OI 选手与家长的可视化算法教练工作台（四平台时间线、六年级数学微卡片、物理只读防偷懒教练与 21:15 夜间护盾）。",
   "type": "module",
-  "main": "index.js",
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "*",
+    "@deepseek-ai/dsh-tools": "*"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "dsh": {
     "bundle": {
-      "patch": "cordis.patch.yml"
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true
     }
-  }
+  },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "oi-coach",
+    "education"
+  ],
+  "license": "MIT"
 }

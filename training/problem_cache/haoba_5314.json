@@ -1,0 +1,10 @@
+{
+  "platform": "好吧(cpptrain)",
+  "pid": "5314",
+  "title": "5314 路径最大边权之和",
+  "url": "https://haoba.vip/d/cpptrain/p/5314",
+  "attempts": 0,
+  "trajectory": "未提交",
+  "latest_code": "",
+  "statement": "给定一棵有 N 个结点的无向树，结点编号 1 到 N。第 i 条边连接 u_i, v_i，边权为 w_i。\n对两个不同结点 u, v，定义 f(u, v) 为它们之间唯一简单路径上的最大边权。求所有无序点对的 f 值之和：sum_{1 <= i < j <= N} f(i, j)。\n数据范围：2 <= N <= 10^5，1 <= w_i <= 10^7，时限 2s。\n样例1输入：\n3\n1 2 10\n2 3 20\n样例1输出：50"
+}
