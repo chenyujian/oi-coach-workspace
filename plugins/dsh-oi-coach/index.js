@@ -579,29 +579,34 @@ export function apply(ctx, config) {
     })
   })
 
+  async function loadOverviewData(includeAgy = true) {
+    const syncDir = path.join(workspace, 'training/sync_logs')
+    const [allSubs, solved, unsolvedCleaned, mistakeCards, mOi, mLg, mHb, mAc, agyStatus] = await Promise.all([
+      readJsonFile(path.join(syncDir, 'all_submissions_timeline.json')),
+      readJsonFile(path.join(syncDir, 'solved_timeline.json')),
+      parseCleanedUnsolved(workspace),
+      listMistakeCards(workspace),
+      statMtimeIso(path.join(syncDir, 'oilibaitian_uid79_summary.md')),
+      statMtimeIso(path.join(syncDir, 'luogu_qiq2015_summary.md')),
+      statMtimeIso(path.join(syncDir, 'haoba_uid957_summary.md')),
+      statMtimeIso(path.join(syncDir, 'atcoder_chenyanxu_summary.md')),
+      includeAgy ? checkAgyReady() : Promise.resolve(null),
+    ])
+    const data = buildOverviewStats(
+      allSubs || [],
+      solved || [],
+      unsolvedCleaned,
+      mistakeCards,
+      { oilibaitian: mOi, luogu: mLg, haoba: mHb, atcoder: mAc },
+      workspace,
+    )
+    if (includeAgy) data.agy = agyStatus
+    return data
+  }
+
   async function handleOverview(_req, res) {
     try {
-      const syncDir = path.join(workspace, 'training/sync_logs')
-      const [allSubs, solved, unsolvedCleaned, mistakeCards, mOi, mLg, mHb, mAc, agyStatus] = await Promise.all([
-        readJsonFile(path.join(syncDir, 'all_submissions_timeline.json')),
-        readJsonFile(path.join(syncDir, 'solved_timeline.json')),
-        parseCleanedUnsolved(workspace),
-        listMistakeCards(workspace),
-        statMtimeIso(path.join(syncDir, 'oilibaitian_uid79_summary.md')),
-        statMtimeIso(path.join(syncDir, 'luogu_qiq2015_summary.md')),
-        statMtimeIso(path.join(syncDir, 'haoba_uid957_summary.md')),
-        statMtimeIso(path.join(syncDir, 'atcoder_chenyanxu_summary.md')),
-        checkAgyReady(),
-      ])
-      const data = buildOverviewStats(
-        allSubs || [],
-        solved || [],
-        unsolvedCleaned,
-        mistakeCards,
-        { oilibaitian: mOi, luogu: mLg, haoba: mHb, atcoder: mAc },
-        workspace,
-      )
-      data.agy = agyStatus
+      const data = await loadOverviewData(true)
       return sendJson(res, { ok: true, data }, 200)
     } catch (err) {
       return sendJson(res, { ok: false, error: err?.message || String(err) }, 500)
@@ -871,11 +876,11 @@ export function apply(ctx, config) {
 
   async function buildDynamicStudentSummary() {
     try {
-      const ov = await buildOverview(workspace)
+      const ov = await loadOverviewData(false)
       const totalSubs = ov?.totals?.submissions ?? '?'
       const uniqueAc = ov?.totals?.uniqueAc ?? '?'
       const atc = (ov?.platforms || []).find((p) => p.id === 'atcoder')
-      const atcDetail = atc?.detail ? `，${atc.detail}` : ''
+      const atcDetail = atc?.solved ? `，AtCoder ${atc.solved} AC` : ''
       return `六年级（2015年生；已会一元一次与二元一次简单方程，当前重点攻克多字母复杂关系建模、三项展开与合并同类项、含参方程倒推、不等式翻号与局部比较证明），四平台 ${totalSubs} 交 / ${uniqueAc} 独立 AC${atcDetail}；高频老毛病：WA 后盲改连交、动笔前不估复杂度。`
     } catch {
       return '六年级（2015年生；已会简单一元/二元方程，当前重点攻克复杂多字母建模与不等式证明）；高频老毛病：WA 后盲改连交、动笔前不估复杂度。'
