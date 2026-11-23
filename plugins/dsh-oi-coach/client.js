@@ -273,6 +273,65 @@ window.__ModuleLoader__.load({
         border-radius: 14px;
         overflow: hidden;
       }
+      .oi-math {
+        display: inline-block;
+        padding: 0 5px;
+        margin: 0 1px;
+        border-radius: 5px;
+        background: color-mix(in srgb, var(--dsw-alias-brand-primary) 10%, transparent);
+        color: var(--dsw-alias-label-primary);
+        font-family: ui-serif, Georgia, 'Times New Roman', -apple-system, sans-serif;
+        font-size: 14.5px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        line-height: 1.35;
+      }
+      .oi-math-block {
+        display: block;
+        margin: 8px 0;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: color-mix(in srgb, var(--dsw-alias-brand-primary) 9%, transparent);
+        border-left: 3px solid var(--dsw-alias-brand-primary);
+        font-family: ui-serif, Georgia, 'Times New Roman', -apple-system, sans-serif;
+        font-size: 15.5px;
+        font-weight: 700;
+        text-align: center;
+      }
+      .oi-math sup, .oi-math-block sup {
+        font-size: 0.74em;
+        vertical-align: super;
+        line-height: 0;
+        font-weight: 700;
+      }
+      .oi-math sub, .oi-math-block sub {
+        font-size: 0.74em;
+        vertical-align: sub;
+        line-height: 0;
+        font-weight: 700;
+      }
+      .oi-code-inline {
+        display: inline-block;
+        padding: 0 5px;
+        margin: 0 1px;
+        border-radius: 4px;
+        background: color-mix(in srgb, var(--dsw-alias-label-primary) 9%, transparent);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12.5px;
+        font-weight: 600;
+      }
+      .oi-code-block {
+        margin: 8px 0;
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: var(--dsw-alias-bg-base);
+        border: 1px solid var(--dsw-alias-border-l1);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12.5px;
+        line-height: 1.55;
+        overflow-x: auto;
+        white-space: pre;
+      }
     `
 
     function ensureStyles() {
@@ -1149,6 +1208,189 @@ window.__ModuleLoader__.load({
       )
     }
 
+    function normalizeMathLatex(raw) {
+      let s = String(raw || '').trim()
+      // Unwrap \text{...}, \mathrm{...}, \mathbf{...}, \operatorname{...}
+      for (let i = 0; i < 3; i++) {
+        s = s.replace(/\\(?:text|mathrm|mathbf|mathit|operatorname|mathsf)\{([^{}]*)\}/g, '$1')
+      }
+      // Convert \frac{a}{b} -> (a) / (b) (omit parens for simple tokens)
+      for (let i = 0; i < 3; i++) {
+        s = s.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, (_m, num, den) => {
+          const n = /^[a-zA-Z0-9._]+$/.test(num.trim()) ? num.trim() : `(${num.trim()})`
+          const d = /^[a-zA-Z0-9._]+$/.test(den.trim()) ? den.trim() : `(${den.trim()})`
+          return `${n} / ${d}`
+        })
+      }
+      // Convert \sqrt{a}
+      s = s.replace(/\\sqrt\{([^{}]+)\}/g, (_m, inner) =>
+        /^[a-zA-Z0-9]$/.test(inner.trim()) ? `√${inner.trim()}` : `√(${inner.trim()})`,
+      )
+      // Remove sizing/spacing macros
+      s = s.replace(/\\(?:left|right|displaystyle|textstyle|big|Big|bigg|Bigg)\b/g, '')
+      s = s.replace(/\\(?:,|;|!|quad|qquad|:)/g, ' ')
+      // Common mathematical symbols
+      const symMap = [
+        [/\\leq?(?![a-zA-Z])/g, ' ≤ '],
+        [/\\geq?(?![a-zA-Z])/g, ' ≥ '],
+        [/\\neq?(?![a-zA-Z])/g, ' ≠ '],
+        [/\\approx(?![a-zA-Z])/g, ' ≈ '],
+        [/\\times(?![a-zA-Z])/g, ' × '],
+        [/\\cdot(?![a-zA-Z])/g, ' · '],
+        [/\\div(?![a-zA-Z])/g, ' ÷ '],
+        [/\\pm(?![a-zA-Z])/g, ' ± '],
+        [/\\(?:to|rightarrow)(?![a-zA-Z])/g, ' → '],
+        [/\\leftarrow(?![a-zA-Z])/g, ' ← '],
+        [/\\Rightarrow(?![a-zA-Z])/g, ' ⇒ '],
+        [/\\Leftrightarrow(?![a-zA-Z])/g, ' ⇔ '],
+        [/\\infty(?![a-zA-Z])/g, '∞'],
+        [/\\(?:ldots|cdots|dots)(?![a-zA-Z])/g, '…'],
+        [/\\sum(?![a-zA-Z])/g, '∑'],
+        [/\\prod(?![a-zA-Z])/g, '∏'],
+        [/\\lfloor(?![a-zA-Z])/g, '⌊'],
+        [/\\rfloor(?![a-zA-Z])/g, '⌋'],
+        [/\\lceil(?![a-zA-Z])/g, '⌈'],
+        [/\\rceil(?![a-zA-Z])/g, '⌉'],
+        [/\\(?:bmod|pmod)(?![a-zA-Z])/g, ' mod '],
+        [/\\(log|min|max|gcd|lcm|sin|cos|abs)(?![a-zA-Z])/g, '$1'],
+        [/\\mid(?![a-zA-Z])/g, ' | '],
+        [/\\notin(?![a-zA-Z])/g, ' ∉ '],
+        [/\\in(?![a-zA-Z])/g, ' ∈ '],
+        [/\\\{/g, '{'],
+        [/\\\}/g, '}'],
+        [/\\%/g, '%'],
+        [/\\_/g, '_'],
+      ]
+      for (const [re, rep] of symMap) s = s.replace(re, rep)
+      return s.replace(/\s{2,}/g, ' ').trim()
+    }
+
+    function renderMathNodes(raw, keyPrefix) {
+      const norm = normalizeMathLatex(raw)
+      const nodes = []
+      const scriptRe = /(\^|_)(?:\{([^{}]+)\}|([a-zA-Z0-9+-]))/g
+      let last = 0
+      let idx = 0
+      let m
+      while ((m = scriptRe.exec(norm)) !== null) {
+        if (m.index > last) nodes.push(norm.slice(last, m.index))
+        const tag = m[1] === '^' ? 'sup' : 'sub'
+        const val = m[2] !== undefined ? m[2] : m[3]
+        nodes.push(h(tag, { key: `${keyPrefix}-s-${idx++}` }, val))
+        last = scriptRe.lastIndex
+      }
+      if (last < norm.length) nodes.push(norm.slice(last))
+      return nodes.length ? nodes : [norm]
+    }
+
+    function renderInlineRich(line, keyPrefix) {
+      // Protect escaped dollar signs (\$ -> placeholder)
+      const ESC_DOLLAR = '\uE000'
+      const src = String(line || '').replace(/\\\$/g, ESC_DOLLAR)
+      const restore = (s) => s.replaceAll(ESC_DOLLAR, '$')
+      // Match inline code, inline math ($...$ or \(...\)), or bold (**...**)
+      const tokenRe = /`([^`\n]+)`|\\\((.+?)\\\)|\$(?!\s)([^$\n]+?)(?<!\s)\$|\*\*([^*\n]+?)\*\*/g
+      const out = []
+      let last = 0
+      let idx = 0
+      let m
+      while ((m = tokenRe.exec(src)) !== null) {
+        if (m.index > last) out.push(restore(src.slice(last, m.index)))
+        if (m[1] !== undefined) {
+          out.push(h('code', { key: `${keyPrefix}-c-${idx++}`, className: 'oi-code-inline' }, restore(m[1])))
+        } else if (m[2] !== undefined || m[3] !== undefined) {
+          const expr = restore(m[2] !== undefined ? m[2] : m[3])
+          out.push(
+            h(
+              'span',
+              { key: `${keyPrefix}-m-${idx++}`, className: 'oi-math' },
+              ...renderMathNodes(expr, `${keyPrefix}-mn-${idx}`),
+            ),
+          )
+        } else if (m[4] !== undefined) {
+          out.push(
+            h(
+              'strong',
+              { key: `${keyPrefix}-b-${idx++}`, style: { fontWeight: 700 } },
+              ...renderInlineRich(restore(m[4]), `${keyPrefix}-bi-${idx}`),
+            ),
+          )
+        }
+        last = tokenRe.lastIndex
+      }
+      if (last < src.length) out.push(restore(src.slice(last)))
+      return out.length ? out : ['']
+    }
+
+    function renderRichMessage(text) {
+      const raw = String(text || '')
+      // 1. Split out fenced code blocks ```...```
+      const codeSplitRe = /```([a-zA-Z0-9_+-]*)\n?([\s\S]*?)```/g
+      const blocks = []
+      let last = 0
+      let m
+      while ((m = codeSplitRe.exec(raw)) !== null) {
+        if (m.index > last) blocks.push({ type: 'md', text: raw.slice(last, m.index) })
+        blocks.push({ type: 'code', lang: m[1] || '', text: m[2].replace(/\n$/, '') })
+        last = codeSplitRe.lastIndex
+      }
+      if (last < raw.length) blocks.push({ type: 'md', text: raw.slice(last) })
+
+      const elements = []
+      blocks.forEach((blk, bIdx) => {
+        if (blk.type === 'code') {
+          elements.push(h('pre', { key: `cb-${bIdx}`, className: 'oi-code-block' }, blk.text))
+          return
+        }
+        // 2. Split out display math blocks $$...$$ or \[...\]
+        const dispRe = /\$\$([\s\S]+?)\$\$|\\\[([\s\S]+?)\\\]/g
+        let dLast = 0
+        let dm
+        let segIdx = 0
+        const pushLines = (chunk) => {
+          const lines = chunk.split('\n')
+          lines.forEach((ln, lIdx) => {
+            const trimmed = ln.trim()
+            if (/^#{1,4}\s+/.test(trimmed)) {
+              const titleText = trimmed.replace(/^#{1,4}\s+/, '')
+              elements.push(
+                h(
+                  'div',
+                  { key: `h-${bIdx}-${segIdx}-${lIdx}`, style: { fontWeight: 800, fontSize: 14.5, margin: '6px 0 3px' } },
+                  ...renderInlineRich(titleText, `hi-${bIdx}-${segIdx}-${lIdx}`),
+                ),
+              )
+            } else {
+              elements.push(
+                h(
+                  'div',
+                  { key: `l-${bIdx}-${segIdx}-${lIdx}`, style: { minHeight: trimmed ? undefined : 6 } },
+                  ...renderInlineRich(ln, `li-${bIdx}-${segIdx}-${lIdx}`),
+                ),
+              )
+            }
+          })
+        }
+        while ((dm = dispRe.exec(blk.text)) !== null) {
+          if (dm.index > dLast) {
+            pushLines(blk.text.slice(dLast, dm.index))
+            segIdx++
+          }
+          const expr = dm[1] !== undefined ? dm[1] : dm[2]
+          elements.push(
+            h(
+              'div',
+              { key: `dm-${bIdx}-${segIdx++}`, className: 'oi-math-block' },
+              ...renderMathNodes(expr, `dmn-${bIdx}-${segIdx}`),
+            ),
+          )
+          dLast = dispRe.lastIndex
+        }
+        if (dLast < blk.text.length) pushLines(blk.text.slice(dLast))
+      })
+      return elements
+    }
+
     function AgyChatPanel({ st }) {
       const chat = st.agyChat
       if (!chat?.open) return null
@@ -1259,12 +1501,11 @@ window.__ModuleLoader__.load({
                 {
                   style: {
                     fontSize: 13.5,
-                    lineHeight: 1.65,
-                    whiteSpace: 'pre-wrap',
+                    lineHeight: 1.7,
                     wordBreak: 'break-word',
                   },
                 },
-                m.text,
+                ...renderRichMessage(m.text),
               ),
             ),
           ),
