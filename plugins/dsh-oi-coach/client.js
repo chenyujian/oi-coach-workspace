@@ -664,9 +664,9 @@ window.__ModuleLoader__.load({
           return
         }
         const prompts = {
-          hint: `教练你好！我做这道题卡住了，请严格按【4 步数学建模锁步】（先剥故事立数学目标 → 我自己判 N → 造小世界拆式子 → 写关系式验毒）带我从第 1 步开始，严禁首轮剧透解法方向或算法名，绝不给完整 AC 代码：${agyHint}\n\n${raw}`,
+          hint: `教练你好！我做这道题卡住了，请严格按【代数建模 5 步锁步】（立数学目标式 → 判 N 并盯“碍眼结构”让我自己选数学变形 → 分离变量引记号 → 比相邻状态推递推并验毒 → 译代码并挂母模型牌）带我从第 1 步开始，严禁首轮剧透解法方向或算法名，别出送分二选一，绝不给完整 AC 代码：${agyHint}\n\n${raw}`,
           wa: `教练你好！我这道题 WA 了，请先帮我核对数学模型和边界条件（绝不要直接剧透正解思路或替我改代码；若已连错 2 次可先喂 1 组 N<=4 极小反例让我手算抓虫）：${agyHint}\n\n${raw}`,
-          tle: `教练你好！我这道题超时 TLE 了，先别告诉我怎么优化！请严格按【4 步数学建模锁步】从第 1 步「剥故事立数学目标」重新带我拆解公式和复杂度（绝不提前剧透算法方向，绝不给 AC 代码）：${agyHint}\n\n${raw}`,
+          tle: `教练你好！我这道题超时 TLE 了，先别告诉我怎么优化！请严格按【代数建模 5 步锁步】从第 1 步「剥故事立数学目标式」重新带我做代数拆解（核心变形让我自己选，严禁提前剧透算法方向，绝不给 AC 代码）：${agyHint}\n\n${raw}`,
           re: `教练你好！我这道题 RE/CE 了，请带我自己定位数组越界、初始化或语法问题（绝不替我改代码）：${agyHint}\n\n${raw}`,
           pm: `教练你好！我刚刚把这道题 AC 了！请按 post-mortem 的 3 秒“敲 1 确认”模式直接帮我提炼 3 行通关秘籍卡，我确认后请你调用 save_mistake_card 存入错题库：\n\n${raw}`,
         }
@@ -736,7 +736,7 @@ window.__ModuleLoader__.load({
           h(
             'div',
             { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } },
-            h('button', { type: 'button', className: 'oi-btn oi-btn-primary', disabled: !!st.busy, onClick: () => handleQuickLaunch('hint') }, '🧭 没思路 · 数学三步快桥'),
+            h('button', { type: 'button', className: 'oi-btn oi-btn-primary', disabled: !!st.busy, onClick: () => handleQuickLaunch('hint') }, '🧭 没思路 · 代数建模5步'),
             h('button', { type: 'button', className: 'oi-btn', disabled: !!st.busy, onClick: () => handleQuickLaunch('wa') }, '🩺 WA 了 · 喂极小反例'),
             h('button', { type: 'button', className: 'oi-btn', disabled: !!st.busy, onClick: () => handleQuickLaunch('tle') }, '⏱️ TLE 了 · 隐性超时快筛'),
             h('button', { type: 'button', className: 'oi-btn', disabled: !!st.busy, onClick: () => handleQuickLaunch('re') }, '💥 RE / CE 排查'),
@@ -807,7 +807,7 @@ window.__ModuleLoader__.load({
                         launchCoachSession({
                           presetId: 'oi-coach',
                           title: `建模 · ${p.title.slice(0, 16)}`,
-                          prompt: `教练，我要补这道题：【${p.title}】（平台：${p.platform}，我之前交了 ${p.attempts} 次，最高 ${p.bestScore} 分，轨迹：${p.trajectory}）。请严格按【4 步数学建模锁步】从第 1 步「剥故事立数学目标」带我一步步建模型，严禁首轮剧透解法思路或算法名称，绝不要直接给代码。${agyHint}`,
+                          prompt: `教练，我要补这道题：【${p.title}】（平台：${p.platform}，我之前交了 ${p.attempts} 次，最高 ${p.bestScore} 分，轨迹：${p.trajectory}）。请严格按【代数建模 5 步锁步】从第 1 步「剥故事立数学目标式」带我一步步推导（核心数学变形让我自己选，别出送分题，严禁首轮剧透解法方向或算法名称，绝不要直接给代码）。${agyHint}`,
                         }),
                     },
                     '🧮 建模搭桥',
@@ -822,7 +822,7 @@ window.__ModuleLoader__.load({
                         launchCoachSession({
                           presetId: 'oi-coach',
                           title: `排错 · ${p.title.slice(0, 16)}`,
-                          prompt: `教练，我在【${p.title}】（平台：${p.platform}，轨迹：${p.trajectory}，最高 ${p.bestScore} 分）上卡住了。先别直接剧透正解方向！若是 WA 请喂 1 组 N<=4 极小反例让我手算找错；若是 TLE 请严格从【第 1 步：剥故事立数学目标】重新带我建数学模型。${agyHint}`,
+                          prompt: `教练，我在【${p.title}】（平台：${p.platform}，轨迹：${p.trajectory}，最高 ${p.bestScore} 分）上卡住了。先别直接剧透正解方向！若是 WA 请喂 1 组 N<=4 极小反例让我手算找错；若是 TLE 请严格按【代数建模 5 步锁步】从第 1 步「剥故事立数学目标式」重新带我做代数拆解。${agyHint}`,
                         }),
                     },
                     '🩺 排错诊所',
