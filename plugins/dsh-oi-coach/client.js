@@ -664,13 +664,13 @@ window.__ModuleLoader__.load({
           return
         }
         const prompts = {
-          hint: `教练你好！我做这道题卡住了，请用 socratic-hint（六年级数学三步快桥 + 低打字摩擦报数/二选一）带我分析，绝不要直接给 AC 代码：${agyHint}\n\n${raw}`,
-          wa: `教练你好！我这道题 WA 了，请用 bug-clinic 带我排查（如果我已经连错 2 次请直接给我一组 N<=4 的最小 Hack 反例，绝不要替我改代码）：${agyHint}\n\n${raw}`,
-          tle: `教练你好！我这道题超时 TLE 了，请用 bug-clinic 的 4 大隐性 TLE 快筛清单帮我定位瓶颈（绝不要直接给 AC 代码）：${agyHint}\n\n${raw}`,
-          re: `教练你好！我这道题 RE/CE 了，请用 bug-clinic 带我自己查出越界/初始化/语法问题：${agyHint}\n\n${raw}`,
+          hint: `教练你好！我做这道题卡住了，请严格按【4 步数学建模锁步】（先剥故事立数学目标 → 我自己判 N → 造小世界拆式子 → 写关系式验毒）带我从第 1 步开始，严禁首轮剧透解法方向或算法名，绝不给完整 AC 代码：${agyHint}\n\n${raw}`,
+          wa: `教练你好！我这道题 WA 了，请先帮我核对数学模型和边界条件（绝不要直接剧透正解思路或替我改代码；若已连错 2 次可先喂 1 组 N<=4 极小反例让我手算抓虫）：${agyHint}\n\n${raw}`,
+          tle: `教练你好！我这道题超时 TLE 了，先别告诉我怎么优化！请严格按【4 步数学建模锁步】从第 1 步「剥故事立数学目标」重新带我拆解公式和复杂度（绝不提前剧透算法方向，绝不给 AC 代码）：${agyHint}\n\n${raw}`,
+          re: `教练你好！我这道题 RE/CE 了，请带我自己定位数组越界、初始化或语法问题（绝不替我改代码）：${agyHint}\n\n${raw}`,
           pm: `教练你好！我刚刚把这道题 AC 了！请按 post-mortem 的 3 秒“敲 1 确认”模式直接帮我提炼 3 行通关秘籍卡，我确认后请你调用 save_mistake_card 存入错题库：\n\n${raw}`,
         }
-        const labels = { hint: '思路搭桥', wa: 'WA排错', tle: 'TLE快筛', re: 'RE/CE诊所', pm: '3秒复盘' }
+        const labels = { hint: '建模搭桥', wa: 'WA排错', tle: 'TLE建模重拆', re: 'RE/CE诊所', pm: '3秒复盘' }
         void launchCoachSession({
           presetId: 'oi-coach',
           title: `${labels[mode]} · ${raw.slice(0, 16).replace(/\s+/g, ' ')}`,
@@ -806,11 +806,11 @@ window.__ModuleLoader__.load({
                       onClick: () =>
                         launchCoachSession({
                           presetId: 'oi-coach',
-                          title: `搭桥 · ${p.title.slice(0, 16)}`,
-                          prompt: `教练，我要补这道题：【${p.title}】（平台：${p.platform}，我之前交了 ${p.attempts} 次，最高 ${p.bestScore} 分，轨迹：${p.trajectory}）。请按自适应切入 + 六年级数学三步快桥（低打字摩擦报数/二选一）带我理清核心模型，不要直接给代码。${agyHint}`,
+                          title: `建模 · ${p.title.slice(0, 16)}`,
+                          prompt: `教练，我要补这道题：【${p.title}】（平台：${p.platform}，我之前交了 ${p.attempts} 次，最高 ${p.bestScore} 分，轨迹：${p.trajectory}）。请严格按【4 步数学建模锁步】从第 1 步「剥故事立数学目标」带我一步步建模型，严禁首轮剧透解法思路或算法名称，绝不要直接给代码。${agyHint}`,
                         }),
                     },
-                    '🧭 思路搭桥',
+                    '🧮 建模搭桥',
                   ),
                   h(
                     'button',
@@ -822,7 +822,7 @@ window.__ModuleLoader__.load({
                         launchCoachSession({
                           presetId: 'oi-coach',
                           title: `排错 · ${p.title.slice(0, 16)}`,
-                          prompt: `教练，我在【${p.title}】（平台：${p.platform}，轨迹：${p.trajectory}，最高 ${p.bestScore} 分）上卡住了。请用 bug-clinic（连交急刹车 + 4 大隐性 TLE 快筛）直接给我一组 N<=4 的最小反例或二选一排查问题！${agyHint}`,
+                          prompt: `教练，我在【${p.title}】（平台：${p.platform}，轨迹：${p.trajectory}，最高 ${p.bestScore} 分）上卡住了。先别直接剧透正解方向！若是 WA 请喂 1 组 N<=4 极小反例让我手算找错；若是 TLE 请严格从【第 1 步：剥故事立数学目标】重新带我建数学模型。${agyHint}`,
                         }),
                     },
                     '🩺 排错诊所',
