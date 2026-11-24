@@ -72,7 +72,7 @@
 
     - id: preset-oi-parent
       name: '@deepseek-ai/dsh-agent-preset'
-      disabled: !!js process.platform === 'win32'
+      disabled: !!js process.platform !== 'darwin'
       config:
         id: oi-parent
         name: OI 家长教研官

@@ -1,65 +1,65 @@
 # OI AI 教练工作台 — 总体架构与方案 A 实施蓝图
 
-本文档记录本项目的核心架构决策、双端协同机制、DeepSeek Harness 适配方案与上线进度，供家长端新对话快速对齐上下文。
+本文档记录本项目的核心架构决策、双端权限隔离机制、数据流与上线状态，供家长端新对话快速对齐全局上下文。
 
 ---
 
-## 一、 总体目标与硬件分工
+## 一、 总体目标与双端分工
 
-构建一个**教研（家长）与学习（孩子）分离、数据云端同步、具备长期记忆的 C++ 信息学奥赛 AI 辅导与诊断平台**：
+构建一个**教研（家长）与学习（孩子）分离、双机云端同步、具备长期记忆与物理防偷懒护栏的 C++ 信息学奥赛 AI 代数建模辅导平台**：
 
-- **家长端（Mac mini，常年开机）**：
-  - 使用 **Antigravity** 打开本工作区（自动加载 `GEMINI.md` 进入**架构师/教研运维模式**）。
-  - 负责：维护教学规则（`AGENTS.md`）、教学技能（`.dsh/skills/`）、DSH 插件包（`plugins/dsh-oi-coach/`）、Git 方案 A 运维、录入老师讲义（`courses/`）、后台定时拉取公开 OJ 提交记录、生成多维弱点诊断报告（`profile/reports/`）。
+- **家长端（Mac mini，常驻中枢）**：
+  - 使用 **Antigravity** 打开本工作区（自动加载 `GEMINI.md` 进入架构师/教研模式）+ **DeepSeek Harness** 实测验收。
+  - 负责：维护教学规则（`AGENTS.md`）、5 个专项技能（`.dsh/skills/`）、原生插件（`plugins/dsh-oi-coach/`）、讲义精炼入库（`courses/notes/`）、四平台提交同步与时间线重建、阶段性四维诊断报告（`profile/reports/`）。
 - **孩子端（Windows 电脑）**：
-  - **写代码**：使用纯净 C++ 编辑器（不开启 AI 自动补全的 VS Code / CP Editor / Dev-C++），代码保存在 `training/`，保持考场手写手感。
-  - **AI 教练辅导**：使用 **DeepSeek Harness 桌面版** 打开本工作区（自动加载 `AGENTS.md` + `.dsh/skills/`，不加载 `GEMINI.md`），严格执行苏格拉底式五级启发、最小 Hack 反例排错、2 分钟复盘归档。
-- **日常刷题平台**：AtCoder、Codeforces、洛谷、机构内部 OJ。
+  - **AI 建模辅导**：使用 **DeepSeek Harness 桌面版**（挂载 `dsh-oi-coach` 插件 + 可选本机 `agy` CLI 专家外脑），严格执行「代数建模 5 步锁步」（不给 AC 代码、不提前剧透解法、不设作息时间打断）。
+  - **手写代码**：使用不开启 AI 自动补全的纯净 C++ 编辑器，保持考场手写手感。
+- **四大日常训练平台**：信奥李拜天 OJ（UID `79`）、洛谷（`qiq2015`）、好吧平台（UID `957`）、AtCoder（`chenyanxu`）。
 
 ---
 
-## 二、 为什么同一份仓库能实现“双端不同人格与权限”？
+## 二、 三层双端人格与物理权限隔离
 
-| 客户端 | 使用者 | 自动加载的规则入口 | 生效角色 |
+| 层次 | 家长端（macOS） | 孩子端（Windows） | 隔离实现机制 |
 | :--- | :--- | :--- | :--- |
-| **Antigravity**（Mac mini） | 家长 | `GEMINI.md`（优先于/覆盖孩子端限制）+ `.agents/skills/` | 架构师、开发者、Git 运维、教研诊断助手 |
-| **DeepSeek Harness**（Windows） | 孩子 | `AGENTS.md` + `.dsh/skills/`（及可选 `plugins/dsh-oi-coach/`） | 严格受限的 OI 教练（绝不直接给 AC 代码、不可改规则与技能） |
+| **1. IDE 规则层** | Antigravity 加载 `GEMINI.md`（架构师权限） | DeepSeek Harness 仅加载 `AGENTS.md` + `.dsh/skills/` | 客户端入口文件分离 |
+| **2. DSH Preset 层** | 同时可见 `oi-coach` 与 `oi-parent` | 物理禁用 `preset-oi-parent`（`disabled: !!js process.platform === 'win32'`），`oi-coach` 文件系统物理只读且禁 `bash` | `cordis.patch.yml` 硬件级权限锁 |
+| **3. `agy` 外脑直连层** | 输入 `.env.local` 中的 `OI_PARENT_PIN` 可开启家长教研模式 | 强制锁死 `coach` 模式，运行于仓外隔离目录 `os.tmpdir()/oi-coach-child-isolated`（绝不加载 `GEMINI.md`），且拦截读取/篡改任何 `parent` 历史记录（`403`） | `plugins/dsh-oi-coach/index.js` 服务端硬锁 |
 
 ---
 
-## 三、 远程协同架构：方案 A（私有云 Git + Mac mini 常驻中枢）
+## 三、 数据流与双机防冲突设计
 
-### 核心链路
 ```text
-[家长 Mac mini] <---> [私有云 Git 仓库 (Gitee / GitHub Private)] <---> [孩子 Windows]
-  (Antigravity +                                                         (DeepSeek Harness +
-   后台定时脚本)                                                           桌面一键同步脚本)
+[四平台 OJ] ──(scripts/fetch_*.py)──> training/sync_logs/*.json
+                                            │
+                            (scripts/build_timeline.py)
+                                            ▼
+                     profile/activity_timeline.md & solved_timeline.md
+                                            │
+                       (scripts/cache_problem_context.py --incremental)
+                                            ▼
+                         training/problem_cache/<plat>_<pid>.json
+                                            │
+[家长 Mac mini] <─── GitHub Private (origin/main) ───> [孩子 Windows · OI学习台]
 ```
 
-### 防冲突目录所有权约定
-- **家长主写 / 孩子只读**：`GEMINI.md`、`AGENTS.md`、`docs/`、`.agents/`、`.dsh/skills/`、`plugins/`、`courses/`、`scripts/`、`profile/reports/`
-- **孩子端（AI）主写 / 家长只读**：`training/`、`mistakes/`（强制一题一文件：`YYYY-MM-DD-<platform>-<id>.md`）
-- **增量共享**：`profile/habits_and_bugs.md`、`profile/skill_matrix.md`、`profile/student_profile.md`
+### 防冲突文件粒度约定
+- **独立单文件落盘（零合并冲突）**：
+  - 教练室历史对话：`training/chat_history/YYYY-MM-DD-<id>.json`
+  - 错题通关秘籍卡：`mistakes/YYYY-MM-DD-<platform>-<slug>.md`
+  - 课程讲义笔记：`courses/notes/YYYY-MM-DD-<topic>.md`（原始大体积 `courses/raw/*.pdf` 已在 `.gitignore` 忽略）
+- **本机私有凭据（绝不入 Git）**：`.env.local`（`600` 权限，存 `HAOBA_USERNAME` / `HAOBA_PASSWORD` / `OI_PARENT_PIN`）。
 
 ---
 
-## 四、 DeepSeek Harness 工作区与插件体系说明
+## 四、 上线进度与演进状态
 
-本项目同时支持两种 DeepSeek Harness 接入层次，按需渐进演进：
-1. **Workspace 级即用层（当前已就绪）**：
-   - DeepSeek Harness 桌面版选中本仓库作为 Workspace 后，原生发现 `AGENTS.md` 与 `.dsh/skills/*/SKILL.md`，零额外安装即可运行 5 套核心教学与复盘技能。
-2. **标准 DSH 插件包层（`plugins/dsh-oi-coach/`，骨架已预置）**：
-   - 当需要更深度的 Harness 运行时控制（例如工具权限沙箱拦截、自动在启动/退出时触发 Git 同步钩子、自定义 UI 面板或 Cordis 服务注入、MCP 数据源挂载）时，在 `plugins/dsh-oi-coach/` 下基于 `package.json`（`dsh.bundle`）+ `cordis.patch.yml` 扩展为标准 DeepSeek Harness 插件。
-
----
-
-## 五、 方案 A 上线进度 Checklist
-
-- [x] 本地工作区目录骨架搭建（`AGENTS.md`、5 个 `.dsh/skills/`、`profile/`、`mistakes/`、`training/`、`courses/`）
-- [x] 跨平台配置（`.gitignore`、`.gitattributes`、Mac/Windows 同步脚本、AtCoder/Codeforces 抓取脚本）
-- [x] 双端规则隔离（`GEMINI.md` 家长端架构师模式 vs `AGENTS.md` 孩子端严格教练模式）与 DSH 插件骨架
-- [x] 本地 Git 仓库初始化（`main` 分支）
-- [x] 已在 GitHub 创建私有远程仓库（`git@github.com:chenyujian/oi-coach-workspace.git`），并在 Mac mini 上绑定 `origin` 完成首次 `git push`
-- [ ] **待完成**：在孩子 Windows 电脑完成 `git clone`、桌面放置“学习同步”快捷方式，并用 DeepSeek Harness 桌面版实测一轮对话
-- [ ] **待完成**：（可选）在 `profile/student_profile.md` 填入平台账号，并在 Mac mini 上配置 `launchd` / `cron` 定时拉取 AtCoder / Codeforces 并自动同步
-- [ ] **待完成**：（按需）基于实际体验完善 `plugins/dsh-oi-coach/` 插件功能（如自动同步钩子、权限护栏或面板）
+- [x] 本地工作区骨架、`AGENTS.md`（代数建模 5 步锁步）与 5 个 `.dsh/skills/`
+- [x] GitHub 私有远程仓库绑定（`git@github.com:chenyujian/oi-coach-workspace.git`）与 Mac/Windows 同步脚本
+- [x] 四平台全量基线拉取、跨站同题去重时间线（`build_timeline.py`）与未过题题面增量缓存（`cache_problem_context.py`）
+- [x] 6 课交互式「OI 读题与建模训练营」（`courses/math_lab/index.html`）
+- [x] 原生 `dsh-oi-coach` 四空间插件（全屏教练室 + 历史对话续聊 + 一键存秘籍卡 + 6 大母模型快练 + 讲义直读 + Windows 全兼容）
+- [x] 15 项端到端自动化门禁测试（`scripts/test_oi_coach.mjs`）与 `GEMINI.md` 研发质量门禁
+- [ ] **待推进**：批量精炼入库 `/Users/chenyujian/oippt` 中剩余 18 份老师讲义至 `courses/notes/`
+- [ ] **待推进**：在孩子 Windows 电脑实装验收，并按需补充“3~7 天无提示盲重做”打卡状态与洛谷增量抓取脚本

@@ -1,14 +1,29 @@
 # `dsh-oi-coach` — 麒麒 OI 学习台（DeepSeek Harness 原生工作台插件）
 
-仿照 `dsh-invest-board` 零构建 ESM 架构实现的原生 DeepSeek Harness 桌面插件，为小学六年级 OI 选手（麒麒）与家长提供可视化学习控制台 + 物理只读防偷懒角色隔离：
+零构建 ESM 原生 DeepSeek Harness 桌面插件（跨平台兼容 macOS 家长端与 Windows 孩子端），提供宽敞的 4 独立空间界面、物理只读权限隔离与官方 Antigravity CLI（`agy`）专家外脑直连。
 
-## 核心能力
-1. **原生侧边栏入口与三视图工作台**（`client.js`）：
-   - **今日训练台**：实时 `21:15` 夜间疲劳护盾 + 新题快速投喂框（`没思路` / `WA` / `TLE` / `RE` / `AC复盘` 五键直达）+ 清洗去重后的近期待补题墙（每题一键拉起「思路搭桥 / 排错诊所 / 3 秒存秘籍」）；
-   - **数学实验 & 错题本**：5 张内置纯手算「六年级数学微卡片」（即时判分 + 标准术语挂牌）+ 每周「隔月旧题冷启动重斩」队列 + `mistakes/` 通关秘籍墙；
-   - **四平台成长档案**：Argon 3 大防作弊指标看板（近 30 天失控连交率、零 CE 底线、`21:15` 深夜提交警报）+ 四平台一键同步 + 档案弹窗直读。
-2. **物理权限隔离角色（`cordis.patch.yml`）**：
-   - `oi-coach`（麒麒 OI 教练）：`tool-fs` 物理只读（`write/edit/applyPatch: false`）、无 Shell 写权限，仅可通过受控工具 `save_mistake_card` 往 `mistakes/` 写入错题卡，彻底杜绝替改源码。
-   - `oi-parent`（OI 家长教研官）：供家长端做四维诊断、周报生成与讲义入库。
-3. **本机挂载方式**：
-   - Mac mini 已通过 `link:` 挂载至 `~/.dsh/profiles/desktop/package.json` 与 `node_modules/dsh-oi-coach`，重启 DeepSeek Harness 桌面版即可在左侧栏看到「OI学习台」。
+## 一、 四个独立功能空间（`client.js`）
+1. **💬 教练室（默认全屏首页）**
+   - 100% 视口高度沉浸式对话空间 + 左侧可折叠**历史对话栏**（落盘于 `training/chat_history/*.json`，跨设备无缝续聊）；
+   - 自动匹配 `training/problem_cache/` 提供 **「📄 看原题」** 折叠抽屉；
+   - 对话满 1 轮后支持顶栏 **「💾 存秘籍卡」** 一键抽取并落盘至 `mistakes/`。
+2. **📋 题单**
+   - 按平台筛选清洗去重后的「近期待补题」与「隔月旧题冷启动重斩」，一键切入全屏教练室。
+3. **🧮 建模练习（独立专区）**
+   - **读题建模训练营（6 课交互实验）**：全高内嵌 `courses/math_lab/index.html` + 一键调起系统浏览器打印 A4 闯关单；
+   - **专题建模快练（6 大母模型 × 3 档难度）**：演草纸空手走完「代数建模 5 步锁步」；
+   - **15 分钟手算微卡片（5 套）**：即时判分与标准术语挂牌。
+4. **📚 错题与档案**
+   - **我的通关秘籍**：展示 `mistakes/` 卡片墙（支持教科书分式与数学排版直读）；
+   - **课程讲义**：自动扫描 `courses/notes/` 讲义并提供「🎯 练 1 道变式建模题」；
+   - **成长与同步**：动态统计四平台独立 AC 进度与一键 Git 同步（Windows 孩子端自动隐藏家长同步运维与模型下拉框）。
+
+## 二、 物理权限隔离与双端护栏（`cordis.patch.yml` & `index.js`）
+- `oi-coach`（麒麒 OI 教练）：`tool-fs` 物理只读（`write/edit/applyPatch: false`）、无 Shell 写权限；直连 `agy` 时运行在仓外隔离目录（不加载 `GEMINI.md`）并每轮强制注入反套话与「代数建模 5 步锁步」护栏。
+- `oi-parent`（OI 家长教研官）：Windows 下由 `cordis.patch.yml` 直接物理禁用；Mac 家长端需校验 `.env.local` 中的 `OI_PARENT_PIN` 口令方可访问。
+
+## 三、 回归测试
+```bash
+node scripts/test_oi_coach.mjs --skip-live-agy   # 1 秒本地全量单测（13 项）
+node scripts/test_oi_coach.mjs                   # 含真实 agy-chat 防剧透与防越狱 E2E（15 项）
+```

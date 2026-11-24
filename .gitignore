@@ -28,3 +28,9 @@ __pycache__/
 *.pyc
 .dsh/cache/
 .dsh/logs/
+
+# Large raw course slides/PDFs (only refined Markdown notes in courses/notes/ are synced)
+courses/raw/*.pdf
+courses/raw/*.pptx
+courses/raw/*.ppt
+courses/raw/*.zip

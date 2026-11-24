@@ -153,14 +153,28 @@ window.__ModuleLoader__.load({
       },
     ]
 
-    const DOC_SHORTCUTS = [
-      { path: 'profile/learning_journey.md', title: '30 个月完整成长路径', desc: '从 9 岁启蒙到六年级八级攻坚的七阶段轨迹' },
-      { path: 'profile/reports/2026-11-22-full-diagnosis.md', title: '四平台全局诊断报告（Argon 终审版）', desc: '四维弱点雷达、核心习惯指标与家长配合清单' },
-      { path: 'profile/habits_and_bugs.md', title: '高频老毛病与习惯库（H-01 ~ H-09）', desc: '含 21:15 深夜盲交、遗忘回退与防坑自查口诀' },
-      { path: 'profile/skill_matrix.md', title: '四维知识点掌握矩阵', desc: '区分短期突击与隔月留存的真实掌握状态' },
-      { path: 'profile/activity_timeline.md', title: '全量 2,705 条提交时间线', desc: '含全部 AC/非 AC 轨迹与清洗后 88 道真正待补题' },
-      { path: 'profile/solved_timeline.md', title: 'AC 首通时间线（去重 734 题）', desc: '精确到分钟的跨平台首通记录与失误轨迹' },
-    ]
+    function buildDocShortcuts(data) {
+      const subCnt = Number(data?.totals?.submissions ?? 0).toLocaleString('en-US')
+      const unsolvedCnt = Number(data?.totals?.trueUnsolved ?? 0)
+      const acCnt = Number(data?.totals?.uniqueAc ?? 0)
+      const list = [
+        { path: 'profile/learning_journey.md', title: '30 个月完整成长路径', desc: '从 9 岁启蒙到六年级八级攻坚的七阶段轨迹' },
+        ...(data?.isWindows
+          ? []
+          : [
+              {
+                path: 'profile/reports/2026-11-22-full-diagnosis.md',
+                title: '四平台全局诊断报告（家长教研版）',
+                desc: '四维弱点雷达、核心习惯指标与家长配合清单（需口令）',
+              },
+            ]),
+        { path: 'profile/habits_and_bugs.md', title: '高频老毛病与习惯库（H-01 ~ H-09）', desc: '含连错急刹车、遗忘回退与防坑自查口诀' },
+        { path: 'profile/skill_matrix.md', title: '四维知识点掌握矩阵', desc: '区分短期突击与隔月留存的真实掌握状态' },
+        { path: 'profile/activity_timeline.md', title: `全量 ${subCnt} 条提交时间线`, desc: `含全部 AC/非 AC 轨迹与清洗后 ${unsolvedCnt} 道真正待补题` },
+        { path: 'profile/solved_timeline.md', title: `AC 首通时间线（去重 ${acCnt} 题）`, desc: '精确到分钟的跨平台首通记录与失误轨迹' },
+      ]
+      return list
+    }
 
 
     const MODELING_DRILLS = [
@@ -779,6 +793,10 @@ window.__ModuleLoader__.load({
 
     async function openChatFromHistory(chatId) {
       if (!chatId) return
+      const meta = (state.chatHistory || []).find((c) => c.id === chatId)
+      const isParentChat = meta?.mode === 'parent'
+      const pin = isParentChat ? ensureParentPin('查看家长教研对话，请输入家长口令：') : ''
+      if (isParentChat && !pin) return
       if (activeAgyAbort) {
         try { activeAgyAbort.abort() } catch { /* ignore */ }
         activeAgyAbort = null
@@ -789,7 +807,10 @@ window.__ModuleLoader__.load({
       }
       setState({ error: null, notice: null })
       try {
-        const res = await fetchJson(`${API}/chat?id=${encodeURIComponent(chatId)}`)
+        const res = await fetchJson(
+          `${API}/chat?id=${encodeURIComponent(chatId)}`,
+          pin ? { headers: { 'x-oi-parent-pin': pin } } : undefined,
+        )
         const rec = res.chat
         if (!rec) return
         setState({
@@ -815,12 +836,17 @@ window.__ModuleLoader__.load({
           void fetchProblemPreview(effectivePreview)
         }
       } catch (err) {
+        if (/鉴权|口令|403/.test(String(err?.message || ''))) activeParentPin = ''
         setState({ error: `打开历史对话失败：${err?.message || err}` })
       }
     }
 
     async function deleteChatFromHistory(chatId) {
       if (!chatId) return
+      const meta = (state.chatHistory || []).find((c) => c.id === chatId)
+      const isParentChat = meta?.mode === 'parent'
+      const pin = isParentChat ? ensureParentPin('删除家长教研对话，请输入家长口令：') : ''
+      if (isParentChat && !pin) return
       const isCurrent = state.agyChat?.chatId === chatId
       if (isCurrent) {
         if (activeAgyAbort) {
@@ -835,8 +861,8 @@ window.__ModuleLoader__.load({
       try {
         await fetchJson(`${API}/chat-delete`, {
           method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ id: chatId }),
+          headers: { 'content-type': 'application/json', ...(pin ? { 'x-oi-parent-pin': pin } : {}) },
+          body: JSON.stringify({ id: chatId, parentPin: pin || undefined }),
         })
         const nextList = (state.chatHistory || []).filter((c) => c.id !== chatId)
         setState({
@@ -862,6 +888,7 @@ window.__ModuleLoader__.load({
             : {}),
         })
       } catch (err) {
+        if (/鉴权|口令|403/.test(String(err?.message || ''))) activeParentPin = ''
         setState({ error: `删除失败：${err?.message || err}` })
       }
     }
@@ -965,6 +992,18 @@ window.__ModuleLoader__.load({
     // 仅保留在当前页面内存态，绝不落盘到任何 JSON 文件
     let activeParentPin = ''
 
+    function ensureParentPin(promptLabel) {
+      if (state.data?.isWindows) return ''
+      if (activeParentPin) return activeParentPin
+      const entered =
+        typeof window !== 'undefined' && typeof window.prompt === 'function'
+          ? window.prompt(promptLabel || '请输入家长口令：')
+          : ''
+      if (!entered) return ''
+      activeParentPin = String(entered).trim()
+      return activeParentPin
+    }
+
     function cancelAgyRequest(clearMessages = false) {
       if (activeAgyAbort) {
         try { activeAgyAbort.abort() } catch { /* ignore */ }
@@ -1003,10 +1042,8 @@ window.__ModuleLoader__.load({
       const mode = opts.mode || (isNew ? 'coach' : prev.mode) || 'coach'
       let parentPin = opts.parentPin || (mode === 'parent' ? activeParentPin : '')
       if (mode === 'parent' && !parentPin && !state.data?.isWindows) {
-        const entered = typeof window !== 'undefined' && window.prompt ? window.prompt('继续家长教研对话，请输入家长口令（4位数字）：') : ''
-        if (!entered) return
-        parentPin = String(entered).trim()
-        activeParentPin = parentPin
+        parentPin = ensureParentPin('继续家长教研对话，请输入家长口令：')
+        if (!parentPin) return
       }
       const convId = isNew ? null : prev.conversationId
       const chatId = isNew ? null : prev.chatId
@@ -1103,25 +1140,22 @@ window.__ModuleLoader__.load({
           setState({ agyChat: { ...state.agyChat, sending: false, elapsed: 0 } })
           return
         }
-        if (mode === 'parent' && /鉴权|口令|403/.test(String(err?.message || ''))) {
+        const isAuthFailure = mode === 'parent' && /鉴权|口令|403/.test(String(err?.message || ''))
+        if (isAuthFailure) {
           activeParentPin = ''
         }
         setState({
           error: `教练连接失败：${err?.message || err}`,
-          agyChat: { ...state.agyChat, sending: false, elapsed: 0 },
+          agyChat: isAuthFailure && isNew ? { ...prev, sending: false, elapsed: 0 } : { ...state.agyChat, sending: false, elapsed: 0 },
         })
       }
     }
 
     async function launchCoachSession({ presetId = 'oi-coach', title, prompt, displayText, previewQuery, skipProblemContext = false }) {
+      const wantsParent = !state.data?.isWindows && presetId === 'oi-parent'
+      const pin = wantsParent ? ensureParentPin('请输入家长口令以进入家长教研模式：') : ''
+      if (wantsParent && !pin) return
       if (state.data?.agy?.ready && state.useAgyBrain) {
-        const wantsParent = !state.data?.isWindows && presetId === 'oi-parent'
-        let pin = wantsParent ? activeParentPin : ''
-        if (wantsParent && !pin) {
-          pin = typeof window !== 'undefined' && window.prompt ? window.prompt('请输入家长口令（4位数字）以进入家长教研模式：') : ''
-          if (!pin) return
-          activeParentPin = String(pin).trim()
-        }
         await sendAgyMessage(prompt, {
           reset: true,
           title,
@@ -1129,7 +1163,7 @@ window.__ModuleLoader__.load({
           previewQuery: previewQuery !== undefined ? previewQuery : (title || prompt),
           skipProblemContext,
           mode: wantsParent ? 'parent' : 'coach',
-          parentPin: wantsParent ? String(pin).trim() : undefined,
+          parentPin: wantsParent ? pin : undefined,
         })
         return
       }
@@ -1137,8 +1171,8 @@ window.__ModuleLoader__.load({
       try {
         const res = await fetchJson(`${API}/dispatch`, {
           method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ presetId, title, prompt }),
+          headers: { 'content-type': 'application/json', ...(wantsParent && pin ? { 'x-oi-parent-pin': pin } : {}) },
+          body: JSON.stringify({ presetId: wantsParent ? 'oi-parent' : 'oi-coach', title, prompt, parentPin: wantsParent ? pin : undefined }),
         })
         setState({
           busy: null,
@@ -1149,6 +1183,7 @@ window.__ModuleLoader__.load({
           navServices.uiWorkspace.openSession(res.sessionId)
         }
       } catch (err) {
+        if (wantsParent && /鉴权|口令|403/.test(String(err?.message || ''))) activeParentPin = ''
         setState({ busy: null, error: err?.message || String(err) })
       }
     }
@@ -1172,11 +1207,23 @@ window.__ModuleLoader__.load({
     }
 
     async function openDoc(relPath, title) {
+      const normRel = String(relPath || '')
+        .replace(/\\/g, '/')
+        .replace(/\/+/g, '/')
+        .replace(/^(?:\.\/|\/)+/, '')
+        .toLowerCase()
+      const needsPin = normRel === 'profile/reports' || normRel.startsWith('profile/reports/')
+      const pin = needsPin ? ensureParentPin('查看家长诊断报告，请输入家长口令：') : ''
+      if (needsPin && !pin) return
       setState({ docModal: { path: relPath, title: title || relPath, loading: true, content: '', error: null } })
       try {
-        const res = await fetchJson(`${API}/doc?path=${encodeURIComponent(relPath)}`)
+        const res = await fetchJson(
+          `${API}/doc?path=${encodeURIComponent(relPath)}`,
+          pin ? { headers: { 'x-oi-parent-pin': pin } } : undefined,
+        )
         setState({ docModal: { path: relPath, title: title || relPath, loading: false, content: res.content, error: null } })
       } catch (err) {
+        if (needsPin && /鉴权|口令|403/.test(String(err?.message || ''))) activeParentPin = ''
         setState({ docModal: { path: relPath, title: title || relPath, loading: false, content: '', error: err?.message || String(err) } })
       }
     }
@@ -1933,7 +1980,7 @@ window.__ModuleLoader__.load({
                     h(
                       'div',
                       { className: 'oi-grid-3' },
-                      ...DOC_SHORTCUTS.map((doc) =>
+                      ...buildDocShortcuts(data).map((doc) =>
                         h(
                           'div',
                           {

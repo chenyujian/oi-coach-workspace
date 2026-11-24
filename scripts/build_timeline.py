@@ -16,9 +16,17 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
+
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        try:
+            _stream.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SYNC_DIR = REPO_ROOT / "training" / "sync_logs"

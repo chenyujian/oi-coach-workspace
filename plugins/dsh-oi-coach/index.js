@@ -417,51 +417,75 @@ function sanitizeChatId(raw) {
   return s
 }
 
-async function listChatHistory(workspace) {
-  const dir = path.join(workspace, 'training', 'chat_history')
+function childChatDir(workspace) {
+  return path.resolve(workspace, 'training', 'chat_history')
+}
+
+function parentChatDir(workspace) {
+  return path.resolve(workspace, '.dsh', 'cache', 'parent_chats')
+}
+
+async function readChatDirItems(dir, allowParent, seenIds, items) {
   try {
     const entries = await fs.readdir(dir, { withFileTypes: true })
     const files = entries.filter((e) => e.isFile() && e.name.endsWith('.json')).map((e) => e.name)
-    const items = []
     for (const fname of files) {
       const rec = await readJsonFile(path.join(dir, fname))
       if (!rec || !rec.id) continue
+      const isParent = rec.mode === 'parent'
+      if (isParent && !allowParent) continue
+      const idStr = String(rec.id)
+      if (seenIds.has(idStr)) continue
+      seenIds.add(idStr)
       const msgs = Array.isArray(rec.messages) ? rec.messages : []
       const lastMsg = msgs.length > 0 ? String(msgs[msgs.length - 1]?.text || '').replace(/\s+/g, ' ').trim() : ''
       items.push({
-        id: String(rec.id),
+        id: idStr,
         title: String(rec.title || rec.id),
-        mode: rec.mode === 'parent' ? 'parent' : 'coach',
+        mode: isParent ? 'parent' : 'coach',
         model: String(rec.model || DEFAULT_AGY_MODEL),
-        conversationId: rec.conversationId || null,
-        previewQuery: rec.previewQuery || '',
+        conversationId: isParent ? null : rec.conversationId || null,
+        previewQuery: isParent ? '' : rec.previewQuery || '',
         messageCount: msgs.length,
         turns: msgs.filter((m) => m?.role === 'user').length,
         createdAt: rec.createdAt || rec.updatedAt || '',
         updatedAt: rec.updatedAt || rec.createdAt || '',
-        lastPreview: lastMsg.slice(0, 72),
+        lastPreview: isParent ? '🔒 家长教研私密记录（输入口令查看）' : lastMsg.slice(0, 72),
       })
     }
-    items.sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)))
-    return items.slice(0, 80)
   } catch {
-    return []
+    // directory may not exist yet
   }
+}
+
+async function listChatHistory(workspace, includeParent = false) {
+  const items = []
+  const seenIds = new Set()
+  if (includeParent) {
+    await readChatDirItems(parentChatDir(workspace), true, seenIds, items)
+  }
+  await readChatDirItems(childChatDir(workspace), includeParent, seenIds, items)
+  items.sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)))
+  return items.slice(0, 80)
 }
 
 async function readChatRecord(workspace, rawId) {
   const id = sanitizeChatId(rawId)
   if (!id) return null
-  const dir = path.resolve(workspace, 'training', 'chat_history')
-  const full = path.resolve(dir, `${id}.json`)
-  if (!full.startsWith(dir + path.sep)) return null
-  return readJsonFile(full)
+  for (const dir of [parentChatDir(workspace), childChatDir(workspace)]) {
+    const full = path.resolve(dir, `${id}.json`)
+    if (!full.startsWith(dir + path.sep)) continue
+    const rec = await readJsonFile(full)
+    if (rec) return rec
+  }
+  return null
 }
 
 async function saveChatRecord(workspace, record) {
   const id = sanitizeChatId(record?.id)
   if (!id) throw new Error('无效的对话 ID')
-  const dir = path.resolve(workspace, 'training', 'chat_history')
+  // 家长教研对话仅保存在本地 Git 忽略目录 (.dsh/cache/parent_chats)，绝不同步到孩子 Windows 机
+  const dir = record?.mode === 'parent' ? parentChatDir(workspace) : childChatDir(workspace)
   await fs.mkdir(dir, { recursive: true })
   const full = path.resolve(dir, `${id}.json`)
   if (!full.startsWith(dir + path.sep)) throw new Error('路径越界')
@@ -474,15 +498,18 @@ async function saveChatRecord(workspace, record) {
 async function deleteChatRecord(workspace, rawId) {
   const id = sanitizeChatId(rawId)
   if (!id) return false
-  const dir = path.resolve(workspace, 'training', 'chat_history')
-  const full = path.resolve(dir, `${id}.json`)
-  if (!full.startsWith(dir + path.sep)) return false
-  try {
-    await fs.unlink(full)
-    return true
-  } catch {
-    return false
+  let removed = false
+  for (const dir of [parentChatDir(workspace), childChatDir(workspace)]) {
+    const full = path.resolve(dir, `${id}.json`)
+    if (!full.startsWith(dir + path.sep)) continue
+    try {
+      await fs.unlink(full)
+      removed = true
+    } catch {
+      // ignore missing in one dir
+    }
   }
+  return removed
 }
 
 async function listCourseNotes(workspace) {
@@ -598,7 +625,134 @@ async function listMistakeCards(workspace) {
   }
 }
 
-function buildOverviewStats(allSubs, solved, unsolvedCleaned, mistakeCards, platformMtimes, workspace) {
+function parseEnvValue(rawVal) {
+  const v = String(rawVal || '').trim()
+  if (!v) return ''
+  if ((v.startsWith('"') && v.includes('"', 1)) || (v.startsWith("'") && v.includes("'", 1))) {
+    const q = v[0]
+    const endIdx = v.indexOf(q, 1)
+    return v.slice(1, endIdx).trim()
+  }
+  return v.replace(/\s+#.*$/, '').trim()
+}
+
+async function resolveParentPin(workspace) {
+  const fromEnv = String(process.env.OI_PARENT_PIN || '').trim()
+  if (fromEnv) return fromEnv
+  try {
+    const raw = await fs.readFile(path.join(workspace, '.env.local'), 'utf8')
+    for (const line of raw.split(/\r?\n/)) {
+      const trimmed = line.trim()
+      if (!trimmed || trimmed.startsWith('#')) continue
+      const m = /^(?:export\s+)?OI_PARENT_PIN\s*=\s*(.+)$/.exec(trimmed)
+      if (m) {
+        return parseEnvValue(m[1])
+      }
+    }
+  } catch {
+    // .env.local optional / absent on child machine
+  }
+  return ''
+}
+
+async function verifyParentAccess(workspace, suppliedPin) {
+  if (process.platform !== 'darwin') return false
+  const expected = await resolveParentPin(workspace)
+  const supplied = String(suppliedPin || '').trim()
+  return Boolean(expected) && Boolean(supplied) && supplied === expected
+}
+
+const GENERIC_SOLVED_TITLES = new Set([
+  '*',
+  '',
+  '游戏',
+  '旅行',
+  '拆分',
+  '选数',
+  '排列',
+  '分组',
+  '计算',
+  '魔法',
+  '树上旅行',
+  '数组划分',
+  '矩阵移动',
+  '树的直径',
+  '取数游戏',
+  '回文数',
+  '编辑距离',
+  '两数之和',
+  '分糖果',
+  '逆序对',
+  '最长递增子序列',
+  '最长回文子串',
+  'a+bproblem',
+])
+
+function computeDynamicSolvedStats(solvedList, solvedTimelineMd = '') {
+  const list = Array.isArray(solvedList) ? solvedList : []
+  const platSolved = { 信奥李拜天: 0, 洛谷: 0, 好吧平台: 0, AtCoder: 0 }
+  const seenPlatPid = new Set()
+  for (const item of list) {
+    const p = String(item?.platform || '')
+    const pid = String(item?.pid || '')
+    const dedupKey = `${p}:${pid}`
+    if (pid && seenPlatPid.has(dedupKey)) continue
+    if (pid) seenPlatPid.add(dedupKey)
+    if (p === '信奥李拜天') platSolved['信奥李拜天'] += 1
+    else if (p === '洛谷') platSolved['洛谷'] += 1
+    else if (p === 'AtCoder') platSolved['AtCoder'] += 1
+    else if (p.startsWith('好吧')) platSolved['好吧平台'] += 1
+  }
+
+  const mdMatch = /真实独立\s*AC\s*题数[^0-9]*(\d+)/.exec(String(solvedTimelineMd || ''))
+  if (mdMatch && list.length > 0) {
+    return { platSolved, uniqueAc: Number(mdMatch[1]) }
+  }
+  // Fallback when solved_timeline.md is absent: cross-platform Union-Find excluding generic titles
+  const n = list.length
+  const parent = Array.from({ length: n }, (_, i) => i)
+  const find = (i) => {
+    while (parent[i] !== i) {
+      parent[i] = parent[parent[i]]
+      i = parent[i]
+    }
+    return i
+  }
+  const idxByKey = new Map()
+  for (let i = 0; i < n; i++) {
+    const item = list[i]
+    const plat = String(item?.platform || '')
+    const title = String(item?.title || '')
+    const pid = String(item?.pid || '')
+    const keys = new Set()
+    if (pid) keys.add(`self:${plat}:${pid}`)
+    const acMatch = /\b(abc|arc|agc)\s*(\d{3})[_ ]?([a-h])\b/i.exec(`${pid} ${title}`)
+    if (acMatch) {
+      keys.add(`atc:${acMatch[1].toLowerCase()}${acMatch[2]}_${acMatch[3].toLowerCase()}`)
+    }
+    const cleanTitle = title.replace(/\[[^\]]+\]|【[^】]+】/g, '').replace(/[\s_\-:：,.，。?!？！'"`·]+/g, '').toLowerCase()
+    if (cleanTitle.length >= 3 && !/^\d+$/.test(cleanTitle) && !GENERIC_SOLVED_TITLES.has(cleanTitle) && cleanTitle !== pid.toLowerCase()) {
+      keys.add(`t:${cleanTitle}`)
+    }
+    for (const k of keys) {
+      if (!idxByKey.has(k)) idxByKey.set(k, [])
+      idxByKey.get(k).push(i)
+    }
+  }
+  for (const [k, idxs] of idxByKey.entries()) {
+    if (idxs.length <= 1) continue
+    const distinctPlats = new Set(idxs.map((i) => String(list[i]?.platform || '')))
+    if (k.startsWith('self:') || distinctPlats.size > 1) {
+      const r0 = find(idxs[0])
+      for (let j = 1; j < idxs.length; j++) parent[find(idxs[j])] = r0
+    }
+  }
+  const roots = new Set()
+  for (let i = 0; i < n; i++) roots.add(find(i))
+  return { platSolved, uniqueAc: roots.size }
+}
+
+function buildOverviewStats(allSubs, solved, unsolvedCleaned, mistakeCards, platformMtimes, workspace, solvedTimelineMd = '') {
   const now = Date.now()
   const dayMs = 86400 * 1000
   const cutoff30 = now - 30 * dayMs
@@ -678,6 +832,8 @@ function buildOverviewStats(allSubs, solved, unsolvedCleaned, mistakeCards, plat
   const isFatigueZone = localHour > 21 || (localHour === 21 && localMin >= 15) || localHour < 5
   const isWarningZone = localHour === 21 && localMin < 15
 
+  const { platSolved, uniqueAc } = computeDynamicSolvedStats(solved, solvedTimelineMd)
+
   return {
     workspace,
     student: {
@@ -695,7 +851,7 @@ function buildOverviewStats(allSubs, solved, unsolvedCleaned, mistakeCards, plat
     totals: {
       submissions: (allSubs || []).length,
       acEntries: (solved || []).length,
-      uniqueAc: 734,
+      uniqueAc,
       trueUnsolved: unsolvedCleaned.length,
       mistakesCount: mistakeCards.length,
       verdicts: verdictsAll,
@@ -717,15 +873,15 @@ function buildOverviewStats(allSubs, solved, unsolvedCleaned, mistakeCards, plat
       recent7Ac,
     },
     platforms: [
-      { id: 'oilibaitian', name: '信奥李拜天 OJ', account: 'UID 79', submissions: platCounts['信奥李拜天'], solved: 250, updatedAt: platformMtimes.oilibaitian },
-      { id: 'luogu', name: '洛谷 Luogu', account: 'qiq2015', submissions: platCounts['洛谷'], solved: 241, updatedAt: platformMtimes.luogu },
-      { id: 'haoba', name: '好吧平台', account: 'UID 957', submissions: platCounts['好吧平台'], solved: 182, updatedAt: platformMtimes.haoba },
-      { id: 'atcoder', name: 'AtCoder', account: 'chenyanxu', submissions: platCounts['AtCoder'], solved: 95, updatedAt: platformMtimes.atcoder },
+      { id: 'oilibaitian', name: '信奥李拜天 OJ', account: 'UID 79', submissions: platCounts['信奥李拜天'], solved: platSolved['信奥李拜天'], updatedAt: platformMtimes.oilibaitian },
+      { id: 'luogu', name: '洛谷 Luogu', account: 'qiq2015', submissions: platCounts['洛谷'], solved: platSolved['洛谷'], updatedAt: platformMtimes.luogu },
+      { id: 'haoba', name: '好吧平台', account: 'UID 957', submissions: platCounts['好吧平台'], solved: platSolved['好吧平台'], updatedAt: platformMtimes.haoba },
+      { id: 'atcoder', name: 'AtCoder', account: 'chenyanxu', submissions: platCounts['AtCoder'], solved: platSolved['AtCoder'], updatedAt: platformMtimes.atcoder },
     ],
     unsolvedRecent: unsolvedCleaned.slice(0, 10),
     retentionQueue: retentionPool.slice(0, 6),
     mistakeCards,
-    isWindows: process.platform === 'win32',
+    isWindows: process.platform !== 'darwin',
   }
 }
 
@@ -745,9 +901,10 @@ export function apply(ctx, config) {
 
   async function loadOverviewData(includeAgy = true) {
     const syncDir = path.join(workspace, 'training/sync_logs')
-    const [allSubs, solved, unsolvedCleaned, mistakeCards, courseNotes, mOi, mLg, mHb, mAc, agyStatus] = await Promise.all([
+    const [allSubs, solved, solvedMd, unsolvedCleaned, mistakeCards, courseNotes, mOi, mLg, mHb, mAc, agyStatus] = await Promise.all([
       readJsonFile(path.join(syncDir, 'all_submissions_timeline.json')),
       readJsonFile(path.join(syncDir, 'solved_timeline.json')),
+      fs.readFile(path.join(workspace, 'profile', 'solved_timeline.md'), 'utf8').catch(() => ''),
       parseCleanedUnsolved(workspace),
       listMistakeCards(workspace),
       listCourseNotes(workspace),
@@ -764,6 +921,7 @@ export function apply(ctx, config) {
       mistakeCards,
       { oilibaitian: mOi, luogu: mLg, haoba: mHb, atcoder: mAc },
       workspace,
+      solvedMd,
     )
     data.courseNotes = courseNotes
     if (includeAgy) data.agy = agyStatus
@@ -782,20 +940,43 @@ export function apply(ctx, config) {
   async function handleDoc(req, res) {
     try {
       const url = new URL(req.url || '/', 'http://localhost')
-      const rel = String(url.searchParams.get('path') || '')
+      const rawRel = String(url.searchParams.get('path') || '')
         .replace(/\\/g, '/')
         .replace(/^\/+/, '')
-      const allowed =
-        ALLOWED_EXACT_DOCS.has(rel) || ALLOWED_DOC_PREFIXES.some((p) => rel.startsWith(p))
-      if (!rel || rel.includes('..') || !allowed) {
+      if (!rawRel || rawRel.includes('..')) {
         return sendJson(res, { ok: false, error: '不允许读取该路径' }, 403)
       }
-      const abs = path.resolve(workspace, rel)
+      const abs = path.resolve(workspace, rawRel)
       if (!abs.startsWith(workspace + path.sep)) {
         return sendJson(res, { ok: false, error: '路径越界' }, 403)
       }
-      const content = await fs.readFile(abs, 'utf8')
-      return sendJson(res, { ok: true, path: rel, content }, 200)
+      const normRel = path.relative(workspace, abs).replace(/\\/g, '/')
+      const lowerRel = normRel.toLowerCase()
+      const allowed =
+        ALLOWED_EXACT_DOCS.has(normRel) || ALLOWED_DOC_PREFIXES.some((p) => lowerRel.startsWith(p))
+      if (!normRel || normRel.includes('..') || !allowed) {
+        return sendJson(res, { ok: false, error: '不允许读取该路径' }, 403)
+      }
+      const realWs = await fs.realpath(workspace).catch(() => workspace)
+      const realAbs = await fs.realpath(abs).catch(() => abs)
+      if (!realAbs.startsWith(realWs + path.sep)) {
+        return sendJson(res, { ok: false, error: '路径越界' }, 403)
+      }
+      const realLowerRel = path.relative(realWs, realAbs).replace(/\\/g, '/').toLowerCase()
+      // 家长诊断报告仅允许 Mac 家长端凭有效口令读取（规范化+忽略大小写+解析真实路径，彻底拦截 //、/./、Reports 等绕过）
+      if (
+        lowerRel === 'profile/reports' ||
+        lowerRel.startsWith('profile/reports/') ||
+        realLowerRel === 'profile/reports' ||
+        realLowerRel.startsWith('profile/reports/')
+      ) {
+        const pin = req.headers?.['x-oi-parent-pin'] || url.searchParams.get('parentPin') || ''
+        if (!(await verifyParentAccess(workspace, pin))) {
+          return sendJson(res, { ok: false, error: '查看家长诊断报告需要 Mac 家长端有效口令' }, 403)
+        }
+      }
+      const content = await fs.readFile(realAbs, 'utf8')
+      return sendJson(res, { ok: true, path: normRel, content }, 200)
     } catch (err) {
       return sendJson(res, { ok: false, error: err?.message || String(err) }, 404)
     }
@@ -808,11 +989,16 @@ export function apply(ctx, config) {
     try {
       const body = await readNodeJsonBody(req)
       const requestedPreset = String(body?.presetId || 'oi-coach').trim()
-      // 服务端权限硬锁：孩子端（Windows）绝对禁止切换到家长教研角色
-      const presetId = process.platform === 'win32' ? 'oi-coach' : requestedPreset
-      if (!ALLOWED_PRESETS.has(presetId)) {
-        return sendJson(res, { ok: false, error: `不支持的角色 Preset：${presetId}` }, 400)
+      if (!ALLOWED_PRESETS.has(requestedPreset)) {
+        return sendJson(res, { ok: false, error: `不支持的角色 Preset：${requestedPreset}` }, 400)
       }
+      if (requestedPreset === 'oi-parent') {
+        const pin = body?.parentPin || req.headers?.['x-oi-parent-pin'] || ''
+        if (!(await verifyParentAccess(workspace, pin))) {
+          return sendJson(res, { ok: false, error: '家长教研模式需要 Mac 家长端有效口令' }, 403)
+        }
+      }
+      const presetId = process.platform !== 'darwin' ? 'oi-coach' : requestedPreset
       const promptText = String(body?.prompt || '').trim()
       if (!promptText) {
         return sendJson(res, { ok: false, error: '提示词不能为空' }, 400)
@@ -884,7 +1070,7 @@ export function apply(ctx, config) {
       const action = String(body?.action || '').trim()
       let cmd = ''
       let args = []
-      const execEnv = { ...process.env }
+      const execEnv = { ...process.env, PYTHONIOENCODING: 'utf-8', PYTHONUTF8: '1' }
       let py = null
 
       if (action === 'atcoder') {
@@ -921,6 +1107,7 @@ export function apply(ctx, config) {
       })
 
       let timelineOut = ''
+      let cacheOut = ''
       if (action === 'atcoder' || action === 'haoba') {
         const pyRunner = py || (await resolvePythonCommand())
         const tl = await execFileAsync(pyRunner.cmd, [...pyRunner.prefixArgs, 'scripts/build_timeline.py'], {
@@ -930,6 +1117,21 @@ export function apply(ctx, config) {
           windowsHide: true,
         })
         timelineOut = tl.stdout || ''
+        try {
+          const cp = await execFileAsync(
+            pyRunner.cmd,
+            [...pyRunner.prefixArgs, 'scripts/cache_problem_context.py', '--incremental', '--platform', action],
+            {
+              cwd: workspace,
+              env: execEnv,
+              timeout: 45_000,
+              windowsHide: true,
+            },
+          )
+          cacheOut = cp.stdout || ''
+        } catch {
+          // 题面增量缓存失败不阻塞主同步结果
+        }
       }
 
       return sendJson(
@@ -937,7 +1139,7 @@ export function apply(ctx, config) {
         {
           ok: true,
           action,
-          output: [stdout, timelineOut, stderr].filter(Boolean).join('\n').trim().slice(-2000),
+          output: [stdout, timelineOut, cacheOut, stderr].filter(Boolean).join('\n').trim().slice(-2000),
         },
         200,
       )
@@ -1073,11 +1275,10 @@ export function apply(ctx, config) {
       const skipProblemContext = Boolean(body?.skipProblemContext)
       const skipSaveHistory = Boolean(body?.ephemeral)
       const requestedMode = String(body?.mode || 'coach').trim()
-      // 服务端权限硬锁：仅 macOS 家长机且显式校验通过时才允许 parent 模式；未通过鉴权直接 403，绝不静默降级篡改家长记录
+      const suppliedPin = body?.parentPin || req.headers?.['x-oi-parent-pin'] || ''
+      // 服务端权限硬锁：仅 macOS 家长机、已配置 OI_PARENT_PIN 且显式校验通过时才允许 parent 模式；未通过鉴权直接 403，绝不静默降级篡改家长记录
       const isParentAllowed =
-        process.platform === 'darwin' &&
-        requestedMode === 'parent' &&
-        String(body?.parentPin || '').trim() === '2015'
+        requestedMode === 'parent' && (await verifyParentAccess(workspace, suppliedPin))
 
       const existingRec = reqChatId ? await readChatRecord(workspace, reqChatId) : null
       if (existingRec?.mode === 'parent' && !isParentAllowed) {
@@ -1366,8 +1567,7 @@ export function apply(ctx, config) {
 
   async function handleListChats(_req, res) {
     try {
-      const all = await listChatHistory(workspace)
-      const chats = process.platform === 'win32' ? all.filter((c) => c.mode !== 'parent') : all
+      const chats = await listChatHistory(workspace, process.platform === 'darwin')
       return sendJson(res, { ok: true, chats }, 200)
     } catch (err) {
       return sendJson(res, { ok: false, error: err?.message || String(err) }, 500)
@@ -1383,8 +1583,11 @@ export function apply(ctx, config) {
         return sendJson(res, { ok: false, error: '无效的对话 ID' }, 400)
       }
       const existing = await readChatRecord(workspace, id)
-      if (process.platform === 'win32' && existing?.mode === 'parent') {
-        return sendJson(res, { ok: false, error: '不允许访问家长教研对话' }, 403)
+      if (existing?.mode === 'parent') {
+        const pin = req.headers?.['x-oi-parent-pin'] || url.searchParams.get('parentPin') || ''
+        if (!(await verifyParentAccess(workspace, pin))) {
+          return sendJson(res, { ok: false, error: '访问家长教研对话需要 Mac 家长端有效口令' }, 403)
+        }
       }
       if (method === 'DELETE') {
         const removed = await deleteChatRecord(workspace, id)
@@ -1412,10 +1615,11 @@ export function apply(ctx, config) {
       if (!id) {
         return sendJson(res, { ok: false, error: '无效的对话 ID' }, 400)
       }
-      if (process.platform === 'win32') {
-        const existing = await readChatRecord(workspace, id)
-        if (existing?.mode === 'parent') {
-          return sendJson(res, { ok: false, error: '不允许删除家长教研对话' }, 403)
+      const existing = await readChatRecord(workspace, id)
+      if (existing?.mode === 'parent') {
+        const pin = body?.parentPin || req.headers?.['x-oi-parent-pin'] || ''
+        if (!(await verifyParentAccess(workspace, pin))) {
+          return sendJson(res, { ok: false, error: '删除家长教研对话需要 Mac 家长端有效口令' }, 403)
         }
       }
       const deleted = await deleteChatRecord(workspace, id)
@@ -1560,9 +1764,9 @@ export function apply(ctx, config) {
               const chosenModel = ALLOWED_AGY_MODELS.has(reqModel) ? reqModel : DEFAULT_AGY_MODEL
               const convId = String(args?.conversation_id || '').trim()
 
-              // 判断调用方角色：Windows 孩子端或非 oi-parent 会话一律强制隔离 cwd + 注入禁给 AC 代码与反套话护栏
+              // 判断调用方角色：非 macOS 家长机或非 oi-parent 会话一律强制隔离 cwd + 注入禁给 AC 代码与反套话护栏
               const callerPreset = safeGetService(ctx, 'agentPresets')?.presetForSession?.(exec?.agent?.session)
-              const isChildCoach = process.platform === 'win32' || callerPreset !== 'oi-parent'
+              const isChildCoach = process.platform !== 'darwin' || callerPreset !== 'oi-parent'
               const runCwd = isChildCoach ? await ensureChildIsolatedCwd() : workspace
               const finalPrompt = isChildCoach
                 ? [

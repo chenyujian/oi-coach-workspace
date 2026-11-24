@@ -157,8 +157,18 @@ await test('GET /api/doc reads allowed docs (POSIX + Windows backslash) & blocks
     assert.equal(out.status, 200)
     assert.ok(json().content.length > 50)
   }
-  // Blocked paths (parent rules, scripts, traversal)
-  for (const bad of ['GEMINI.md', 'scripts/fetch_atcoder.py', '../../etc/passwd', 'profile/../GEMINI.md']) {
+  // Blocked paths (parent rules, secrets, unauthenticated parent reports incl. //, /./, case-folding, scripts, traversal)
+  for (const bad of [
+    'GEMINI.md',
+    '.env.local',
+    'profile/reports/2026-11-22-full-diagnosis.md',
+    'profile//reports/2026-11-22-full-diagnosis.md',
+    'profile/./reports/2026-11-22-full-diagnosis.md',
+    'profile/Reports/2026-11-22-full-diagnosis.md',
+    'scripts/fetch_atcoder.py',
+    '../../etc/passwd',
+    'profile/../GEMINI.md',
+  ]) {
     const { res, out } = makeRes()
     await routes.get('/dsh-oi-coach/api/doc')(makeReq('GET', `/dsh-oi-coach/api/doc?path=${encodeURIComponent(bad)}`), res)
     assert.equal(out.status, 403, `Expected 403 for ${bad}, got ${out.status}`)
@@ -216,9 +226,11 @@ await test('POST /api/sync validates method (405), unknown action (400), and run
   return 'timeline rebuild succeeded'
 })
 
-await test('index.js has no undefined helper calls (check buildDynamicStudentSummary)', async () => {
+await test('index.js has no undefined helper calls or hardcoded PIN / static AC numbers', async () => {
   const indexSrc = await fs.readFile(path.join(REPO_ROOT, 'plugins/dsh-oi-coach/index.js'), 'utf8')
   assert.ok(!indexSrc.includes('await buildOverview('), 'BUG FOUND: buildOverview() is called in buildDynamicStudentSummary but never defined!')
+  assert.ok(!indexSrc.includes("=== '2015'"), 'Hardcoded parent PIN 2015 still in index.js!')
+  assert.ok(!indexSrc.includes('uniqueAc: 734'), 'Hardcoded uniqueAc: 734 still in index.js!')
 })
 
 await test('save_mistake_card writes clean markdown card in isolated temp workspace & sanitizes slug', async () => {
@@ -361,30 +373,104 @@ await test('Chat history APIs (list, get, delete, path traversal rejection) & PO
       const md = await fs.readFile(path.join(tmpDir, body.saved), 'utf8')
       assert.ok(md.includes('最近异色点') && md.includes('见绝对值先分类去符号'))
 
-      // Verify GET /api/overview parses bolded motto cleanly (P1 regression check)
+      // Verify GET /api/overview parses bolded motto cleanly & computes dynamic 0 AC on empty sync_logs
       const { res: rOv, out: oOv, json: jOv } = makeRes()
       await tmpRoutes.get('/dsh-oi-coach/api/overview')(makeReq('GET', '/dsh-oi-coach/api/overview'), rOv)
       assert.equal(oOv.status, 200)
-      const cards = jOv().data.mistakeCards
+      const ovEmpty = jOv().data
+      assert.equal(ovEmpty.totals.uniqueAc, 0, `Expected dynamic 0 uniqueAc on empty workspace, got ${ovEmpty.totals.uniqueAc}`)
+      assert.ok(ovEmpty.platforms.every((p) => p.solved === 0), 'Expected all platform solved=0 on empty workspace')
+      const cards = ovEmpty.mistakeCards
       assert.equal(cards.length, 1)
       assert.equal(cards[0].motto, '见绝对值先分类去符号', `Expected parsed motto, got: "${cards[0].motto}"`)
+
+      // Seed solved entries (including cross-platform ABC485C + two distinct generic '树的直径' problems) and verify dynamic deduplication
+      const tmpSync = path.join(tmpDir, 'training', 'sync_logs')
+      await fs.mkdir(tmpSync, { recursive: true })
+      // First verify stale solved_timeline.md with empty solved_timeline.json still returns 0
+      await fs.mkdir(path.join(tmpDir, 'profile'), { recursive: true })
+      await fs.writeFile(path.join(tmpDir, 'profile', 'solved_timeline.md'), '跨平台去重后真实独立 AC 题数：约 **999** 题\n', 'utf8')
+      {
+        const { res: rStale, json: jStale } = makeRes()
+        await tmpRoutes.get('/dsh-oi-coach/api/overview')(makeReq('GET', '/dsh-oi-coach/api/overview'), rStale)
+        assert.equal(jStale().data.totals.uniqueAc, 0, 'Empty solved_timeline.json must ignore stale solved_timeline.md count')
+      }
+      await fs.rm(path.join(tmpDir, 'profile', 'solved_timeline.md'), { force: true })
+
+      await fs.writeFile(
+        path.join(tmpSync, 'solved_timeline.json'),
+        JSON.stringify([
+          { platform: 'AtCoder', pid: 'abc485_c', title: 'C - Different Neighbor', timestamp: '2026-11-24T10:00:00Z' },
+          { platform: '信奥李拜天', pid: '9001', title: '[ABC485C] Different Neighbor', timestamp: '2026-11-24T11:00:00Z' },
+          { platform: '好吧(cpptrain)', pid: '5313', title: '切木头', timestamp: '2026-11-24T12:00:00Z' },
+          { platform: '好吧(cpptrain)', pid: '5236', title: '树的直径', timestamp: '2026-11-24T12:30:00Z' },
+          { platform: '洛谷', pid: 'B4016', title: '树的直径', timestamp: '2026-11-24T12:40:00Z' },
+        ]),
+        'utf8',
+      )
+      const { res: rOv2, json: jOv2 } = makeRes()
+      await tmpRoutes.get('/dsh-oi-coach/api/overview')(makeReq('GET', '/dsh-oi-coach/api/overview'), rOv2)
+      const ovSeeded = jOv2().data
+      assert.equal(ovSeeded.totals.uniqueAc, 4, `Expected deduplicated uniqueAc=4 (ABC485C merged, generic '树的直径' kept separate), got ${ovSeeded.totals.uniqueAc}`)
+      assert.equal(ovSeeded.platforms.find((p) => p.id === 'atcoder').solved, 1)
+      assert.equal(ovSeeded.platforms.find((p) => p.id === 'oilibaitian').solved, 1)
+      assert.equal(ovSeeded.platforms.find((p) => p.id === 'haoba').solved, 2)
+      assert.equal(ovSeeded.platforms.find((p) => p.id === 'luogu').solved, 1)
     }
 
-    // P0/P1 regression check: parent chatId cannot be continued or downgraded without valid parent PIN
+    // P0/P1 regression check: parent chat stored in .dsh/cache/parent_chats + full PIN auth across all endpoints
     {
+      const parentCacheDir = path.join(tmpDir, '.dsh', 'cache', 'parent_chats')
+      await fs.mkdir(parentCacheDir, { recursive: true })
       const parentChatId = '2026-11-23-parent01'
       await fs.writeFile(
-        path.join(histDir, `${parentChatId}.json`),
+        path.join(parentCacheDir, `${parentChatId}.json`),
         JSON.stringify({
           id: parentChatId,
           title: '家长周报私密诊断',
           mode: 'parent',
           conversationId: 'conv-parent',
           updatedAt: '2026-11-23T16:00:00.000Z',
-          messages: [{ role: 'user', text: '家长私密问题' }],
+          messages: [{ role: 'user', text: '绝密家长私密问题内容' }],
         }),
         'utf8',
       )
+      await fs.mkdir(path.join(tmpDir, 'profile', 'reports'), { recursive: true })
+      await fs.writeFile(path.join(tmpDir, 'profile', 'reports', 'r1.md'), '# 私密家长周报\n', 'utf8')
+
+      // GET /api/chats must NOT leak private message body in lastPreview
+      if (process.platform === 'darwin') {
+        const { res: rList, json: jList } = makeRes()
+        await tmpRoutes.get('/dsh-oi-coach/api/chats')(makeReq('GET', '/dsh-oi-coach/api/chats'), rList)
+        const pItem = jList().chats.find((c) => c.id === parentChatId)
+        assert.ok(pItem, 'Expected parent chat metadata on darwin')
+        assert.ok(!pItem.lastPreview.includes('绝密家长私密问题内容'), 'Leaked parent private message in /api/chats!')
+      }
+
+      // Unauthenticated GET /api/chat, POST /api/chat-delete, POST /api/dispatch (oi-parent), GET /api/doc (reports) -> all 403!
+      for (const [label, fn] of [
+        ['GET /api/chat (parent)', (r) => tmpRoutes.get('/dsh-oi-coach/api/chat')(makeReq('GET', `/dsh-oi-coach/api/chat?id=${parentChatId}`), r)],
+        ['POST /api/chat-delete (parent)', (r) => tmpRoutes.get('/dsh-oi-coach/api/chat-delete')(makeReq('POST', '/dsh-oi-coach/api/chat-delete', { id: parentChatId }), r)],
+        ['POST /api/dispatch (oi-parent)', (r) => tmpRoutes.get('/dsh-oi-coach/api/dispatch')(makeReq('POST', '/dsh-oi-coach/api/dispatch', { presetId: 'oi-parent', prompt: '诊断' }), r)],
+        ['GET /api/doc (profile/reports)', (r) => tmpRoutes.get('/dsh-oi-coach/api/doc')(makeReq('GET', '/dsh-oi-coach/api/doc?path=profile/reports/r1.md'), r)],
+      ]) {
+        const { res, out } = makeRes()
+        await fn(res)
+        assert.equal(out.status, 403, `Expected 403 for unauthenticated ${label}, got ${out.status}`)
+      }
+
+      // Even old hardcoded '2015' must fail-closed with 403 when tmpDir has no .env.local!
+      const { res: rOldPin, out: oOldPin } = makeRes()
+      await tmpRoutes.get('/dsh-oi-coach/api/agy-chat')(
+        makeReq('POST', '/dsh-oi-coach/api/agy-chat', {
+          chatId: parentChatId,
+          mode: 'parent',
+          parentPin: '2015',
+          message: '无 .env.local 时尝试旧口令',
+        }),
+        rOldPin,
+      )
+      assert.equal(oOldPin.status, 403, `Expected fail-closed 403 when .env.local absent, got ${oOldPin.status}`)
 
       const { res: rHijack, out: oHijack } = makeRes()
       await tmpRoutes.get('/dsh-oi-coach/api/agy-chat')(
@@ -397,24 +483,105 @@ await test('Chat history APIs (list, get, delete, path traversal rejection) & PO
       )
       assert.equal(oHijack.status, 403, `Expected 403 blocking parent chat hijack, got ${oHijack.status}`)
 
-      const { res: rNoPin, out: oNoPin } = makeRes()
-      await tmpRoutes.get('/dsh-oi-coach/api/agy-chat')(
-        makeReq('POST', '/dsh-oi-coach/api/agy-chat', {
-          chatId: parentChatId,
-          mode: 'parent',
-          parentPin: '0000',
-          message: '错误口令续聊家长对话',
-        }),
-        rNoPin,
-      )
-      assert.equal(oNoPin.status, 403, `Expected 403 for bad parent PIN, got ${oNoPin.status}`)
+      // Configure .env.local with 'export ' prefix + inline '# comment' and verify positive PIN unlock on darwin
+      await fs.writeFile(path.join(tmpDir, '.env.local'), '# local config\nexport OI_PARENT_PIN = 9876 # parent secret pin\n', 'utf8')
+      if (process.platform === 'darwin') {
+        const { res: rWrong, out: oWrong } = makeRes()
+        await tmpRoutes.get('/dsh-oi-coach/api/chat')(
+          makeReq('GET', `/dsh-oi-coach/api/chat?id=${parentChatId}`, null, { 'x-oi-parent-pin': '0000' }),
+          rWrong,
+        )
+        assert.equal(oWrong.status, 403)
 
-      const untouched = JSON.parse(await fs.readFile(path.join(histDir, `${parentChatId}.json`), 'utf8'))
-      assert.equal(untouched.mode, 'parent', 'Parent chat mode was corrupted!')
-      assert.equal(untouched.messages.length, 1, 'Parent chat messages were tampered with!')
+        const { res: rOkChat, out: oOkChat, json: jOkChat } = makeRes()
+        await tmpRoutes.get('/dsh-oi-coach/api/chat')(
+          makeReq('GET', `/dsh-oi-coach/api/chat?id=${parentChatId}`, null, { 'x-oi-parent-pin': '9876' }),
+          rOkChat,
+        )
+        assert.equal(oOkChat.status, 200, 'Valid .env.local PIN should unlock parent chat on darwin')
+        assert.equal(jOkChat().chat.messages[0].text, '绝密家长私密问题内容')
+
+        const { res: rOkDoc, out: oOkDoc, json: jOkDoc } = makeRes()
+        await tmpRoutes.get('/dsh-oi-coach/api/doc')(
+          makeReq('GET', '/dsh-oi-coach/api/doc?path=profile/reports/r1.md', null, { 'x-oi-parent-pin': '9876' }),
+          rOkDoc,
+        )
+        assert.equal(oOkDoc.status, 200, 'Valid .env.local PIN should unlock parent report on darwin')
+        assert.ok(jOkDoc().content.includes('私密家长周报'))
+
+        const { res: rDelOk, out: oDelOk } = makeRes()
+        await tmpRoutes.get('/dsh-oi-coach/api/chat-delete')(
+          makeReq('POST', '/dsh-oi-coach/api/chat-delete', { id: parentChatId, parentPin: '9876' }),
+          rDelOk,
+        )
+        assert.equal(oDelOk.status, 200, 'Valid PIN should allow deleting parent chat')
+      }
     }
 
-    return 'history CRUD + save-card motto parse + parent isolation 403 OK'
+    return 'history CRUD + .env.local PIN parse + parent isolation 403/200 OK'
+  } finally {
+    await fs.rm(tmpDir, { recursive: true, force: true })
+  }
+})
+
+await test('cache_problem_context.py discovers merged-row PIDs & skips unchanged single-platform cache in --incremental mode', async () => {
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'oi-coach-cache-test-'))
+  try {
+    await fs.mkdir(path.join(tmpDir, 'profile'), { recursive: true })
+    await fs.mkdir(path.join(tmpDir, 'training', 'sync_logs'), { recursive: true })
+    await fs.mkdir(path.join(tmpDir, 'training', 'problem_cache'), { recursive: true })
+
+    await fs.writeFile(
+      path.join(tmpDir, 'profile', 'activity_timeline.md'),
+      [
+        '# Timeline',
+        '## 二、真正尚未 AC 的独立待补题时间线（已跨站去重，共 3 题，最近尝试在前）',
+        '| 最近尝试时间 | 平台 | 题目 | 尝试次数 | 跨站最高分 | 失误轨迹 | 来源 |',
+        '| :--- | :--- | :--- | :---: | :---: | :--- | :--- |',
+        '| 2026-11-22 20:10 | 洛谷`P3139` + 信奥李拜天`1941` | `P3139` Milk Pails S | 5 | 60 | WA→WA | 作业 |',
+        '| 2026-11-21 18:00 | AtCoder | `abc485_c` Different Neighbor | 3 | 0 | TLE→TLE→TLE | abc485 |',
+        '| 2026-11-20 15:00 | 好吧(Cpp2023) | `659` 老旧域模拟题 | 2 | 40 | WA→WA | 模拟 |',
+      ].join('\n'),
+      'utf8',
+    )
+    // Single-platform Oilibaitian has 2 local records (whereas merged row sum is 5)
+    await fs.writeFile(
+      path.join(tmpDir, 'training', 'sync_logs', 'oilibaitian_uid79_records.json'),
+      JSON.stringify([{ pid: 1941, status: 2 }, { pid: 1941, status: 2 }]),
+      'utf8',
+    )
+    await fs.writeFile(
+      path.join(tmpDir, 'training', 'problem_cache', 'oilibaitian_1941.json'),
+      JSON.stringify({ platform: '信奥李拜天', pid: '1941', statement: 'Cached Milk Pails statement', attempts: 2 }),
+      'utf8',
+    )
+
+    let pyCmd = 'python3'
+    let pyPrefix = []
+    if (process.platform === 'win32') {
+      try {
+        await execFileAsync('py', ['-3', '--version'], { windowsHide: true })
+        pyCmd = 'py'
+        pyPrefix = ['-3']
+      } catch {
+        pyCmd = 'python'
+      }
+    }
+    const { stdout } = await execFileAsync(
+      pyCmd,
+      [...pyPrefix, path.join(REPO_ROOT, 'scripts/cache_problem_context.py'), '--workspace', tmpDir, '--incremental', '--dry-run'],
+      { env: { ...process.env, PYTHONIOENCODING: 'utf-8', PYTHONUTF8: '1' }, windowsHide: true },
+    )
+    const plan = JSON.parse(stdout.trim())
+    // 1. Merged row must extract 1941 (NOT P3139) for oilibaitian
+    const oiDiscoveredPids = plan.discovered.oilibaitian.map((x) => x[0])
+    assert.ok(oiDiscoveredPids.includes('1941'), `Expected 1941 in oilibaitian discovered: ${JSON.stringify(oiDiscoveredPids)}`)
+    assert.ok(!oiDiscoveredPids.includes('P3139'), `Must NOT extract Luogu P3139 as oilibaitian PID: ${JSON.stringify(oiDiscoveredPids)}`)
+    // 2. --incremental must skip 1941 because single-platform attempts==2 matches cache (despite merged row attempts=5), while queuing uncached 2667, abc485_c, and 659
+    assert.ok(!plan.todo.oilibaitian.includes('1941'), `Expected 1941 to be skipped in --incremental: ${JSON.stringify(plan.todo.oilibaitian)}`)
+    assert.deepEqual(plan.todo.atcoder, ['abc485_c'])
+    assert.deepEqual(plan.todo.haoba, ['659'])
+    return 'merged-row PID=1941 extracted & skipped, uncached queued OK'
   } finally {
     await fs.rm(tmpDir, { recursive: true, force: true })
   }
@@ -677,17 +844,32 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
   assert.ok(flattenText(tree).includes('查看原文'), 'DocModal did not open')
   findButtons(tree).find((b) => flattenText(b).includes('关闭')).props.onClick()
 
-  // 5b. Simulate Windows child mode -> parent tools & model select must be hidden!
+  // 5b. Simulate Windows child mode -> parent tools, parent diagnosis report & model select must be hidden, and doc counts are dynamic!
   const prevFetch = globalThis.fetch
   globalThis.fetch = async (url) => {
     if (String(url).includes('/overview')) {
-      return { ok: true, status: 200, json: async () => ({ ok: true, data: { ...liveOverviewData, isWindows: true } }) }
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          ok: true,
+          data: {
+            ...liveOverviewData,
+            isWindows: true,
+            totals: { ...liveOverviewData.totals, submissions: 123, uniqueAc: 45, trueUnsolved: 6 },
+          },
+        }),
+      }
     }
     return prevFetch(url)
   }
   await findButtons(slots.main()).find((b) => flattenText(b).includes('刷新')).props.onClick()
   tree = slots.main()
-  assert.ok(!flattenText(tree).includes('家长端教研与数据同步'), 'Windows child mode leaked parent tools!')
+  const winArchiveText = flattenText(tree)
+  assert.ok(!winArchiveText.includes('家长端教研与数据同步'), 'Windows child mode leaked parent tools!')
+  assert.ok(!winArchiveText.includes('全局诊断报告'), 'Windows child mode leaked parent diagnosis report shortcut!')
+  assert.ok(!winArchiveText.includes('Argon'), 'Windows child mode leaked Argon jargon!')
+  assert.ok(winArchiveText.includes('全量 123 条提交时间线') && winArchiveText.includes('去重 45 题'), 'DOC_SHORTCUTS counts are not dynamic!')
   findButtons(tree).find((b) => flattenText(b).includes('教练室')).props.onClick()
   tree = slots.main()
   assert.equal(findByType(tree, 'select').length, 0, 'Windows child mode leaked model selector!')
@@ -729,7 +911,9 @@ await test('cordis.patch.yml YAML parse & !!js expressions evaluate cleanly', as
 })
 
 await test('sync_mac.sh syntax valid & sync_windows.bat guards every pause with NO_PAUSE', async () => {
-  await execFileAsync('bash', ['-n', path.join(REPO_ROOT, 'scripts/sync_mac.sh')])
+  if (process.platform !== 'win32') {
+    await execFileAsync('bash', ['-n', path.join(REPO_ROOT, 'scripts/sync_mac.sh')])
+  }
   const bat = await fs.readFile(path.join(REPO_ROOT, 'scripts/sync_windows.bat'), 'utf8')
   const pauseLines = bat.split(/\r?\n/).filter((l) => /(?:^|\s)pause(?:\s|$)/i.test(l) && !/^\s*REM\b/i.test(l))
   assert.ok(pauseLines.length > 0)

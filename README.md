@@ -1,51 +1,41 @@
-# 信息学奥赛 AI 教练工作台框架（OI Coach Workspace）
+# 信息学奥赛 AI 教练工作台（OI Coach Workspace）
 
-这是一个**家长端（Mac mini 教研与诊断）与孩子端（Windows 刷题与辅导）双机协同**的信息学奥赛（C++）学习框架，基于 **方案 A（私有 Git 远程仓库 + Mac mini 常驻中枢）** 设计，原生适配 **DeepSeek Harness** 桌面工作台（同样兼容其他支持 `AGENTS.md` / Skills 的 Agent 工具）。
+这是一个**家长端（Mac mini 教研与诊断）与孩子端（Windows 刷题与代数建模辅导）双机协同**的信息学奥赛（C++）学习系统，基于 **方案 A（GitHub 私有仓库 + Mac mini 常驻中枢）** 构建，原生运行于 **DeepSeek Harness** 桌面版并支持官方 **Antigravity CLI（`agy`）** 专家外脑直连。
 
-## 目录分工（防冲突设计）
+## 目录分工（双机零冲突隔离设计）
 
 | 目录 / 文件 | 主写端 | 作用 |
 | :--- | :--- | :--- |
-| `GEMINI.md` / `.agents/` | 家长 | 家长端（Mac mini + Antigravity）架构师与运维规则、Git 方案 A 配置技能 |
-| `docs/ARCHITECTURE.md` | 家长 | 总体架构蓝图、双端隔离说明与方案 A 上线进度 Checklist |
-| `AGENTS.md` | 家长 | 孩子端（Windows + DeepSeek Harness）AI 教练核心铁律（严禁直接给 AC 代码） |
-| `.dsh/skills/` | 家长 | 孩子端与教研按场景触发的 5 个专项教学与诊断技能 |
-| `plugins/dsh-oi-coach/` | 家长 | DeepSeek Harness（`dsh`）标准插件包骨架（`dsh.bundle` + `cordis.patch.yml`） |
-| `courses/` | 家长 | 老师讲义原件（`raw/`）及提炼后的结构化笔记（`notes/`） |
-| `training/` | 孩子 | 日常 C++ 练习代码（`atcoder/`、`codeforces/`、`luogu/`、`oj/`）及同步日志 |
-| `mistakes/` | 孩子（AI 自动写） | 一题一档的结构化错题卡（按四维根因打标） |
-| `profile/` | 双方协作 | 孩子档案、能力状态表、高频习惯/犯错库、家长周期诊断报告 |
-| `scripts/` | 家长维护 | Windows/Mac 一键同步脚本、AtCoder/Codeforces 提交记录拉取脚本 |
+| `GEMINI.md` / `.agents/` | 家长（Mac） | 家长端（Antigravity）架构师规则、研发质量门禁、Git 方案 A 与好吧 OJ 技能 |
+| `docs/ARCHITECTURE.md` | 家长（Mac） | 总体架构蓝图、双端权限隔离说明与上线进度 |
+| `AGENTS.md` / `.dsh/skills/` | 家长（Mac） | 孩子端核心铁律（「代数建模 5 步锁步」、禁给 AC 代码、禁提前剧透）与 5 个专项技能 |
+| `plugins/dsh-oi-coach/` | 家长（Mac） | DeepSeek Harness 原生工作台插件（4 独立空间 UI + 物理只读 Preset + `agy` 隔离外脑） |
+| `courses/math_lab/` | 家长（Mac） | 6 课交互式「OI 读题与建模训练营」单文件实验网页与 A4 打印闯关单 |
+| `courses/notes/` | 家长（Mac） | 老师讲义提炼后的结构化母模型笔记（未 AC 题带 `<details>` 防剧透折页；`raw/*.pdf` 不入 Git） |
+| `training/chat_history/` | 双端独立新文件 | 教练室持久化历史对话（`YYYY-MM-DD-<id>.json`，一会话一文件，跨机无缝续聊） |
+| `training/problem_cache/` | 家长同步脚本 | 未 AC 题的原题面与最新提交代码缓存（供教练室「看原题」与零工具直答注入） |
+| `training/sync_logs/` | 家长同步脚本 | 四平台（信奥李拜天 / 洛谷 / 好吧 / AtCoder）提交记录与跨站去重时间线 |
+| `mistakes/` | 孩子（受控落盘） | 一题一档的 3 行通关秘籍错题卡（`YYYY-MM-DD-<platform>-<slug>.md`） |
+| `profile/` | 家长主维护 | 学生档案、高频失误库、能力状态矩阵、每周 10h 计划与周期诊断报告 |
+| `scripts/` | 家长（Mac） | Mac/Windows 一键同步脚本、OJ 抓取与时间线合并脚本、`test_oi_coach.mjs` 自动化测试套件 |
 
-## 方案 A 快速上线步骤
+## 日常使用与运维
 
-### 1. 创建私有远程仓库
-在 **Gitee**（国内直连稳）或 **GitHub** 创建一个 **Private（私有）** 空仓库，例如 `oi-coach-workspace`。
+### 1. 家长端（Mac mini）
+- **开发与教研**：用 Antigravity 打开本仓库（自动加载 `GEMINI.md`），录入讲义、查看孩子同步上来的 `training/chat_history/` 与 `mistakes/`、生成阶段诊断。
+- **本机敏感配置**：仅存于工作区根目录 `.env.local`（权限 `600`，已在 `.gitignore` 忽略）：
+  - `HAOBA_USERNAME` / `HAOBA_PASSWORD`（好吧平台只读同步凭据）
+  - `OI_PARENT_PIN`（Mac 学习台切换 `oi-parent` 家长教研模式的口令）
+- **质量门禁与同步**：
+  ```bash
+  node scripts/test_oi_coach.mjs --skip-live-agy
+  ./scripts/sync_mac.sh
+  ```
 
-### 2. Mac mini（家长端）首次关联推送
-在本目录执行：
-```bash
-git remote add origin <你的私有仓库URL>
-git branch -M main
-git push -u origin main
-```
-日常更新完规则、讲义或看完周报后，执行 `./scripts/sync_mac.sh` 即可同步。
-
-### 3. Windows（孩子端）首次配置
-1. 安装 Git for Windows（安装时保持默认即可）与 DeepSeek Harness 桌面版。
-2. 在合适路径克隆仓库：
-   ```powershell
-   git clone <你的私有仓库URL> oi-coach-workspace
-   ```
-3. 在 DeepSeek Harness 桌面版中将工作区（Workspace）指向 `oi-coach-workspace`。
-4. 将 `scripts\sync_windows.bat` 创建快捷方式放到桌面，命名为 **“学习同步”**：
-   - 每次开始学习前、结束后双击一次即可自动完成拉取与上传（零 Git 命令门槛）。
-5. **重要提醒**：孩子写 C++ 请使用纯净编辑器（如不开启 AI 自动补全的 VS Code / CP Editor / Dev-C++），与 AI 工作台分离，保持考场手写代码手感。
-
-### 4. Mac mini 后台定时任务（可选）
-Mac mini 常年开机，可配置 `cron` 或 `launchd` 每晚自动执行：
-1. `python3 scripts/fetch_atcoder.py --user <孩子AtCoderID>`（拉取 AtCoder 公开提交）
-2. `python3 scripts/fetch_codeforces.py --handle <孩子CF用户名>`（拉取 Codeforces 公开提交与非 AC 高频标签）
-3. `./scripts/sync_mac.sh "chore: nightly OJ sync"`（同步到远程仓库）
-
-> 洛谷与机构内部 OJ 的训练代码放在 `training/luogu/` 与 `training/oj/`，孩子在工作台内复盘时由 `post-mortem` 技能自动归档到 `mistakes/`。
+### 2. 孩子端（Windows）
+- **日常学习**：打开 DeepSeek Harness 桌面版 → 左侧栏进入「OI学习台」（Windows 下自动锁定孩子模式，物理隐藏家长工具与口令入口）：
+  - **💬 教练室**：贴题或点待补题走「代数建模 5 步锁步」，聊完一键存秘籍卡，左侧历史栏随时回看续聊；
+  - **📋 题单**：挑近期待补题或隔月旧题冷启动重斩；
+  - **🧮 建模练习**：做 6 课交互式建模实验、6 大母模型 AI 快练或 15 分钟手算微卡片；
+  - **📚 错题与档案**：翻阅通关秘籍卡与课程讲义，点击「☁️ 一键同步进度」（或双击桌面「学习同步」快捷方式）。
+- **手写代码分离**：C++ 代码使用不开启 AI 自动补全的纯净编辑器编写，保持考场真实手感。
