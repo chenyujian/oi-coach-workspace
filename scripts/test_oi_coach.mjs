@@ -191,8 +191,13 @@ await test('GET /api/overview returns real 4-platform stats, courseNotes & agy r
           assert.fail(`Un-AC pitfall bullet leaked outside <details> in ${n.file}: ${st}`)
         }
       }
+      assert.ok(Array.isArray(n.problems) && n.problems.length >= 4, `Expected >=4 parsed problems on ${n.file}, got ${n.problems?.length}`)
     }
   }
+  const pj11Note = d.courseNotes.find((n) => n.file.includes('pj11'))
+  assert.ok(pj11Note && pj11Note.problems.length === 6, `Expected 6 problems in pj11, got ${pj11Note?.problems?.length}`)
+  assert.equal(pj11Note.problems.find((p) => p.pid === '5310')?.solved, true)
+  assert.equal(pj11Note.problems.find((p) => p.pid === '5313')?.solved, false)
   assert.equal(d.agy.ready, true, `Expected agy.ready=true, got ${JSON.stringify(d.agy)}`)
   liveOverviewData = d
   return `${d.totals.submissions} subs, ${d.totals.uniqueAc} AC, ${d.courseNotes.length} notes, agy=${d.agy.version}`
@@ -277,6 +282,13 @@ await test('GET /api/problem-preview matches by ID, Chinese keyword, and handles
   await routes.get('/dsh-oi-coach/api/problem-preview')(makeReq('GET', '/dsh-oi-coach/api/problem-preview?q=abc476_b'), r8)
   assert.equal(j8().found, true)
   assert.ok(j8().problem.lectureNote?.file?.includes('abc476'), 'Expected abc476 lectureNote for multi-item abc476_b')
+
+  // Single-letter ABC slot (abc484_a) must NOT false-match abc484_d's H3 section containing A[i]
+  const { res: r9, json: j9 } = makeRes()
+  await routes.get('/dsh-oi-coach/api/problem-preview')(makeReq('GET', '/dsh-oi-coach/api/problem-preview?q=abc484_a'), r9)
+  assert.equal(j9().found, true)
+  assert.ok(j9().problem.lectureNote?.file?.includes('abc484'), 'Expected abc484 lectureNote for abc484_a')
+  assert.ok(!j9().problem.statement.includes('本质不同的结果序列'), 'Single-letter ABC slot A must NOT cross-match abc484_d abstract!')
   return `abc485_c=${j1().problem.statement.length} chars, lectureNote link & no-false-match OK`
 })
 
@@ -729,6 +741,7 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
 
   let pluginDef = null
   const mockFetchCalls = []
+  const mockAgyPayloads = []
   globalThis.window = {
     __ModuleLoader__: { load: (def) => { pluginDef = def } },
   }
@@ -737,8 +750,11 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
     createElement: () => ({ textContent: '' }),
     head: { appendChild: () => {} },
   }
-  globalThis.fetch = async (url) => {
+  globalThis.fetch = async (url, opts) => {
     mockFetchCalls.push(url)
+    if (String(url).includes('/api/agy-chat') && opts?.body) {
+      try { mockAgyPayloads.push(JSON.parse(opts.body)) } catch { /* ignore */ }
+    }
     if (String(url).includes('/overview')) {
       return { ok: true, status: 200, json: async () => ({ ok: true, data: liveOverviewData }) }
     }
@@ -791,7 +807,12 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
         json: async () => ({
           ok: true,
           found: true,
-          problem: { title: 'abc485_c', platform: 'AtCoder', statement: 'Find min $|i - j|$ with $C_j \\neq C_i$ and $\\frac{N(N-1)}{2}$.' },
+          problem: {
+            title: 'abc485_c',
+            platform: 'AtCoder',
+            statement: 'Find min $|i - j|$ with $C_j \\neq C_i$ and $\\frac{N(N-1)}{2}$.',
+            lectureNote: { file: 'courses/notes/2026-11-22-pj11-modeling.md', title: '普及组训练赛 11' },
+          },
         }),
       }
     }
@@ -836,7 +857,7 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
   assert.ok(!coachEmptyText.includes('CodePlan'), 'Engineering jargon leaked into coach UI!')
   assert.ok(!coachEmptyText.includes('21:15'), 'Removed 21:15 cutoff still visible in coach UI!')
 
-  // 1b. Open chat from history sidebar -> restores messages & enables 存秘籍卡 modal
+  // 1b. Open chat from history sidebar -> restores messages, lectureNote chips & enables 存秘籍卡 modal
   const histItem = (function findHist(n) {
     if (!n || typeof n !== 'object') return null
     if (Array.isArray(n)) { for (const c of n) { const r = findHist(c); if (r) return r } return null }
@@ -846,8 +867,14 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
   })(tree)
   assert.ok(histItem, 'History sidebar item missing')
   await histItem.props.onClick()
+  await new Promise((r) => setTimeout(r, 0))
   tree = slots.main()
   assert.ok(flattenText(tree).includes('见 |i-j| 先去绝对值'), 'History chat messages not restored')
+  assert.ok(flattenText(tree).includes('对应讲义') && flattenText(tree).includes('慢放拆解数学式'), 'CoachRoomTab missing lectureNote / slow-digest chips')
+  const slowChip = findButtons(tree).find((b) => flattenText(b).includes('慢放拆解数学式'))
+  await slowChip.props.onClick()
+  assert.equal(mockAgyPayloads.at(-1)?.subMode, 'lecture-digest', 'Slow-digest chip did not dispatch subMode=lecture-digest')
+  tree = slots.main()
   const saveCardBtn = findButtons(tree).find((b) => flattenText(b).includes('存秘籍卡'))
   assert.ok(saveCardBtn, 'Missing 存秘籍卡 button in active Coach Room')
   saveCardBtn.props.onClick()
@@ -892,10 +919,11 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
   assert.ok(openBrowserBtn, 'Missing open in browser button')
   await openBrowserBtn.props.onClick()
 
-  // Switch to 专题建模快练 subtab -> verify all 10 Ren teacher modeling drills render
+  // Switch to 专题建模快练 subtab -> verify 2 foundation drills + all 10 Ren teacher modeling drills render
   findButtons(tree).find((b) => flattenText(b).includes('专题建模快练')).props.onClick()
   tree = slots.main()
   const drillsText = flattenText(tree)
+  assert.ok(drillsText.includes('破冰基石 A') && drillsText.includes('破冰基石 B'), 'Foundation modeling drills missing')
   assert.ok(drillsText.includes('绝对值与前后缀拆解') && drillsText.includes('二分答案转判定'), 'Modeling drills missing')
   for (let k = 1; k <= 10; k++) {
     assert.ok(drillsText.includes(`抓手 ${k} ·`), `Missing Ren teacher modeling drill #${k}`)
@@ -917,7 +945,31 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
   assert.ok(flattenText(tree).includes('我的通关秘籍'))
   findButtons(tree).find((b) => flattenText(b).includes('课程讲义')).props.onClick()
   tree = slots.main()
-  assert.ok(flattenText(tree).includes('阅读讲义') && flattenText(tree).includes('练 1 道变式建模题'), 'Course notes subtab missing lectures')
+  assert.ok(
+    flattenText(tree).includes('阅读讲义') &&
+      flattenText(tree).includes('带我读懂数学推导') &&
+      flattenText(tree).includes('练 1 道变式建模题'),
+    'Course notes subtab missing lectures or digest button',
+  )
+  // Click 🧑‍🏫 带我读懂数学推导 -> verify LectureDigestModal opens & clicking a problem chip dispatches subMode=lecture-digest
+  const digestBtn = findButtons(tree).find((b) => flattenText(b).includes('带我读懂数学推导'))
+  assert.ok(digestBtn, 'Missing lecture digest button')
+  digestBtn.props.onClick()
+  tree = slots.main()
+  const digestModalText = flattenText(tree)
+  assert.ok(digestModalText.includes('点选哪道题的数学推导没听懂'), 'LectureDigestModal did not open')
+  const probChip = findButtons(tree).find((b) => flattenText(b).includes('5313') || flattenText(b).includes('abc'))
+  assert.ok(probChip, 'LectureDigestModal missing clickable problem chips')
+  const beforeLen = mockAgyPayloads.length
+  await probChip.props.onClick()
+  assert.ok(mockAgyPayloads.length > beforeLen, 'Clicking problem chip in LectureDigestModal did not call /api/agy-chat')
+  const lastDigestPayload = mockAgyPayloads.at(-1)
+  assert.equal(lastDigestPayload.subMode, 'lecture-digest', 'LectureDigestModal chip must send subMode=lecture-digest')
+  assert.ok(lastDigestPayload.previewQuery && lastDigestPayload.previewQuery.length >= 3, 'LectureDigestModal chip must pass previewQuery=pid')
+  // Return to Archive -> 成长 subtab
+  tree = slots.main()
+  findButtons(tree).find((b) => flattenText(b).includes('错题与档案')).props.onClick()
+  tree = slots.main()
   findButtons(tree).find((b) => flattenText(b).includes('成长')).props.onClick()
   tree = slots.main()
   assert.ok(flattenText(tree).includes('四平台累计独立 AC'))
@@ -1022,11 +1074,11 @@ await test('sync_mac.sh syntax valid & sync_windows.bat guards every pause with 
 if (!SKIP_LIVE_AGY) {
   console.log('\n=== 4. Live agy-chat Coach E2E Guardrail Tests ===')
 
-  await test('LIVE agy-chat: Step 1 algebraic modeling (no spoiler, no AC code, no raw LaTeX, no 21:15 nagging)', async () => {
+  await test('LIVE agy-chat: Step 1 concrete small-case warm-up (no spoiler, no AC code, no raw LaTeX, no 21:15 nagging)', async () => {
     const { res, out, json } = makeRes()
     await routes.get('/dsh-oi-coach/api/agy-chat')(
       makeReq('POST', '/dsh-oi-coach/api/agy-chat', {
-        message: '教练，我要补这道题：【abc485_c】（平台：AtCoder，轨迹：TLE→TLE→TLE）。请严格按【任氏建模 5 步锁步】从第 1 步开始，绝不剧透算法方向，绝不给代码。',
+        message: '教练，我要补这道题：【abc485_c】（平台：AtCoder，轨迹：TLE→TLE→TLE）。请严格按【实战探索 + 数学搭桥 5 步法】从第 1 步开始：先拿具体小数字带我手算破冰，绝不一上来逼写抽象字母式，绝不剧透算法方向，绝不给代码。',
         model: 'gemini-4-neon-high',
         mode: 'coach',
         ephemeral: true,

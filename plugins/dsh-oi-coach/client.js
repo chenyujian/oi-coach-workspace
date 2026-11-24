@@ -158,7 +158,7 @@ window.__ModuleLoader__.load({
       const unsolvedCnt = Number(data?.totals?.trueUnsolved ?? 0)
       const acCnt = Number(data?.totals?.uniqueAc ?? 0)
       const list = [
-        { path: 'courses/notes/00-ren-teacher-modeling-playbook.md', title: '📌 任老师 OI 建模心法总纲', desc: '五步拆题骨架、十大高频转化抓手与写码验毒四件套' },
+        { path: 'courses/notes/00-ren-teacher-modeling-playbook.md', title: '📌 号家军建模与六年级搭桥总纲', desc: '零基础数字译字母、考场手玩打表、十大转化抓手与对拍验毒' },
         { path: 'profile/learning_journey.md', title: '30 个月完整成长路径', desc: '从 9 岁启蒙到六年级八级攻坚的七阶段轨迹' },
         ...(data?.isWindows
           ? []
@@ -179,6 +179,20 @@ window.__ModuleLoader__.load({
 
 
     const MODELING_DRILLS = [
+      {
+        id: 'translate-words-to-math',
+        title: '破冰基石 A · 把人话与口算翻译成字母式',
+        subtitle: '专为六年级数学搭桥：消除“看黑板字母公式发懵”的第一课',
+        signal: '看懂题目故事，但一看到 i、j、l、r、向下取整式就发怵',
+        focus: '先拿 N = 3~4 具体数字口算 1 步 → 给数字起字母外号 → 亲手把口算动作写成数学式',
+      },
+      {
+        id: 'small-case-tabulate',
+        title: '破冰基石 B · 手玩小数据与打表抓不变量',
+        subtitle: '如 ABC482-D 僵尸碰撞、ABC484-D 极小移位、PJ04-T6 树构造',
+        signal: '面对陌生构造、博弈或操作等价题，干瞪题面下不了笔',
+        focus: '先在演草本画 N = 3~4 小图或列小表抓对称/抵消/重复现象 → 再用数学式锁死并验证',
+      },
       {
         id: 'abs-prefix-suffix',
         title: '抓手 1 · 挂靠右端点、绝对值与前后缀拆解',
@@ -755,6 +769,7 @@ window.__ModuleLoader__.load({
         chatId: null,
         title: '',
         mode: 'coach',
+        subMode: '',
         conversationId: null,
         previewQuery: '',
         messages: [],
@@ -765,6 +780,7 @@ window.__ModuleLoader__.load({
       problemPreview: null,
       showProblemPreview: false,
       saveCardModal: null,
+      lectureDigestModal: null,
       activePrimerId: 'combo-mod',
       primerAnswers: {},
       docModal: null,
@@ -851,6 +867,7 @@ window.__ModuleLoader__.load({
             chatId: rec.id,
             title: rec.title || rec.id,
             mode: rec.mode || 'coach',
+            subMode: rec.subMode || '',
             conversationId: rec.conversationId || null,
             previewQuery: rec.previewQuery !== undefined ? String(rec.previewQuery || '') : (rec.title || ''),
             skipProblemContext: Boolean(rec.skipProblemContext),
@@ -905,6 +922,7 @@ window.__ModuleLoader__.load({
                   chatId: null,
                   title: '',
                   mode: 'coach',
+                  subMode: '',
                   conversationId: null,
                   previewQuery: '',
                   skipProblemContext: false,
@@ -923,7 +941,7 @@ window.__ModuleLoader__.load({
     }
 
     function inferCardDraftFromChat(chat, pv) {
-      const title = String(pv?.title || chat?.title || '').replace(/^(任氏建模|代数建模|讲义变式|建模|排错|复盘|旧题重斩|变形手算|建模快练)\s*·\s*/i, '').trim() || '未命名题目'
+      const title = String(pv?.title || chat?.title || '').replace(/^(讲义慢放|任氏建模|代数建模|讲义变式|建模|排错|复盘|旧题重斩|变形手算|建模快练)\s*·\s*/i, '').trim() || '未命名题目'
       const combined = `${pv?.platform || ''} ${title}`.toLowerCase()
       let platform = 'oj'
       if (/atcoder|abc\d+|arc\d+|agc\d+/.test(combined)) platform = 'atcoder'
@@ -1048,7 +1066,7 @@ window.__ModuleLoader__.load({
           ...state.agyChat,
           sending: false,
           elapsed: 0,
-          ...(clearMessages ? { open: false, chatId: null, conversationId: null, previewQuery: '', messages: [], title: '', draft: '' } : {}),
+          ...(clearMessages ? { open: false, chatId: null, conversationId: null, subMode: '', previewQuery: '', messages: [], title: '', draft: '' } : {}),
         },
       })
     }
@@ -1069,6 +1087,7 @@ window.__ModuleLoader__.load({
       const prev = state.agyChat
       const title = opts.title || (isNew ? msg.slice(0, 24) : prev.title) || '新题目'
       const mode = opts.mode || (isNew ? 'coach' : prev.mode) || 'coach'
+      const subMode = opts.subMode !== undefined ? String(opts.subMode || '') : isNew ? '' : String(prev.subMode || '')
       let parentPin = opts.parentPin || (mode === 'parent' ? activeParentPin : '')
       if (mode === 'parent' && !parentPin && !state.data?.isWindows) {
         parentPin = ensureParentPin('继续家长教研对话，请输入家长口令：')
@@ -1106,6 +1125,7 @@ window.__ModuleLoader__.load({
           chatId,
           title,
           mode,
+          subMode,
           conversationId: convId,
           previewQuery,
           skipProblemContext,
@@ -1135,6 +1155,7 @@ window.__ModuleLoader__.load({
             model: opts.model || state.agyModel || 'gemini-4-neon-high',
             conversationId: convId || undefined,
             mode,
+            subMode: subMode || undefined,
             parentPin: parentPin || undefined,
           }),
         })
@@ -1180,7 +1201,7 @@ window.__ModuleLoader__.load({
       }
     }
 
-    async function launchCoachSession({ presetId = 'oi-coach', title, prompt, displayText, previewQuery, skipProblemContext = false }) {
+    async function launchCoachSession({ presetId = 'oi-coach', title, prompt, displayText, previewQuery, skipProblemContext = false, subMode = '' }) {
       const wantsParent = !state.data?.isWindows && presetId === 'oi-parent'
       const pin = wantsParent ? ensureParentPin('请输入家长口令以进入家长教研模式：') : ''
       if (wantsParent && !pin) return
@@ -1192,6 +1213,7 @@ window.__ModuleLoader__.load({
           previewQuery: previewQuery !== undefined ? previewQuery : (title || prompt),
           skipProblemContext,
           mode: wantsParent ? 'parent' : 'coach',
+          subMode: wantsParent ? '' : subMode,
           parentPin: wantsParent ? pin : undefined,
         })
         return
@@ -1269,9 +1291,9 @@ window.__ModuleLoader__.load({
 
     function buildQuickPrompt(mode, raw) {
       const prompts = {
-        hint: `教练你好！我做这道题卡住了，请严格按【任氏建模 5 步锁步】（题意复述立目标并揪陷阱 → 看 N 诊朴素死穴让我自选转化抓手 → 等价改写并做微证明 → 逐项拆解与任氏验毒四件套 → 译代码并挂课堂同门题）带我从第 1 步开始，严禁首轮剧透解法方向或算法名，别出送分二选一，绝不给完整 AC 代码：\n\n${raw}`,
-        wa: `教练你好！我这道题 WA 了，请先帮我核对数学模型和任氏验毒四件套边界（绝不要直接剧透正解思路或替我改代码；若已连错 2 次可先喂 1 组 N<=4 极小反例让我手算抓虫）：\n\n${raw}`,
-        tle: `教练你好！我这道题超时 TLE 了，先别告诉我怎么优化！请严格按【任氏建模 5 步锁步】从第 1 步「题意复述立目标式并揪陷阱」重新带我诊出朴素死穴（核心转化抓手让我自己选，严禁提前剧透算法方向，绝不给 AC 代码）：\n\n${raw}`,
+        hint: `教练你好！我做这道题卡住了，请严格按【实战探索 + 数学搭桥 5 步法】（先用 N=3~4 具体小数字带我手算破冰并排掉题眼陷阱，绝不一上来甩抽象字母式 → 扶着把数字译成字母 → 让我自己发现哪步算重了、不直接塞套路菜单 → 代边界小数字慢放公式并做直观微证明 → 验毒对拍与回看讲义）从第 1 步开始，严禁首轮剧透解法方向或算法名，绝不给完整 AC 代码：\n\n${raw}`,
+        wa: `教练你好！我这道题 WA 了，请先帮我核对数学模型和任氏验毒四件套边界（绝不要直接剧透正解思路或替我改代码；若已连错 2 次请先喂 1 组 N<=4 极小反例让我手算或本地暴力对拍抓虫）：\n\n${raw}`,
+        tle: `教练你好！我这道题超时 TLE 了，先别告诉我怎么优化！请按【实战探索 + 数学搭桥 5 步法】先拿 1 组 N=3~4 具体小数字带我手算一遍，帮我自己看清哪一步算重了（严禁首轮剧透算法方向，绝不给 AC 代码）：\n\n${raw}`,
         re: `教练你好！我这道题 RE/CE 了，请带我自己定位数组越界、初始化或语法问题（绝不替我改代码）：\n\n${raw}`,
         pm: `教练你好！我刚刚把这道题 AC 了！请按 post-mortem 的 3 秒“敲 1 确认”模式直接帮我提炼 3 行通关秘籍卡，我确认后请你调用 save_mistake_card 存入错题库：\n\n${raw}`,
       }
@@ -1283,9 +1305,9 @@ window.__ModuleLoader__.load({
         return launchCoachSession({
           presetId: 'oi-coach',
           title: p.title,
-          displayText: `我想用任氏建模法补这道题：${p.title}（${p.platform} · ${p.trajectory}）`,
+          displayText: `我想补这道题：${p.title}（${p.platform} · ${p.trajectory}）`,
           previewQuery: p.title,
-          prompt: `教练，我要补这道题：【${p.title}】（平台：${p.platform}，我之前交了 ${p.attempts} 次，最高 ${p.bestScore} 分，轨迹：${p.trajectory}）。请严格按【任氏建模 5 步锁步】从第 1 步「题意复述立目标式并揪陷阱」带我一步步推导（核心转化抓手让我自己选，别出送分题，严禁首轮剧透解法方向或算法名称，绝不要直接给代码）。`,
+          prompt: `教练，我要补这道题：【${p.title}】（平台：${p.platform}，我之前交了 ${p.attempts} 次，最高 ${p.bestScore} 分，轨迹：${p.trajectory}）。请严格按【实战探索 + 数学搭桥 5 步法】从第 1 步开始：先拿 1 组 N=3~4 的具体小数字带我口算破冰（绝不一上来逼写抽象字母式，也严禁首轮剧透解法方向或算法名，绝不要直接给代码）。`,
         })
       }
       if (kind === 'debug') {
@@ -1294,7 +1316,7 @@ window.__ModuleLoader__.load({
           title: `排错 · ${p.title}`,
           displayText: `帮我排错：${p.title}（${p.platform} · ${p.trajectory}）`,
           previewQuery: p.title,
-          prompt: `教练，我在【${p.title}】（平台：${p.platform}，轨迹：${p.trajectory}，最高 ${p.bestScore} 分）上卡住了。先别直接剧透正解方向！若是 WA 请喂 1 组 N<=4 极小反例让我手算找错；若是 TLE 请严格按【任氏建模 5 步锁步】从第 1 步重新带我诊断朴素死穴。`,
+          prompt: `教练，我在【${p.title}】（平台：${p.platform}，轨迹：${p.trajectory}，最高 ${p.bestScore} 分）上卡住了。先别直接剧透正解方向！若是 WA 请喂 1 组 N<=4 极小反例让我手算或本地暴力对拍找错；若是 TLE 请按【实战探索 + 数学搭桥 5 步法】先拿具体小数字帮我自己看清哪步算重了。`,
         })
       }
       return launchCoachSession({
@@ -1496,7 +1518,7 @@ window.__ModuleLoader__.load({
           displayText: `开始「${drill.title}」专题建模快练（${activeLevel.label}）`,
           previewQuery: '',
           skipProblemContext: true,
-          prompt: `教练，我想做 1 道【${drill.title}】（重点：${drill.focus}）的 10 分钟演草纸任氏建模快练（难度：${activeLevel.label}，不需要急着写代码）。请你先现编 1 道简短干净、数据范围明确（如 N ≤ 20万）的原创或变式微题，只给题面和约束，**绝不剧透解法或算法名**，然后严格按【任氏建模 5 步锁步】从第 1 步「题意复述立目标式并揪陷阱」开始带我一步步推导！`,
+          prompt: `教练，我想做 1 道【${drill.title}】（重点：${drill.focus}）的 10 分钟演草本建模快练（难度：${activeLevel.label}，不用急着写代码）。请你先现编 1 道简短干净的原创或变式微题，给清楚题面和 1 组 N=3~4 具体小数字例子，**绝不一上来抛复杂字母式或剧透算法名**，然后按【实战探索 + 数学搭桥 5 步法】先带我手算 1 步，再扶着把数字翻译成数学式一步步推进！`,
         })
       }
 
@@ -1538,7 +1560,7 @@ window.__ModuleLoader__.load({
                 className: `oi-nav-btn ${st.practiceSubTab === 'drills' ? 'oi-nav-btn-active' : ''}`,
                 onClick: () => setState({ practiceSubTab: 'drills' }),
               },
-              '⚡ 专题建模快练（任氏 10 法）',
+              '⚡ 专题建模快练（基石 + 10法）',
             ),
             h(
               'button',
@@ -1618,8 +1640,8 @@ window.__ModuleLoader__.load({
                   h(
                     'div',
                     { style: { display: 'grid', gap: 4 } },
-                    h('div', { style: { fontSize: 18, fontWeight: 800 } }, '⚡ 每日 10 分钟 · 任氏十大建模转化快练'),
-                    h('div', { style: { fontSize: 13.5, color: C.sub } }, '提炼自任衍硕老师 20 场普及模拟赛与 ABC 题解：选一个核心转化抓手，在演草本上跟教练走完「任氏建模 5 步锁步」，练出秒破朴素死穴的肌肉记忆。'),
+                    h('div', { style: { fontSize: 18, fontWeight: 800 } }, '⚡ 每日 10 分钟 · 破冰搭桥 + 号家军十大建模快练'),
+                    h('div', { style: { fontSize: 13.5, color: C.sub } }, '先从“人话译字母 / 手玩小数据打表”两块基石起步，再进阶到任衍硕老师 20 场讲义提炼的十大核心转化，每轮先算具体小数字、不甩吓人符号。'),
                   ),
                   h(
                     'div',
@@ -1882,11 +1904,23 @@ window.__ModuleLoader__.load({
                             },
                             '📖 阅读讲义',
                           ),
+                          !n.pinned && Array.isArray(n.problems) && n.problems.length > 0
+                            ? h(
+                                'button',
+                                {
+                                  type: 'button',
+                                  className: 'oi-btn oi-btn-primary',
+                                  disabled: !!st.busy,
+                                  onClick: () => setState({ lectureDigestModal: n }),
+                                },
+                                '🧑‍🏫 带我读懂数学推导',
+                              )
+                            : null,
                           h(
                             'button',
                             {
                               type: 'button',
-                              className: 'oi-btn oi-btn-primary',
+                              className: n.pinned ? 'oi-btn oi-btn-primary' : 'oi-btn',
                               disabled: !!st.busy,
                               onClick: () =>
                                 launchCoachSession({
@@ -1895,7 +1929,7 @@ window.__ModuleLoader__.load({
                                   displayText: `基于讲义「${n.title}」出 1 道全新变式建模题练手`,
                                   previewQuery: '',
                                   skipProblemContext: true,
-                                  prompt: `教练，我刚复习完课程讲义「${n.title}」（${n.summary || '建模专题'}）。请你基于同一类核心母模型，**新编 1 道变式建模微题**（不要照抄讲义原题结论，绝不剧透算法方向），然后严格按【任氏建模 5 步锁步】从第 1 步「题意复述立目标式并揪陷阱」带我演草纸推一遍！`,
+                                  prompt: `教练，我刚复习完课程讲义「${n.title}」（${n.summary || '建模专题'}）。请你基于同一类核心母模型，**新编 1 道变式建模微题**（附 1 组 N=3~4 具体小数字例子，不要照抄讲义原题结论，绝不剧透算法方向），按【实战探索 + 数学搭桥 5 步法】先带我手算 1 步再扶着翻译成数学式！`,
                                 }),
                             },
                             '🎯 练 1 道变式建模题',
@@ -2585,7 +2619,7 @@ window.__ModuleLoader__.load({
           return
         }
         const mode = st.intakeMode || 'hint'
-        const labels = { hint: '代数建模', wa: 'WA 排错', tle: 'TLE 重拆', re: 'RE/CE 排查', pm: 'AC 存秘籍' }
+        const labels = { hint: '探索建模', wa: 'WA 排错', tle: 'TLE 重拆', re: 'RE/CE 排查', pm: 'AC 存秘籍' }
         void launchCoachSession({
           presetId: 'oi-coach',
           title: `${labels[mode]} · ${raw.slice(0, 18).replace(/\s+/g, ' ')}`,
@@ -2610,7 +2644,7 @@ window.__ModuleLoader__.load({
       if (!isActive) {
         const quickProblems = (data?.unsolvedRecent || []).slice(0, 3)
         const modes = [
-          { id: 'hint', label: '🧮 代数建模' },
+          { id: 'hint', label: '🧮 探索建模' },
           { id: 'wa', label: '🩺 WA 排错' },
           { id: 'tle', label: '⏱️ TLE 重拆' },
           { id: 'pm', label: '🃏 AC 存秘籍' },
@@ -2646,7 +2680,7 @@ window.__ModuleLoader__.load({
                 'div',
                 { style: { textAlign: 'center', display: 'grid', gap: 8 } },
                 h('div', { style: { fontSize: 26, fontWeight: 800, letterSpacing: '-0.02em' } }, '今天想攻克哪道题？'),
-                h('div', { style: { fontSize: 14, color: C.sub } }, '备好演草纸，贴上题号、题面或卡住的代码，教练带你从数学目标式一步步推出来'),
+                h('div', { style: { fontSize: 14, color: C.sub } }, '备好演草本，贴上题号、题面或卡住的代码，先拿小数字手算破冰，再一步步翻译成数学式'),
               ),
               h(
                 'div',
@@ -2798,6 +2832,21 @@ window.__ModuleLoader__.load({
                         onClick: () => openDoc(pv.lectureNote.file, pv.lectureNote.title),
                       },
                       '📚 对应讲义',
+                    )
+                  : null,
+                pv && pv.lectureNote && pv.lectureNote.file && chat.mode !== 'parent' && !chat.sending
+                  ? h(
+                      'button',
+                      {
+                        type: 'button',
+                        className: 'oi-chip',
+                        onClick: () =>
+                          void sendAgyMessage(
+                            '教练，任老师讲义里这一步的数学式子我有点看晕，能先拿两组具体小数字（比如 N=3~4 或边界数）代进去慢放算给我看，再告诉我怎么变成那个字母式子吗？',
+                            { subMode: 'lecture-digest', displayText: '🧑‍🏫 请用具体小数字帮我慢放拆解这一步数学式子' },
+                          ),
+                      },
+                      '🧑‍🏫 慢放拆解数学式',
                     )
                   : null,
                 chat.messages.length >= 2 && chat.mode !== 'parent'
@@ -3052,6 +3101,84 @@ window.__ModuleLoader__.load({
       )
     }
 
+    function LectureDigestModal({ modal }) {
+      if (!modal) return null
+      const probs = Array.isArray(modal.problems) ? modal.problems : []
+      const pickProblem = (p) => {
+        const label = [p.slot, p.pid, p.title && p.title !== p.pid ? p.title : ''].filter(Boolean).join(' ')
+        setState({ lectureDigestModal: null })
+        void launchCoachSession({
+          presetId: 'oi-coach',
+          subMode: 'lecture-digest',
+          title: `讲义慢放 · ${label}`,
+          displayText: `请帮我慢放拆解讲义《${modal.title}》里的【${label}】的数学推导`,
+          previewQuery: p.pid,
+          prompt: `教练，我在看任衍硕老师讲义《${modal.title}》里的题目【${label}】时，对课堂上的数学公式推导有点接受不了。请开启【课后讲义数学慢放拆解模式】，千万别一口气把公式倒给我，先拿 1 组 N=3~4 的具体小数字带我算 1 步，再一帧帧把数字翻译成讲义里的字母推导（严禁给完整 AC 代码）！`,
+        })
+      }
+      return h(
+        'div',
+        { className: 'oi-modal-bg', onClick: () => setState({ lectureDigestModal: null }) },
+        h(
+          'div',
+          { className: 'oi-modal', style: { width: 'min(560px, 94vw)' }, onClick: (e) => e.stopPropagation() },
+          h(
+            'div',
+            {
+              style: {
+                padding: '14px 20px',
+                borderBottom: `1px solid ${C.border}`,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 10,
+              },
+            },
+            h('div', { style: { fontWeight: 800, fontSize: 15 } }, '🧑‍🏫 点选哪道题的数学推导没听懂（零打字直达）'),
+            h('button', { type: 'button', className: 'oi-btn oi-btn-ghost', onClick: () => setState({ lectureDigestModal: null }) }, '关闭'),
+          ),
+          h(
+            'div',
+            { style: { padding: '16px 20px', display: 'grid', gap: 14, overflowY: 'auto' } },
+            h('div', { style: { fontSize: 13, color: C.sub, lineHeight: 1.6 } }, `当前讲义：${modal.title}。点下面任意一道题，教练会先用 N = 3~4 具体小数字带你算清楚，再一步步翻译成任老师的数学式子：`),
+            h(
+              'div',
+              { style: { display: 'grid', gap: 8 } },
+              ...probs.map((p) => {
+                const label = [p.slot, p.pid, p.title && p.title !== p.pid ? p.title : ''].filter(Boolean).join(' · ')
+                return h(
+                  'button',
+                  {
+                    key: p.pid,
+                    type: 'button',
+                    className: 'oi-btn',
+                    style: {
+                      justifyContent: 'space-between',
+                      padding: '10px 14px',
+                      textAlign: 'left',
+                    },
+                    onClick: () => pickProblem(p),
+                  },
+                  h('span', { style: { fontWeight: 700, fontSize: 13.5 } }, label),
+                  h(
+                    'span',
+                    {
+                      className: 'oi-pill',
+                      style: {
+                        color: p.solved ? C.ok : C.warn,
+                        borderColor: p.solved ? C.ok : C.warn,
+                      },
+                    },
+                    p.solved ? '✓ 已 AC · 巩固推导' : '🔒 待补 · 慢放拆解',
+                  ),
+                )
+              }),
+            ),
+          ),
+        ),
+      )
+    }
+
     function OiCoachPage() {
       const st = useStore()
       React.useEffect(() => {
@@ -3184,6 +3311,7 @@ window.__ModuleLoader__.load({
 
         h(DocModal, { modal: st.docModal }),
         h(SaveCardModal, { modal: st.saveCardModal }),
+        h(LectureDigestModal, { modal: st.lectureDigestModal }),
       )
     }
 
