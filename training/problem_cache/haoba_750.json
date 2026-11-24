@@ -1,0 +1,13 @@
+{
+  "platform": "好吧(Cpp2023)",
+  "pid": "750",
+  "title": "750 Abbreviation",
+  "url": "https://haoba.vip/d/Cpp2023/p/750?tid=6986d3e4d57ae7ce90087039",
+  "statement": "\n\n### 题目描述\n\n缩写 *Abbreviation*（来源于拉丁语 *brevis*，意为“短”）是一个词或短语的简化形式。在本题中，你需要编写一个自动化工具，将一串大写开头的单词替换为相应的缩写形式。缩写形式由这些单词的首字母（大写）组成，后面紧跟括号内的完整解释。请参考输入输出示例。\n\n我们先给出一些形式化定义：\n\n* **单词 (word)**：文本中的一个单词是由大小写英文字母组成的最长连续序列。\n* **大写开头的单词 (capitalized word)**：首字母是大写字母，后跟一个或多个小写字母的单词。例如 “Ab”、“Abc”、“Abcd”、“Abcde” 都是大写开头的单词，而 “ab”、“A”、“AB”、“ABc4” 则不是。\n* **可缩写序列 (abbreviatable sequence of words)**：由两个或更多大写开头单词组成的序列，这些单词之间恰好用一个空格隔开，中间不能有其他标点符号或空格。\n* **缩写 (abbreviation)**：对一个可缩写序列的缩写形式是：取每个单词的首字母（大写），接着一个空格，然后是左括号，完整的原序列，最后是右括号。\n\n---\n\n### 输入格式 (Input)\n\n输入文件最多包含 1000 行，每行最多 120 个字符。每行仅由空格、大小写字母以及标点符号组成。没有行首或行尾的空格，每行中单词之间至少有一个空格。文件中至少会出现一次可缩写序列。\n\n---\n\n### 输出格式 (Output)\n\n输出文件的内容应与输入文本相同，但需要将所有出现的可缩写序列替换为对应的缩写形式。\n\n```input1\nThis is ACM North Eastern European Regional Contest,\nsponsored by International Business Machines.\nThe. Best. Contest. Ever.\nA Great Opportunity for all contestants.\nab Ab A Abc AB Abcd ABc Abcde AbC\nOh  No  Extra Spaces.And,Punctuation Ruin Everything\n```\n```output1\nThis is ACM NEERC (North Eastern European Regional Contest),\nsponsored by IBM (International Business Machines).\nThe. Best. Contest. Ever.\nA GO (Great Opportunity) for all contestants.\nab Ab A Abc AB Abcd ABc Abcde AbC\nOh  No  ES (Extra Spaces).And,PRE (Punctuation Ruin Everything)\n```\n\n```input2\nA Cd Ef\nAb C Ef\nAb Cd E\nA C Ef\nA Cd E\nAb C E\nA.Cd Ef\nAb.C Ef\nAb.Cd E\nA.C Ef\nA.Cd E\nAb.C E\nA.Cd.Ef\nAb.C.Ef\nAb.Cd.E\nA.C.Ef\nA.Cd.E\nAb.C.E\nA Cd.Ef\nAb C.Ef\nAb Cd.E\nA C.Ef\nA Cd.E\nAb C.E\n```\n\n```output2\nA CE (Cd Ef)\nAb C Ef\nAC (Ab Cd) E\nA C Ef\nA Cd E\nAb C E\nA.CE (Cd Ef)\nAb.C Ef\nAb.Cd E\nA.C Ef\nA.Cd E\nAb.C E\nA.Cd.Ef\nAb.C.Ef\nAb.Cd.E\nA.C.Ef\nA.Cd.E\nAb.C.E\nA Cd.Ef\nAb C.Ef\nAC (Ab Cd).E\nA C.Ef\nA Cd.E\nAb C.E\n```",
+  "attempts": 4,
+  "best_score": 100,
+  "trajectory": "WA→WA→AC→WA",
+  "latest_verdict": "WA",
+  "latest_score": 0,
+  "latest_code": "#include<bits/stdc++.h>\n#define int long long\nusing namespace std;\n\nsigned main() {\n\tios::sync_with_stdio(0);\n\tcin.tie(0);\n\tcout.tie(0);\n\tint n;\n\tcin >> n;\n\tvector<int>a, b;\n\tfor (int i = 0; i < n; i++) {\n\t\tint x;\n\t\tcin >> x;\n\t\ta.push_back(x);\n\t}\n\tfor (int i = 0; i < n; i++) {\n\t\tint x;\n\t\tcin >> x;\n\t\tb.push_back(x);\n\t}\n\tfor(int i=0;i<n;i++){\n\t\tif(a[i]>0&&b[i]<0||a[i]<0&&b[i]>0){\n\t\t\tcout<<2<<\" \";\n\t\t}else{\n\t\t\tcout<<0<<\" \";\n\t\t}\n\t}\n\treturn 0;\n}\n"
+}

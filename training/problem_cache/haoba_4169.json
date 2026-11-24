@@ -1,0 +1,13 @@
+{
+  "platform": "好吧(cpptrain)",
+  "pid": "4169",
+  "title": "4169 火枪手",
+  "url": "https://haoba.vip/d/cpptrain/p/4169?tid=6aa4d0485ee0445aa3a2a8c1",
+  "statement": "## 题目描述\n\n有 $n$ 个人按顺时针顺序站成一个圆圈，编号为 $1$ 到 $n$。\n\n接下来一共会进行 $n-1$ 场决斗。每一轮可以从当前仍在圈中的人里任选一人；若本轮选中的是编号为 $x$ 的人，则他会与自己右侧相邻的人进行决斗。失败者立即出局，圆圈随之收缩，原本位于失败者后面的那个人会成为胜者新的右侧邻居。\n\n已知任意两人对决时的胜负结果，用一个 $n \\times n$ 的 $01$ 矩阵 $A$ 表示：\n\n- 若 $A_{i,j}=1$，则编号为 $i$ 的人一定战胜编号为 $j$ 的人；\n- 若 $A_{i,j}=0$，则编号为 $i$ 的人一定输给编号为 $j$ 的人。\n\n如果存在一种进行这 $n-1$ 场决斗的顺序，使得编号为 $i$ 的人成为最后的胜者，则称编号为 $i$ 的人 **可能获胜**。\n\n请你求出所有可能获胜的人的编号。\n\n## 输入格式\n\n第一行一个整数 $n$。\n\n接下来 $n$ 行，每行一个长度为 $n$ 的 $01$ 串。第 $i$ 行第 $j$ 个字符表示 $A_{i,j}$。\n\n形式化地，输入满足：\n\n$$\n3 \\le n \\le 100\n$$\n\n并且：\n\n$$\nA_{i,i}=1 \\qquad (1 \\le i \\le n)\n$$\n\n$$\nA_{i,j}=1-A_{j,i} \\qquad (1 \\le i,j \\le n,\\ i \\ne j)\n$$\n\n## 输出格式\n\n第一行输出一个整数 $k$，表示可能获胜的人数。\n\n接下来 $k$ 行，按升序每行输出一个可能获胜者的编号。\n\n## 数据范围\n\n- $3 \\le n \\le 100$\n- 输入矩阵中的每个字符均为 `0` 或 `1`\n- 对任意 $i$，都有 $A_{i,i}=1$\n- 对任意 $i \\ne j$，都有 $A_{i,j}=1-A_{j,i}$\n\n## 样例\n\n### 样例输入\n\n```text\n7\n1111101\n0101100\n0111111\n0001101\n0000101\n1101111\n0100001\n```\n\n### 样例输出\n\n```text\n3\n1\n3\n6\n```\n\n## 样例解释\n\n如果决斗顺序为 `1-2`、`1-3`、`5-6`、`7-1`、`4-6`、`6-1`，那么最后的胜者是编号为 `6` 的人。进一步检查可知，只有编号为 `1`、`3`、`6` 的人可能成为最终胜者。\n",
+  "attempts": 1,
+  "best_score": 0,
+  "trajectory": "WA",
+  "latest_verdict": "WA",
+  "latest_score": 0,
+  "latest_code": "#include<bits/stdc++.h>\n#define int long long\nusing namespace std;\nint w[1111][1111],m[1111][1111];\nsigned main(){\n\tios::sync_with_stdio(0);cin.tie(0);cout.tie(0);\n\tint n;\n\tcin>>n;\n\tfor(int i=1;i<=n;i++){\n\t\tfor(int j=1;j<=n;j++){\n\t\t\tcin>>w[i][j];\n\t\t}\n\t}\n\tfor(int i=1;i<=n;i++){\n\t\tfor(int j=i;j<=n;j++){\n\t\t\tw[i][j]=1;\n\t\t\tfor(int k=i+1;k<j;k++){\n\t\t\t\tif(m[i][k]&&m[k][j]&&(w[i][k]||w[j][k])){\n\t\t\t\t\tw[i][j]=1;\n\t\t\t\t}else{\n\t\t\t\t\tw[i][j]=0;\n\t\t\t\t\tbreak;\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n\tfor(int i=1;i<=n;i++){\n\t\tif(m[i][i]){\n\t\t\tcout<<i<<endl;\n\t\t}\n\t}\n\treturn 0;\n}\n"
+}

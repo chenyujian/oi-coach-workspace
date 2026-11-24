@@ -1,0 +1,11 @@
+{
+  "platform": "AtCoder",
+  "pid": "abc414_c",
+  "title": "abc414_c C - Palindromic in Both Bases",
+  "url": "https://atcoder.jp/contests/abc414/tasks/abc414_c",
+  "statement": "Score : 350 points\n\nProblem Statement\nThe decimal representation of 414 is 414, which is a palindrome.\nAlso, the octal representation of 414 is 636, which is also a palindrome.\nBased on this, solve the following problem.\n\nYou are given positive integers A and N.\nFind the sum of all integers between 1 and N, inclusive, whose decimal representation and base-A representation are both palindromes.\n\nUnder the constraints of this problem, it can be proved that the answer is less than 2^{63}.\n\nConstraints\n\n2 \\leq A \\leq 9\n\n1 \\leq N \\le 10^{12}\n\nAll input values are integers.\n\nInput\nThe input is given from Standard Input in the following format:\n\nA\nN\n\nOutput\nOutput the answer in one line.\n\nSample Input 1\n8\n1000\n\nSample Output 1\n2155\n\nThe integers satisfying the condition are 1,2,3,4,5,6,7,9,121,292,333,373,414,585 (14 integers), and their sum is 2155.\n\nSample Input 2\n8\n999999999999\n\nSample Output 2\n914703021014\n\nSample Input 3\n6\n999999999999\n\nSample Output 3\n283958331810",
+  "attempts": 1,
+  "trajectory": "TLE",
+  "latest_code": "",
+  "note": "AtCoder 提交源码需登录后查看，题面与数据范围已自动拉取缓存。"
+}

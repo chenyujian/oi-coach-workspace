@@ -1,0 +1,13 @@
+{
+  "platform": "信奥李拜天",
+  "pid": "2542",
+  "title": "2542 [GESP七级模拟]乘积末尾的零",
+  "url": "https://www.oilibaitian.cn/p/2542",
+  "statement": "\n## 题目描述\n\n小 W 有 $n$ 张卡片，每张卡片上写着一个正整数。她需要从中**恰好**选出 $k$ 张卡片，并把选中的卡片上的数全部乘起来。乘积在十进制表示下末尾连续 $0$ 的个数，就是这次选择的得分。\n\n小 W 想知道，她最多能得到多少个末尾的 $0$。\n\n## 输入格式\n\n第一行包含两个正整数 $n$ 和 $k$，分别表示卡片的总数和需要选出的卡片数。\n\n第二行包含 $n$ 个正整数 $a_1, a_2, \\dots, a_n$，表示每张卡片上的数。\n\n## 输出格式\n\n输出一行一个整数，表示最多能得到的末尾 $0$ 的个数。\n\n## 样例\n\n### 样例 1 输入\n\n```text\n3 2\n4 25 10\n```\n\n### 样例 1 输出\n\n```text\n2\n```\n\n### 样例 1 解释\n\n选出 $4$ 和 $25$，乘积是 $100$，末尾有 $2$ 个 $0$。其他选法的乘积末尾都只有 $1$ 个 $0$。\n\n### 样例 2 输入\n\n```text\n5 3\n8 5 5 2 2\n```\n\n### 样例 2 输出\n\n```text\n2\n```\n\n### 样例 2 解释\n\n选出 $8$、$5$、$5$，乘积是 $200$，末尾有 $2$ 个 $0$。不存在能得到更多 $0$ 的选法。\n\n### 附加样例\n\n规模达到上限的样例随题目分发为 `examples/ex_zeros.in` 和 `examples/ex_zeros.ans`。\n\n## 数据范围\n\n对于全部数据，满足：\n\n- $1 \\le k \\le n \\le 200$；\n- $1 \\le a_i \\le 10^{18}$。\n\n本题采用捆绑测试。只有通过一个子任务内的全部测试点，才能获得该子任务的分数。\n\n- 子任务 $1$（$30$ 分）：$n \\le 12$。\n- 子任务 $2$（$70$ 分）：无附加约束。",
+  "attempts": 5,
+  "best_score": 30,
+  "trajectory": "TLE→TLE→TLE→CE→WA",
+  "latest_verdict": "WA",
+  "latest_score": 0,
+  "latest_code": "#include<bits/stdc++.h>\r\n#define int long long\r\nusing namespace std;\r\nint n,a[222],ans[222][222],a5[222],a2[222];\r\n\r\nint dfs(int p,int k,int p2,int p5){\r\n\tif(p>n){\r\n\t\tif(k==0){\r\n\t\t\treturn min(p2,p5);\r\n\t\t}else{\r\n\t\t\treturn 0;\r\n\t\t}\r\n\t}\r\n\tif(ans[p][k]!=-1){\r\n\t\treturn ans[p][k];\r\n\t}\r\n\tint x=dfs(p+1,k,p2,p5);\r\n\tif(k>0){\r\n\t\tx=max(x,dfs(p+1,k-1,p2+a2[p],p5+a5[p]));\r\n\t}\r\n\tans[p][k]=x;\r\n\treturn x;\r\n}\r\nsigned main(){\r\n\tios::sync_with_stdio(0);cin.tie(0);cout.tie(0);\r\n\tint k;\r\n\tcin>>n>>k;\r\n\tmemset(ans,-1,sizeof(ans));\r\n\tfor(int i=1;i<=n;i++){\r\n\t\tcin>>a[i];\r\n\t\twhile(a[i]%2==0){\r\n\t\t\ta[i]/=2;\r\n\t\t\ta2[i]++;\r\n\t\t}\r\n\t\twhile(a[i]%5==0){\r\n\t\t\ta[i]/=5;\r\n\t\t\ta5[i]++;\r\n\t\t}\r\n\t}\r\n\tcout<<dfs(1,k,0,0);\r\n    return 0;\r\n}\r\n"
+}

@@ -1,0 +1,11 @@
+{
+  "platform": "AtCoder",
+  "pid": "abc408_c",
+  "title": "abc408_c C - Not All Covered",
+  "url": "https://atcoder.jp/contests/abc408/tasks/abc408_c",
+  "statement": "Score : 300 points\n\nProblem Statement\nIn the AtCoder Kingdom, there are N castle walls numbered from 1 through N. There are also M turrets.\n\nTurret i guards castle walls numbered from L_i through R_i.\n\nWhen a turret is destroyed, the castle walls that were guarded by that turret are no longer guarded by that turret.\n\nWhat is the minimum number of turrets that need to be destroyed so that at least one castle wall is not guarded by any turret?\n\nConstraints\n\n1 \\leq N \\leq 10^6\n\n1 \\leq M \\leq 2 \\times 10^5\n\n1 \\leq L_i \\leq R_i \\leq N (1 \\leq i \\leq M)\n\nAll input values are integers.\n\nInput\nThe input is given from Standard Input in the following format:\n\nN M\nL_1 R_1\nL_2 R_2\n \\vdots \nL_M R_M\n\nOutput\nOutput the minimum number of turrets that need to be destroyed so that at least one castle wall is not guarded by any turret.\n\nSample Input 1\n10 4\n1 6\n4 5\n5 10\n7 10\n\nSample Output 1\n1\n\nIf turret 1 is destroyed, no turret guards castle wall 3.\nAlso, if no turrets are destroyed, all castle walls are guarded by some turret.\nTherefore, output 1.\n\nSample Input 2\n5 2\n1 2\n3 4\n\nSample Output 2\n0\n\nSince no turret guards castle wall 5, there already exists a castle wall not guarded by any turret without destroying any turrets. Therefore, output 0.\n\nSample Input 3\n5 10\n2 5\n1 5\n1 2\n2 4\n2 2\n5 5\n2 4\n1 2\n2 2\n2 3\n\nSample Output 3\n3",
+  "attempts": 1,
+  "trajectory": "TLE",
+  "latest_code": "",
+  "note": "AtCoder 提交源码需登录后查看，题面与数据范围已自动拉取缓存。"
+}

@@ -1,0 +1,11 @@
+{
+  "platform": "AtCoder",
+  "pid": "abc404_c",
+  "title": "abc404_c C - Cycle Graph?",
+  "url": "https://atcoder.jp/contests/abc404/tasks/abc404_c",
+  "statement": "Score : 300 points\n\nProblem Statement\nYou are given a simple undirected graph with N vertices and M edges. The vertices are numbered 1,2,\\dots,N and the edges are numbered 1,2,\\dots,M. Edge i connects vertices A_i and B_i.\n\nDetermine whether this graph is a cycle graph.\n\nDefinition of simple undirected graph\nA simple undirected graph is a graph with undirected edges without self-loops or multi-edges.\n\nDefinition of cycle graph\nAn N-vertex graph with vertices labeled 1,2,\\dots,N is a cycle graph when there exists a permutation (v_1,v_2,\\dots,v_N) of (1,2,\\dots,N) such that:\n\nFor each i = 1,2,\\dots,N-1, there is an edge between vertices v_i and v_{i+1}. \n\nThere is an edge between vertices v_N and v_1. \n\nNo other edges exist. \n\nConstraints\n\n3 \\le N \\le 2\\times 10^5\n\n0 \\le M \\le 2\\times 10^5\n\n1 \\le A_i, B_i \\le N\n\nThe given graph is simple.\n\nAll input values are integers.\n\nInput\nThe input is given from Standard Input in the following format:\n\nN M\nA_1 B_1\n\\vdots\nA_M B_M\n\nOutput\nOutput Yes if the given graph is a cycle graph; otherwise, print No.\n\nSample Input 1\n4 4\n2 4\n3 1\n4 1\n2 3\n\nSample Output 1\nYes\n\nThe given graph is as follows, and this is a cycle graph.\n\nSample Input 2\n4 6\n1 2\n1 3\n1 4\n2 3\n2 4\n3 4\n\nSample Output 2\nNo\n\nThe given graph is as follows, and this is not a cycle graph.",
+  "attempts": 7,
+  "trajectory": "WA→WA→WA→WA→WA→WA→WA",
+  "latest_code": "",
+  "note": "AtCoder 提交源码需登录后查看，题面与数据范围已自动拉取缓存。"
+}

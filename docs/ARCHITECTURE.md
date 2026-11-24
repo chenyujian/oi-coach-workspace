@@ -49,7 +49,10 @@
   - 教练室历史对话：`training/chat_history/YYYY-MM-DD-<id>.json`
   - 错题通关秘籍卡：`mistakes/YYYY-MM-DD-<platform>-<slug>.md`
   - 课程讲义笔记：`courses/notes/YYYY-MM-DD-<topic>.md`（原始大体积 `courses/raw/*.pdf` 已在 `.gitignore` 忽略）
-- **本机私有凭据（绝不入 Git）**：`.env.local`（`600` 权限，存 `HAOBA_USERNAME` / `HAOBA_PASSWORD` / `OI_PARENT_PIN`）。
+- **本机私有凭据（绝不入 Git）**：`.env.local`（`600` 权限，存 `HAOBA_USERNAME` / `HAOBA_PASSWORD`、`OILIBAITIAN_USERNAME` / `OILIBAITIAN_PASSWORD`、可选 `LUOGU_COOKIE` 与 `OI_PARENT_PIN`）。
+- **双端无感实时同步与定时抓题**：
+  - **Windows 孩子端无感同步**：存秘籍卡 3 秒自动推送、教练室对话停笔 45 秒自动备份、每 5 分钟后台自动拉取新讲义/新题单（仅定向提交 `training/chat_history/` 与 `mistakes/`，冲突自动安全回退，顶栏显示 `☁️ 自动同步` 与 `✨ 收到新升级，点此更新` 柔和胶囊）。
+  - **Mac mini 常驻中枢定时抓题**：`~/Library/LaunchAgents/com.oicoach.oj-autosync.plist` 每 2 小时自动执行 `scripts/auto_sync_ojs.py --git-push`，串联 AtCoder + 好吧 + 信奥李拜天 + 洛谷会话增量抓取、跨站去重时间线与题面增量缓存，检测到真实新提交时定向推送数据文件（绝不触碰家长未提交的开发代码）。
 
 ---
 
@@ -57,9 +60,9 @@
 
 - [x] 本地工作区骨架、`AGENTS.md`（实战探索 + 数学搭桥 5 步法）与 5 个 `.dsh/skills/`
 - [x] GitHub 私有远程仓库绑定（`git@github.com:chenyujian/oi-coach-workspace.git`）与 Mac/Windows 同步脚本
-- [x] 四平台全量基线拉取、跨站同题去重时间线（`build_timeline.py`）与未过题题面增量缓存（`cache_problem_context.py`）
+- [x] 四平台全量基线拉取、跨站同题去重时间线（`build_timeline.py`）、未过题题面增量缓存（`cache_problem_context.py`）与 2 小时定时自动抓题总管（`auto_sync_ojs.py` + `fetch_luogu.py` + `launchd`）
 - [x] 6 课交互式「OI 读题与建模训练营」（`courses/math_lab/index.html`）
 - [x] 号家军建模与六年级实战搭桥总纲（`00-ren-teacher-modeling-playbook.md`）+ 全部 20 场普及模拟赛与 ABC 讲义零剧透结构化入库（共 21 份 `courses/notes/*.md`）
-- [x] 原生 `dsh-oi-coach` 四空间插件（全屏教练室 + 讲义数学慢放伴读 + 历史对话续聊 + 一键存秘籍卡 + 破冰基石与号家军 10 法快练 + Windows 全兼容）
-- [x] 16 项端到端自动化门禁测试（`scripts/test_oi_coach.mjs`）与 `GEMINI.md` 研发质量门禁
-- [ ] **待推进**：在孩子 Windows 电脑实装验收，并按需补充“3~7 天无提示盲重做”打卡状态与洛谷增量抓取脚本
+- [x] 原生 `dsh-oi-coach` 四空间插件（全屏教练室 + 讲义数学慢放伴读 + 双端后台无感同步与升级提示 + 一键存秘籍卡 + 破冰基石与号家军 10 法快练 + Windows 实机跑通闭环）
+- [x] 端到端自动化门禁测试（`scripts/test_oi_coach.mjs`）与 `GEMINI.md` 研发质量门禁
+- [ ] **待推进**：持续结合孩子真实对话轨迹做周期诊断，并按需补充“3~7 天无提示盲重做”打卡状态

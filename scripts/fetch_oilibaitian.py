@@ -18,20 +18,31 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import http.cookiejar
 import json
+import os
+import re
 import shutil
 import sqlite3
 import subprocess
+import sys
 import tempfile
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
 HOST = "www.oilibaitian.cn"
-BASE = f"http://{HOST}"
+BASE = f"https://{HOST}"
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SYNC_DIR = REPO_ROOT / "training" / "sync_logs"
 
@@ -108,28 +119,105 @@ def chrome_cookie_header(profile: str = "Default") -> str:
     return "; ".join(cookies)
 
 
+def parse_env_value(raw: str) -> str:
+    val = raw.strip()
+    if len(val) >= 2 and ((val[0] == '"' and val[-1] == '"') or (val[0] == "'" and val[-1] == "'")):
+        return val[1:-1]
+    if " #" in val:
+        val = val.split(" #", 1)[0].strip()
+    return val
+
+
+def load_env_local() -> dict[str, str]:
+    env_vars = dict(os.environ)
+    env_file = REPO_ROOT / ".env.local"
+    if env_file.exists():
+        for line in env_file.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            key = k.strip()
+            if key.startswith("export "):
+                key = key[7:].strip()
+            if key:
+                env_vars.setdefault(key, parse_env_value(v))
+    return env_vars
+
+
 class HydroClient:
-    def __init__(self, cookie: str, delay: float = 0.12) -> None:
+    def __init__(self, cookie: str = "", delay: float = 0.12) -> None:
         self.cookie = cookie
         self.delay = delay
-        self.opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+        self.cj = http.cookiejar.CookieJar()
+        self.opener = urllib.request.build_opener(
+            urllib.request.ProxyHandler({}),
+            urllib.request.HTTPCookieProcessor(self.cj),
+        )
+
+    def login(self, username: str, password: str) -> None:
+        req_get = urllib.request.Request(
+            f"{BASE}/login",
+            headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X) Chrome Safari"},
+        )
+        with self.opener.open(req_get, timeout=25) as resp:
+            login_html = resp.read().decode("utf-8", "ignore")
+            if re.search(r"captcha|turnstile|recaptcha|hcaptcha|geetest", login_html, re.I):
+                raise RuntimeError("检测到信奥李拜天登录页存在验证码，自动停止。")
+
+        body = urllib.parse.urlencode(
+            {
+                "uname": username,
+                "password": password,
+                "rememberme": "on",
+                "tfa": "",
+                "authnChallenge": "",
+            }
+        ).encode("utf-8")
+        req_post = urllib.request.Request(
+            f"{BASE}/login",
+            data=body,
+            headers={
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X) Chrome Safari",
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Accept": "application/json",
+            },
+        )
+        with self.opener.open(req_post, timeout=25) as resp:
+            _ = resp.read()
 
     def get_json(self, path: str) -> dict:
         url = path if path.startswith("http") else f"{BASE}{path}"
-        req = urllib.request.Request(
-            url,
-            headers={
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X) Chrome Safari",
-                "Cookie": self.cookie,
-                "Accept": "application/json",
-                "Accept-Language": "zh-CN,zh;q=0.9",
-            },
-        )
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X) Chrome Safari",
+            "Accept": "application/json",
+            "Accept-Language": "zh-CN,zh;q=0.9",
+        }
+        if self.cookie:
+            headers["Cookie"] = self.cookie
+        req = urllib.request.Request(url, headers=headers)
         with self.opener.open(req, timeout=30) as resp:
             data = json.loads(resp.read().decode("utf-8"))
         if self.delay > 0:
             time.sleep(self.delay)
         return data
+
+
+def create_authenticated_client(cookie: str | None = None, chrome_profile: str = "Default", delay: float = 0.12) -> HydroClient:
+    """优先使用 .env.local 中的 OILIBAITIAN_USERNAME / OILIBAITIAN_PASSWORD 零依赖无人值守登录；未配置时回退读取 Chrome Cookie。"""
+    if cookie:
+        return HydroClient(cookie=cookie, delay=delay)
+    env_vars = load_env_local()
+    env_cookie = env_vars.get("OILIBAITIAN_COOKIE", "").strip()
+    if env_cookie:
+        return HydroClient(cookie=env_cookie, delay=delay)
+    user = env_vars.get("OILIBAITIAN_USERNAME", "").strip()
+    pwd = env_vars.get("OILIBAITIAN_PASSWORD", "").strip()
+    if user and pwd:
+        cli = HydroClient(delay=delay)
+        cli.login(user, pwd)
+        return cli
+    return HydroClient(cookie=chrome_cookie_header(chrome_profile), delay=delay)
 
 
 def status_name(code: int | None) -> str:
@@ -146,7 +234,12 @@ def parse_iso_local(ts: str | None) -> str:
         return ts[:16]
 
 
-def fetch_all_records_for_query(client: HydroClient, query: str) -> tuple[list[dict], dict[str, dict]]:
+def fetch_all_records_for_query(
+    client: HydroClient,
+    query: str,
+    max_pages: int = 30,
+    known_ids: set[str] | None = None,
+) -> tuple[list[dict], dict[str, dict]]:
     all_rdocs: list[dict] = []
     pdict_merged: dict[str, dict] = {}
     seen_ids: set[str] = set()
@@ -160,13 +253,16 @@ def fetch_all_records_for_query(client: HydroClient, query: str) -> tuple[list[d
         if not rdocs:
             break
         new_in_page = 0
+        hit_known = False
         for r in rdocs:
             rid = str(r.get("_id"))
+            if known_ids and rid in known_ids:
+                hit_known = True
             if rid not in seen_ids:
                 seen_ids.add(rid)
                 all_rdocs.append(r)
                 new_in_page += 1
-        if len(rdocs) < 100 or new_in_page == 0 or page >= 30:
+        if len(rdocs) < 100 or new_in_page == 0 or page >= max_pages or hit_known:
             break
         page += 1
     return all_rdocs, pdict_merged
@@ -390,22 +486,48 @@ def generate_summary(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="全量同步信奥李拜天 OJ（Hydro）学习数据")
+    parser = argparse.ArgumentParser(description="全量或增量同步信奥李拜天 OJ（Hydro）学习数据")
     parser.add_argument("--uid", type=int, default=79, help="用户 UID（默认 79）")
     parser.add_argument("--days", type=int, default=30, help="近期统计窗口天数（默认 30）")
+    parser.add_argument("--incremental", action="store_true", help="增量快速同步模式（仅拉最近提交与近 45 天活动）")
     parser.add_argument("--chrome-profile", default="Default", help="Chrome 配置目录（默认 Default）")
     parser.add_argument("--cookie", help="可选：手动传入 Cookie 头")
     args = parser.parse_args()
 
-    cookie = args.cookie or chrome_cookie_header(args.chrome_profile)
-    client = HydroClient(cookie, delay=0.12)
+    client = create_authenticated_client(cookie=args.cookie, chrome_profile=args.chrome_profile, delay=0.1)
 
     print(f"1/4 拉取用户主页 /user/{args.uid} ...")
     profile = client.get_json(f"/user/{args.uid}")
     if not profile.get("udoc"):
-        raise RuntimeError("未能获取用户信息，请检查登录会话。")
+        raise RuntimeError("未能获取用户信息，请检查 .env.local 凭据或登录会话。")
 
     pdict_all: dict[str, dict] = {}
+    records_by_id: dict[str, dict] = {}
+    existing_acts_by_tid: dict[str, dict] = {}
+
+    if args.incremental:
+        rec_file = SYNC_DIR / f"oilibaitian_uid{args.uid}_records.json"
+        act_file = SYNC_DIR / f"oilibaitian_uid{args.uid}_activities.json"
+        prof_file = SYNC_DIR / f"oilibaitian_uid{args.uid}_profile.json"
+        if rec_file.exists():
+            for r in json.loads(rec_file.read_text(encoding="utf-8")):
+                records_by_id[str(r.get("_id"))] = r
+        if act_file.exists():
+            for a in json.loads(act_file.read_text(encoding="utf-8")):
+                tid = str(a.get("tid") or "")
+                if tid:
+                    existing_acts_by_tid[tid] = a
+                    for pe in a.get("problems") or []:
+                        pid_s = str(pe.get("pid") or "")
+                        if pid_s and pe.get("title"):
+                            pdict_all[pid_s] = {"pid": pid_s, "title": pe["title"], "tag": pe.get("tags") or []}
+        if prof_file.exists():
+            old_prof = json.loads(prof_file.read_text(encoding="utf-8"))
+            for ep in (old_prof.get("extraPdocs") or []) + (old_prof.get("pdocs") or []):
+                pid_s = str(ep.get("pid") or "")
+                if pid_s and ep.get("title"):
+                    pdict_all[pid_s] = {"pid": pid_s, "title": ep["title"], "tag": ep.get("tag") or []}
+
     for p in profile.get("pdocs") or []:
         pid = str(p.get("docId") or p.get("_id"))
         pdict_all[pid] = {
@@ -414,24 +536,43 @@ def main() -> int:
             "tag": p.get("tag") or [],
         }
 
-    print(f"2/4 拉取公共提交记录 /record?uidOrName={args.uid} ...")
-    records_by_id: dict[str, dict] = {}
-    gen_rdocs, gen_pdict = fetch_all_records_for_query(client, f"/record?uidOrName={args.uid}")
+    known_ids = set(records_by_id.keys()) if args.incremental else None
+    print(f"2/4 拉取公共提交记录 /record?uidOrName={args.uid} ({'增量' if args.incremental else '全量'}) ...")
+    gen_rdocs, gen_pdict = fetch_all_records_for_query(
+        client,
+        f"/record?uidOrName={args.uid}",
+        max_pages=3 if args.incremental else 30,
+        known_ids=known_ids,
+    )
     for pid, pinfo in gen_pdict.items():
         pdict_all.setdefault(str(pid), {}).update(
             {"pid": str(pid), "title": pinfo.get("title", ""), "tag": pinfo.get("tag") or []}
         )
     for r in gen_rdocs:
         records_by_id[str(r["_id"])] = r
-    print(f"   公共提交共 {len(gen_rdocs)} 条。")
+    print(f"   本次拉取公共提交 {len(gen_rdocs)} 条（累计去重 {len(records_by_id)} 条）。")
 
     uname = (profile.get("udoc") or {}).get("uname", "")
     raw_acts = collect_activities(client, profile.get("tdocs") or [], uname=uname)
-    print(f"3/4 拉取全部 {len(raw_acts)} 个作业与比赛明细及专属提交 ...")
+    print(f"3/4 处理 {len(raw_acts)} 个作业与比赛明细 ({'增量刷新近期活动' if args.incremental else '全量抓取'}) ...")
     enriched_acts: list[dict] = []
+    recent_cutoff = time.time() - 45 * 86400
 
     for idx, act in enumerate(raw_acts, 1):
         tid = act["tid"]
+        if args.incremental and tid in existing_acts_by_tid:
+            prev_act = existing_acts_by_tid[tid]
+            ds = str(act.get("endAt") or act.get("beginAt") or prev_act.get("dateSort") or "")
+            is_recent = True
+            if ds:
+                try:
+                    ep = datetime.fromisoformat(ds.replace("Z", "+00:00")).timestamp()
+                    is_recent = ep >= recent_cutoff
+                except Exception:
+                    is_recent = False
+            if not is_recent:
+                enriched_acts.append(prev_act)
+                continue
         kind = "homework" if act.get("rule") == "homework" else "contest"
         detail = None
         for try_kind in (kind, "contest" if kind == "homework" else "homework"):
@@ -442,6 +583,8 @@ def main() -> int:
             except Exception:
                 continue
         if not detail:
+            if tid in existing_acts_by_tid:
+                enriched_acts.append(existing_acts_by_tid[tid])
             continue
 
         tdoc = detail.get("tdoc") or {}
@@ -518,11 +661,14 @@ def main() -> int:
     print("4/4 保存数据与生成汇总报告 ...")
     SYNC_DIR.mkdir(parents=True, exist_ok=True)
     pdoc_ids = {str(p.get("docId") or p.get("_id")) for p in (profile.get("pdocs") or [])}
-    extra_pdocs = [
-        {"pid": pid, "title": info.get("title", ""), "tag": info.get("tag") or []}
-        for pid, info in pdict_all.items()
-        if pid not in pdoc_ids and info.get("title")
-    ]
+    extra_pdocs = sorted(
+        [
+            {"pid": pid, "title": info.get("title", ""), "tag": info.get("tag") or []}
+            for pid, info in pdict_all.items()
+            if pid not in pdoc_ids and info.get("title")
+        ],
+        key=lambda x: (int(x["pid"]) if str(x["pid"]).isdigit() else 10**9, str(x["pid"])),
+    )
     profile_slim = {
         "fetchedAt": datetime.now(timezone.utc).isoformat(),
         "udoc": profile.get("udoc"),

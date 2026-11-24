@@ -1,0 +1,13 @@
+{
+  "platform": "信奥李拜天",
+  "pid": "2604",
+  "title": "2604 [GESP七级模拟]魔法括号串",
+  "url": "https://www.oilibaitian.cn/p/2604",
+  "statement": "\n\n## 题目描述\n\n小明正在研究一种特殊的括号序列。\n\n现在有一个长度为 $n$ 的字符串 $S$，其中每个字符可能是：\n\n- `(`，表示一个左括号；\n- `)`，表示一个右括号；\n- `?`，表示一个未知括号。\n\n对于每一个 `?`，小明可以将它替换成 `(` 或者 `)`。\n\n经过所有替换后，可以得到许多不同的括号字符串。如果一个字符串满足括号匹配规则，则称它为一个合法括号串。现在请你计算，有多少种替换方式，可以使最终得到的字符串成为合法括号串。\n\n答案可能很大，请输出答案对 $998244353$ 取模后的结果。\n\n## 输入格式\n\n输入一行一个字符串 $S$。表示初始的括号字符串。\n\n## 输出格式\n\n输出一个整数，表示可以得到合法括号串的替换方案数。答案需要对 $998244353$ 取模。\n\n## 样例 #1\n\n```input1\n(???(?\n```\n\n```output1\n2\n```\n\n### 样例解释 #1\n\n对于样例 1：\n\n字符串：(???(?\n其中一种替换方式为： ()()()\n\n另一种替换方式为：(())()\n这两种方式可以得到合法括号串，因此答案为：2\n\n## 样例 #2\n\n```input2\n)))))\n```\n\n```output2\n0\n```\n\n## 样例 #3\n\n```input3\n??????????????(????????(??????)?????????(?(??)\n```\n\n```output3\n603032273\n```\n\n## 数据范围\n\n对于 $40\\%$ 的数据，满足：$1 \\le n \\le 300$\n\n对于 $100\\%$ 的数据，满足：$1 \\le n \\le 3000$\n\n保证字符串 $S$ 仅由 `(`、`)` 和 `?` 组成。\n",
+  "attempts": 3,
+  "best_score": 50,
+  "trajectory": "TLE→TLE→WA",
+  "latest_verdict": "WA",
+  "latest_score": 50,
+  "latest_code": "#include<bits/stdc++.h>\r\n#define int long long\r\nusing namespace std;\r\nint ans=0;\r\nconst int mod=998244353;\r\nint a[3333][3333];\r\nstring s;\r\nint dfs(int p,int l,int r){\r\n//\tcout<<s<<endl;\r\n\tif(p==s.size()){\r\n\t\tif(l==r){\r\n\t\t\treturn 1;\r\n\t\t}\r\n\t\treturn 0;\r\n\t}else if(a[p][l]!=-1){\r\n\t\treturn a[p][l];\r\n\t}else{\r\n\t\tif(s[p]!='?'){\r\n\t\t\tif(s[p]=='('){\r\n\t\t\t\tint x=dfs(p+1,l+1,r);\r\n\t\t\t\tx%=mod;\r\n\t\t\t\ta[p][l]=x;\r\n\t\t\t\treturn x;\r\n\t\t\t}else{\r\n\t\t\t\tint x=dfs(p+1,l,r+1);\r\n\t\t\t\tx%=mod;\r\n\t\t\t\ta[p][l]=x;\r\n\t\t\t\treturn x;\r\n\t\t\t}\r\n\t\t}else{\r\n\t\t\tint x=0;\r\n\t\t\tif(r<l){\r\n\t\t\t\r\n\t\t\t\ts[p]=')';\r\n\t\t\t\tx+=dfs(p+1,l,r+1);\r\n\t\t\t\ts[p]='?';\r\n\t\t\t}\r\n\t\t\ts[p]='(';\r\n\t\t\tx+=dfs(p+1,l+1,r);\r\n\t\t\ts[p]='?';\r\n\t\t\tx%=998244353;\r\n\t\t\ta[p][l]=x;\r\n\t\t\treturn x;\r\n\t\t}\r\n\t}\r\n}\r\nsigned main(){\r\n\tios::sync_with_stdio(0);cin.tie(0);cout.tie(0);\r\n\tcin>>s;\r\n\tmemset(a,-1,sizeof(a));\r\n\tcout<<dfs(0,0,0);\r\n    return 0;\r\n}\r\n"
+}

@@ -1,0 +1,11 @@
+{
+  "platform": "AtCoder",
+  "pid": "abc444_c",
+  "title": "abc444_c C - AtCoder Riko",
+  "url": "https://atcoder.jp/contests/abc444/tasks/abc444_c",
+  "statement": "Score : 350 points\n\nProblem Statement\nYou are given a sequence of N positive integers A=(A_1,A_2,\\dots,A_N).\n\nFind all positive integers L for which the following can occur:\n\nAtCoder Inc. has released a stick-shaped snack called \"AtCoderiko.\"\nA cup contains one or more AtCoderikos, each of length L.\nWhen Takahashi shook the cup, each AtCoderiko ended up in one of the following states:\n\n It remained as one AtCoderiko of length L. \n\n It broke into two AtCoderikos whose lengths sum to L. Here, the length of each AtCoderiko is a positive integer. \nAfter shaking the cup, there were N AtCoderikos in the cup, and the length of the i-th AtCoderiko was A_i.\n\nThe given input guarantees that there exists at least one positive integer L for which this can occur.\n\nConstraints\n\n1 \\leq N \\leq 3 \\times 10^5\n\n1 \\leq A_i \\leq 10^9\n\nThere exists at least one L satisfying the condition.\n\nAll input values are integers.\n\nInput\nThe input is given from Standard Input in the following format:\n\nN  \nA_1 A_2 \\ldots A_N  \n\nOutput\nOutput all values of L satisfying the condition in ascending order, separated by spaces, in one line.\n\nSample Input 1\n4\n10 5 5 10\n\nSample Output 1\n10 15\n\nIf the cup initially contained three AtCoderikos of length 10, and one of them broke into two AtCoderikos of length 5, the condition is satisfied.\n\nIf the cup initially contained two AtCoderikos of length 15, and each of them broke into two AtCoderikos of lengths 5 and 10, the condition is satisfied.\n\nNo other values of L satisfy the condition.\n\nSample Input 2\n3\n4 4 4\n\nSample Output 2\n4\n\nSample Input 3\n6\n10 187 344 100 434 257\n\nSample Output 3\n444",
+  "attempts": 2,
+  "trajectory": "WA→CE",
+  "latest_code": "",
+  "note": "AtCoder 提交源码需登录后查看，题面与数据范围已自动拉取缓存。"
+}

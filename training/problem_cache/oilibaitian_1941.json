@@ -1,0 +1,13 @@
+{
+  "platform": "信奥李拜天",
+  "pid": "1941",
+  "title": "1941 [USACO16FEB] Milk Pails S",
+  "url": "https://www.oilibaitian.cn/p/1941",
+  "statement": "\n\n## 题目描述\n\nFarmer John 接到了一份需要立即完成的订单，要求他提供恰好 $M$ 单位的牛奶（$1 \\leq M \\leq 200$）。不幸的是，他先进的挤奶机刚刚坏了，现在他只有两个容量为整数 $X$ 和 $Y$（$1 \\leq X, Y \\leq 100$）的牛奶桶可以用来量取牛奶。两个桶最初都是空的。使用这两个桶，他可以执行最多 $K$ 次以下类型的操作（$1 \\leq K \\leq 100$）：\n\n- 他可以将任意一个桶完全装满。\n\n- 他可以将任意一个桶完全倒空。\n\n- 他可以将一个桶中的牛奶倒入另一个桶，直到前者被倒空或后者被装满（以先发生的情况为准）。\n\n尽管 FJ 意识到他可能无法最终在两个桶中得到恰好 $M$ 单位的牛奶，但请帮助他计算 $M$ 与两个桶中牛奶总量之间的最小误差。也就是说，请计算 $|M - M'|$ 的最小值，其中 $M'$ 是 FJ 可以在两个桶中共同构造的牛奶量。\n\n## 输入格式\n\n输入的第一行也是唯一一行包含 $X$、$Y$、$K$ 和 $M$。\n\n## 输出格式\n\n输出 $M$ 与 FJ 可以生产的牛奶量之间的最小误差。\n\n## 输入输出样例 #1\n\n### 输入 #1\n\n```\n14 50 2 32\n```\n\n### 输出 #1\n\n```\n18\n```\n\n## 说明/提示\n\n在两步操作中，FJ 可以在他的桶中留下以下数量的牛奶：\n\n```\n(0, 0) = 0 单位  \n(14, 0) = 14 单位  \n(0, 50) = 50 单位  \n(0, 14) = 14 单位  \n(14, 36) = 50 单位  \n(14, 50) = 64 单位  \n```\n\n最接近 32 单位的是 14 单位，误差为 18。注意，要倒空第一个桶以得到 $(0, 36)$ 需要额外的步骤。",
+  "attempts": 2,
+  "best_score": 80,
+  "trajectory": "WA→WA",
+  "latest_verdict": "WA",
+  "latest_score": 80,
+  "latest_code": "#include<bits/stdc++.h>\r\n#define int long long\r\nusing namespace std;\r\nint x,y,t,m;\r\nbool vis[111][111][111];\r\nint ans=INT_MAX;\r\nvoid dfs(int a,int b,int k){\r\n\tif(vis[a][b][k]==1){\r\n\t\treturn ;\r\n\t}\r\n\tvis[a][b][k]=1;\r\n\tif(k>=t){\r\n\t\treturn ;\r\n\t}\r\n\tans=min(ans,abs(m-a-b));\r\n\t\r\n\tdfs(x,b,k+1);\r\n\tdfs(0,b,k+1);\r\n\tdfs(a,y,k+1);\r\n\tdfs(a,0,k+1);\r\n\tif(a!=0){\r\n\t\tif(b!=y){\r\n\t\t\tif(y-b>=a){\r\n\t\t\t\tdfs(0,b+a,k+1);\r\n\t\t\t}else{\r\n\t\t\t\tdfs(a-y+b,y,k+1);\r\n\t\t\t}\r\n\t\t}\t\r\n\t}\r\n\tif(b!=0){\r\n\t\tif(x!=a){\r\n\t\t\tif(x-a>=b){\r\n\t\t\t\tdfs(b+a,0,k+1);\r\n\t\t\t}else{\r\n\t\t\t\tdfs(x,b-x+a,k+1);\r\n\t\t\t}\t\r\n\t\t}\r\n\t}\r\n}\r\nsigned main() {\r\n\tios::sync_with_stdio(0);cin.tie(0);\tcout.tie(0);\r\n\tcin>>x>>y>>t>>m;\r\n\tdfs(0,0,0);\r\n\tcout<<ans;\r\n\treturn 0;\r\n}\r\n"
+}

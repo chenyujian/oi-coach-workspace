@@ -10,6 +10,7 @@
 
 import { execFile } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
+import { existsSync } from 'node:fs'
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
@@ -987,6 +988,163 @@ export function apply(ctx, config) {
       : DEFAULT_WORKSPACE,
   )
 
+  // --- 后台无感自动同步引擎（单飞互斥锁 + 错题秒推 + 对话停笔防抖 + 定时心跳） ---
+  const syncState = {
+    autoEnabled: process.env.OI_DISABLE_BG_SYNC !== '1' && existsSync(path.join(workspace, '.git')),
+    running: false,
+    lastSyncAt: null,
+    lastPullAt: null,
+    lastResult: 'idle', // 'idle' | 'ok' | 'retry'
+    lastMessage: '后台无感自动同步已就绪',
+    behindCount: 0,
+    aheadCount: 0,
+    pluginUpdated: false,
+    backendUpdated: false,
+  }
+  let gitMutexPromise = Promise.resolve()
+  let debounceSyncTimer = null
+  let heartbeatSyncTimer = null
+  let startupSyncTimer = null
+
+  function runExclusiveGit(fn) {
+    const next = gitMutexPromise.then(fn, fn)
+    gitMutexPromise = next.catch(() => {})
+    return next
+  }
+
+  async function execGit(args, timeout = 30_000) {
+    return execFileAsync('git', args, {
+      cwd: workspace,
+      env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
+      timeout,
+      maxBuffer: 2 * 1024 * 1024,
+      windowsHide: true,
+    })
+  }
+
+  async function detectPulledPluginChanges(oldHead, newHead) {
+    if (!oldHead || !newHead || oldHead === newHead) return
+    syncState.lastPullAt = new Date().toISOString()
+    try {
+      const { stdout } = await execGit(['diff', '--name-only', `${oldHead}..${newHead}`], 10_000)
+      const changed = String(stdout || '').split(/\r?\n/).map((s) => s.trim()).filter(Boolean)
+      if (changed.some((f) => f === 'plugins/dsh-oi-coach/client.js')) {
+        syncState.pluginUpdated = true
+      }
+      if (changed.some((f) => f === 'plugins/dsh-oi-coach/index.js' || f === 'plugins/dsh-oi-coach/cordis.patch.yml')) {
+        syncState.backendUpdated = true
+      }
+    } catch {
+      // ignore diff error
+    }
+  }
+
+  async function runSilentBackgroundSync(reason = 'heartbeat') {
+    if (!existsSync(path.join(workspace, '.git'))) return syncState
+    return runExclusiveGit(async () => {
+      syncState.running = true
+      try {
+        const oldHead = String((await execGit(['rev-parse', 'HEAD'], 8_000)).stdout || '').trim()
+
+        if (process.platform !== 'darwin') {
+          // Windows 孩子端：仅自动打包上传 chat_history 与 mistakes（绝不误提交其他文件导致冲突），并自动拉取家长新讲义/规则
+          const childPaths = ['training/chat_history', 'mistakes'].filter((rel) => existsSync(path.join(workspace, rel)))
+          if (childPaths.length > 0) {
+            const stOut = String((await execGit(['status', '--porcelain', '--', ...childPaths], 10_000)).stdout || '').trim()
+            if (stOut) {
+              await execGit(['add', '--', ...childPaths], 10_000)
+              const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ')
+              await execGit(['commit', '-m', `study(win): auto sync ${reason} ${stamp}`, '--', ...childPaths], 15_000).catch(() => {})
+            }
+          }
+          await execGit(['fetch', 'origin', 'main'], 25_000)
+          const behind = Number(String((await execGit(['rev-list', '--count', 'HEAD..origin/main'], 8_000)).stdout || '0').trim()) || 0
+          if (behind > 0) {
+            try {
+              await execGit(['pull', '--rebase', '--autostash', 'origin', 'main'], 45_000)
+            } catch (pullErr) {
+              await execGit(['rebase', '--abort'], 10_000).catch(() => {})
+              throw pullErr
+            }
+            const newHead = String((await execGit(['rev-parse', 'HEAD'], 8_000)).stdout || '').trim()
+            await detectPulledPluginChanges(oldHead, newHead)
+          }
+          const ahead = Number(String((await execGit(['rev-list', '--count', 'origin/main..HEAD'], 8_000)).stdout || '0').trim()) || 0
+          if (ahead > 0) {
+            await execGit(['push', 'origin', 'main'], 35_000)
+          }
+          syncState.behindCount = 0
+          syncState.aheadCount = 0
+          syncState.lastSyncAt = new Date().toISOString()
+          syncState.lastResult = 'ok'
+          syncState.lastMessage = behind > 0 ? `已自动接收 ${behind} 项新内容` : ahead > 0 ? '学习记录已自动备份上云' : '云端已是最新'
+        } else {
+          // macOS 家长端：静默 fetch；工作区干净时自动 fast-forward 收下孩子最新记录，正改代码时只提示不乱 commit
+          await execGit(['fetch', 'origin', 'main'], 25_000)
+          const behind = Number(String((await execGit(['rev-list', '--count', 'HEAD..origin/main'], 8_000)).stdout || '0').trim()) || 0
+          const ahead = Number(String((await execGit(['rev-list', '--count', 'origin/main..HEAD'], 8_000)).stdout || '0').trim()) || 0
+          const dirty = String((await execGit(['status', '--porcelain'], 10_000)).stdout || '').trim()
+          if (behind > 0 && ahead === 0 && !dirty) {
+            await execGit(['merge', '--ff-only', 'origin/main'], 25_000)
+            const newHead = String((await execGit(['rev-parse', 'HEAD'], 8_000)).stdout || '').trim()
+            await detectPulledPluginChanges(oldHead, newHead)
+            syncState.behindCount = 0
+            syncState.aheadCount = 0
+            syncState.lastMessage = `已自动收下孩子端 ${behind} 项新记录`
+          } else {
+            syncState.behindCount = behind
+            syncState.aheadCount = ahead
+            syncState.lastMessage =
+              behind > 0 ? `孩子端有 ${behind} 项新记录（开发改动未提交，点同步可合并）` : '云端已是最新'
+          }
+          syncState.lastSyncAt = new Date().toISOString()
+          syncState.lastResult = 'ok'
+        }
+      } catch {
+        syncState.lastResult = 'retry'
+        syncState.lastMessage = '网络波动，后台将自动重试'
+      } finally {
+        syncState.running = false
+      }
+      return syncState
+    })
+  }
+
+  function scheduleAutoSync(reason, delayMs = 45_000) {
+    if (!syncState.autoEnabled) return
+    if (debounceSyncTimer) clearTimeout(debounceSyncTimer)
+    debounceSyncTimer = setTimeout(() => {
+      debounceSyncTimer = null
+      void runSilentBackgroundSync(reason)
+    }, delayMs)
+    debounceSyncTimer.unref?.()
+  }
+
+  if (syncState.autoEnabled) {
+    startupSyncTimer = setTimeout(() => {
+      startupSyncTimer = null
+      void runSilentBackgroundSync('startup')
+    }, 10_000)
+    startupSyncTimer.unref?.()
+
+    const intervalMs = process.platform === 'darwin' ? 180_000 : 300_000
+    heartbeatSyncTimer = setInterval(() => {
+      void runSilentBackgroundSync('heartbeat')
+    }, intervalMs)
+    heartbeatSyncTimer.unref?.()
+  }
+
+  ctx.on?.('dispose', () => {
+    if (startupSyncTimer) clearTimeout(startupSyncTimer)
+    if (debounceSyncTimer) clearTimeout(debounceSyncTimer)
+    if (heartbeatSyncTimer) clearInterval(heartbeatSyncTimer)
+  })
+
+  async function handleSyncStatus(_req, res) {
+    const ojSyncMeta = await readJsonFile(path.join(workspace, '.dsh', 'cache', 'last_oj_sync.json'))
+    return sendJson(res, { ok: true, sync: { ...syncState, lastOjSync: ojSyncMeta || null } }, 200)
+  }
+
   // 1. 启动时温和确保「麒麒 OI 学习台」工作区存在（不清理任何其他工作区）
   ctx.inject(['workspaceRegistry'], () => {
     ensureOiWorkspace(ctx, workspace).catch((err) => {
@@ -1168,6 +1326,10 @@ export function apply(ctx, config) {
       const execEnv = { ...process.env, PYTHONIOENCODING: 'utf-8', PYTHONUTF8: '1' }
       let py = null
 
+      if (action !== 'git-sync' && process.platform !== 'darwin') {
+        return sendJson(res, { ok: false, error: 'OJ 数据抓取与时间线重建仅在家长端 Mac mini 执行' }, 403)
+      }
+
       if (action === 'atcoder') {
         py = await resolvePythonCommand()
         cmd = py.cmd
@@ -1176,19 +1338,87 @@ export function apply(ctx, config) {
         py = await resolvePythonCommand()
         cmd = py.cmd
         args = [...py.prefixArgs, 'scripts/fetch_haoba.py', 'sync', '--domains', 'cpptrain,Cpp2023', '--days', '60']
+      } else if (action === 'oilibaitian') {
+        py = await resolvePythonCommand()
+        cmd = py.cmd
+        args = [...py.prefixArgs, 'scripts/fetch_oilibaitian.py', '--uid', '79', '--days', '30', '--incremental']
+      } else if (action === 'all-ojs') {
+        py = await resolvePythonCommand()
+        const ojRes = await runExclusiveGit(async () => {
+          syncState.running = true
+          try {
+            const out = await execFileAsync(py.cmd, [...py.prefixArgs, 'scripts/auto_sync_ojs.py', '--git-push'], {
+              cwd: workspace,
+              env: execEnv,
+              timeout: 240_000,
+              maxBuffer: 4 * 1024 * 1024,
+              windowsHide: true,
+            })
+            syncState.lastSyncAt = new Date().toISOString()
+            syncState.lastResult = 'ok'
+            syncState.lastMessage = '四平台增量抓题与同步已完成'
+            return out
+          } finally {
+            syncState.running = false
+          }
+        })
+        return sendJson(
+          res,
+          {
+            ok: true,
+            action,
+            output: [ojRes.stdout, ojRes.stderr].filter(Boolean).join('\n').trim().slice(-2000),
+          },
+          200,
+        )
       } else if (action === 'timeline') {
         py = await resolvePythonCommand()
         cmd = py.cmd
         args = [...py.prefixArgs, 'scripts/build_timeline.py']
       } else if (action === 'git-sync') {
-        if (process.platform === 'win32') {
-          cmd = 'cmd.exe'
-          args = ['/c', 'scripts\\sync_windows.bat', '--no-pause']
-          execEnv.OI_NO_PAUSE = '1'
-        } else {
-          cmd = 'bash'
-          args = ['scripts/sync_mac.sh', 'chore: oi-coach board sync']
-        }
+        const result = await runExclusiveGit(async () => {
+          syncState.running = true
+          try {
+            const oldHead = existsSync(path.join(workspace, '.git'))
+              ? String((await execGit(['rev-parse', 'HEAD'], 8_000).catch(() => ({ stdout: '' }))).stdout || '').trim()
+              : ''
+            const gCmd = process.platform === 'win32' ? 'cmd.exe' : 'bash'
+            const gArgs =
+              process.platform === 'win32'
+                ? ['/c', 'scripts\\sync_windows.bat', '--no-pause']
+                : ['scripts/sync_mac.sh', 'chore: oi-coach board sync']
+            const gEnv = process.platform === 'win32' ? { ...execEnv, OI_NO_PAUSE: '1' } : execEnv
+            const out = await execFileAsync(gCmd, gArgs, {
+              cwd: workspace,
+              env: gEnv,
+              timeout: 120_000,
+              maxBuffer: 2 * 1024 * 1024,
+              windowsHide: true,
+            })
+            if (oldHead) {
+              const newHead = String((await execGit(['rev-parse', 'HEAD'], 8_000).catch(() => ({ stdout: '' }))).stdout || '').trim()
+              await detectPulledPluginChanges(oldHead, newHead)
+            }
+            syncState.behindCount = 0
+            syncState.aheadCount = 0
+            syncState.lastSyncAt = new Date().toISOString()
+            syncState.lastResult = 'ok'
+            syncState.lastMessage = '手动双向同步已完成'
+            return out
+          } finally {
+            syncState.running = false
+          }
+        })
+        return sendJson(
+          res,
+          {
+            ok: true,
+            action,
+            sync: syncState,
+            output: [result.stdout, result.stderr].filter(Boolean).join('\n').trim().slice(-2000),
+          },
+          200,
+        )
       } else {
         return sendJson(res, { ok: false, error: `未知同步动作：${action}` }, 400)
       }
@@ -1203,7 +1433,7 @@ export function apply(ctx, config) {
 
       let timelineOut = ''
       let cacheOut = ''
-      if (action === 'atcoder' || action === 'haoba') {
+      if (action === 'atcoder' || action === 'haoba' || action === 'oilibaitian') {
         const pyRunner = py || (await resolvePythonCommand())
         const tl = await execFileAsync(pyRunner.cmd, [...pyRunner.prefixArgs, 'scripts/build_timeline.py'], {
           cwd: workspace,
@@ -1263,7 +1493,7 @@ export function apply(ctx, config) {
       '   - 锁步 ④（代数字慢放变形 + 可视化微证明）：难懂公式（如 (a-1)/x、同余移项）必先代 2 组具体边界小数字算账再收拢；保留 100% 号家军严谨证明但用直观载体（排顺序做相邻交换对比、单调结构做又老又差永不翻身、区间贪心画上下两行比余量 + 自造 N ≤ 3 反例挑战）。',
       '   - 锁步 ⑤（任氏验毒四件套 + 本地暴力对拍 + 回看懂原讲义）：查 1LL 乘法前防溢出、整除取整与右倾中点、哨兵初值、正倒序与 BFS 入队即标；复杂题提醒用 5 行笨暴力在 N ≤ 5 上本地对拍；收尾对译讲义原话消除畏惧并挂同门题名片。',
       '4. 【高含金量提问铁律】严禁出“一眼假”送分二选一（如“几百万次 vs 几百亿次”）；A/B/C 的干扰项必须是真实易掉坑的合理误区（如 a/x vs (a-1)/x；初值选 0 vs 10⁹ vs INT_MAX），或让孩子演草纸算完报 1~2 个具体数字/简短式子。',
-      '5. 【公式易读铁律】严禁输出原始 LaTeX 源码（不要写 `$...$`、`\\le`、`\\times`、`\\approx`、`^{10}` 等）！一律用清晰直观的常规数学 Unicode 符号与中文数量级（如 `N ≤ 30万（3×10⁵）`、`|i - j|`、`⌊(a - 1) / x⌋`）。',
+      '5. 【公式易读与口语防超载铁律】严禁输出原始 LaTeX 源码（不要写 `$...$`、`\\le`、`\\times`、`\\approx`、`^{10}` 等）！一律用清晰直观的常规数学 Unicode 符号与中文数量级（如 `N ≤ 30万（3×10⁵）`、`|i - j|`、`⌊(a - 1) / x⌋`）；**严禁对六年级直接甩“消元”等超前书面词或 `e₁ + ... + eₖ` 长串省略号下标**，一律先用大白话“算总账”表达，去括号化简后引导代 `k = 1` 极小特值验正负号，估复杂度引导按选择层数逐层相乘。',
       '6. 【不设时间限制】无论现在几点（包括 22:00 之后），一律专心正常辅导，绝不劝睡、不催休息、不以时间晚打断或收尾。',
       '',
     ].join('\n')
@@ -1524,7 +1754,19 @@ export function apply(ctx, config) {
       }
       const mode = isParentAllowed ? 'parent' : 'coach'
 
-      let persistedPreviewQuery = previewQuery || existingRec?.previewQuery || ''
+      const isGenericGreetingTitle = (rawTitle) => {
+        const core = String(rawTitle || '')
+          .replace(
+            /^(探索建模|代数建模|任氏建模|讲义慢放|讲义变式|WA\s*排错|TLE\s*重拆|RE\/CE\s*排查|AC\s*存秘籍|OI\s*教练|建模|排错|复盘|旧题重斩|变形手算|建模快练)\s*·\s*/i,
+            '',
+          )
+          .trim()
+        return !core || /^(你好|您好|你好呀|hi|hello|hey|在吗|在不在|教练|教练好|教练你好|嗨|早上好|下午好|晚上好)[!！。.~～？?\s]*$/i.test(core)
+      }
+
+      const cleanReqPreview = previewQuery && !isGenericGreetingTitle(previewQuery) ? previewQuery : ''
+      const cleanExistingPreview = existingRec?.previewQuery && !isGenericGreetingTitle(existingRec.previewQuery) ? existingRec.previewQuery : ''
+      let persistedPreviewQuery = cleanExistingPreview || cleanReqPreview || ''
       let resolvedProbKey = ''
       let didInjectFullNote = false
 
@@ -1541,17 +1783,19 @@ export function apply(ctx, config) {
           const isFirstTurnOfChat = !convId && !carryHistory
           let effectiveQuery = ''
           if (!skipProblemContext) {
-            // 首轮优先用显式 previewQuery；追问轮优先看本轮 userMsg 是否提到了新题号（支持中途直接换题，若仅回“选 B”则回退到原题）
-            const candidateNew = isFirstTurnOfChat ? previewQuery || userMsg : userMsg
+            // 首轮优先用显式非寒暄 previewQuery；追问轮优先看本轮 userMsg 是否提到了新题号（支持中途换题，若仅回“选 B”则回退到已落盘原题，绝不被首轮“你好！”反向覆盖）
+            const candidateNew = isFirstTurnOfChat ? cleanReqPreview || userMsg : userMsg
             const [newProb, newNote] = candidateNew
               ? await Promise.all([findCachedProblem(candidateNew), findMatchingCourseNote(candidateNew)])
               : [null, null]
             if (newProb || newNote) {
               effectiveQuery = candidateNew
-              persistedPreviewQuery = newProb?.pid || newNote?.problemTitle || previewQuery || candidateNew
+              persistedPreviewQuery = newProb?.pid || newNote?.problemTitle || cleanReqPreview || candidateNew
               resolvedProbKey = String(newProb?.pid || newNote?.problemTitle || '').toLowerCase()
             } else {
-              const fallbackQ = previewQuery || existingRec?.previewQuery || ''
+              const fallbackQ = isFirstTurnOfChat
+                ? cleanReqPreview || cleanExistingPreview
+                : cleanExistingPreview || cleanReqPreview
               if (fallbackQ) {
                 effectiveQuery = fallbackQ
                 const [oldProb, oldNote] = await Promise.all([findCachedProblem(fallbackQ), findMatchingCourseNote(fallbackQ)])
@@ -1609,7 +1853,7 @@ export function apply(ctx, config) {
             '- 锁步 ③（自诊“哪步白干了” + 国内赛制分流）：亮出数据范围 N 让孩子自己判朴素做法过不过得了 1 亿次红线；**先不报十大抓手名词、不直接塞套路菜单**！让他在小例子上往前多算 1 步，用大白话指出“哪一块算重了 / 哪两个操作撞出了同一结果”（卡壳再给支架再对接任氏抓手）。注意题型分流：DP/图论难题可先立 30~60 分朴素状态保底再降维；搜索题看搜序与剪枝；大模拟拆独立小函数。',
             '- 锁步 ④（代数字慢放变形 + 直观微证明）：难懂的整除变形（如 (a-1)/x）、同余移项或递推式，**必先拿 2 组具体边界数（如整除 vs 不整除）带他算清数字账**再收拢成字母公式；保留 100% 号家军证明意识但换直观载体（排顺序做相邻交换对比、单调结构做又老又差永不翻身、区间贪心画上下两行比余量 + 自造 N ≤ 3 反例挑战自己）。',
             '- 锁步 ⑤（任氏验毒四件套 + 本地暴力对拍 + 回看懂原讲义）：写码前查 1LL 防溢出、整除取整与右倾中点、哨兵初值、正倒序与 BFS 入队即标；复杂题提醒用 5 行必对暴力在 N ≤ 5 上本地对拍；收尾若有关联讲义，用 1 句话把刚推的式子与任老师讲义原话对译脱敏，再贴上 3 行以内同门题名片。',
-            '【高含金量提问 + 公式易读 + 不设时间限制】① 严禁出“一眼假”送分二选一（如“几百万次 vs 几百亿次”），A/B/C 的干扰项必须是真实易掉坑的合理误区；② 严禁输出原始 LaTeX 源码（绝不写 `$...$`、`\\le`、`\\times`、`\\approx`、`^{10}` 等），一律用清晰 Unicode 符号与中文数量级（如 `N ≤ 30万（3×10⁵）`、`|i - j|`、`⌊(a - 1) / x⌋`）；③ 不设任何晚间/作息时间限制，无论几点（包括 22:30）都专心正常辅导，绝不劝睡或以时间晚打断对话！',
+            '【高含金量提问 + 口语防超载 + 不设时间限制】① 严禁出“一眼假”送分二选一（如“几百万次 vs 几百亿次”），A/B/C 的干扰项必须是真实易掉坑的合理误区；② 严禁输出原始 LaTeX 源码（绝不写 `$...$`、`\\le`、`\\times`、`\\approx`、`^{10}` 等），一律用清晰 Unicode 符号与中文数量级（如 `N ≤ 30万（3×10⁵）`、`|i - j|`、`⌊(a - 1) / x⌋`），且**严禁对六年级甩“代数消元”等超前词或 `e₁ + ... + eₖ` 省略号下标**（改用大白话“算总账”，去括号后引导代 `k = 1` 验正负号，估复杂度按“选几个东西”逐层相乘防漏乘）；③ 不设任何晚间/作息时间限制，无论几点（包括 22:30）都专心正常辅导，绝不劝睡或以时间晚打断对话！',
             '',
             ...carryBlock,
             '麒麒说：',
@@ -1698,20 +1942,34 @@ export function apply(ctx, config) {
       }
 
       const persistTurn = async (replyText, nextConvId, durationSeconds) => {
-        if (skipSaveHistory) return reqChatId || null
+        if (skipSaveHistory) return { id: reqChatId || null, title: chatTitle || '', previewQuery: persistedPreviewQuery }
         try {
           const nowIso = new Date().toISOString()
           const rec = existingRec || (reqChatId ? await readChatRecord(workspace, reqChatId) : null)
           const id = rec?.id || reqChatId || `${localDateStamp()}-${randomUUID().slice(0, 8)}`
           const prevMsgs = Array.isArray(rec?.messages) ? rec.messages : []
+          const cleanMsgSnippet = displayUserMsg.replace(/^(题目描述|问题描述)\s*/i, '').replace(/\s+/g, ' ').trim().slice(0, 26)
+          let resolvedTitle = rec?.title || chatTitle || cleanMsgSnippet || '新对话'
+          // 若首轮孩子只发了“你好！”寒暄，第 2 轮贴出真实题目时自动把历史对话标题与检索词升级为真实题目
+          if (rec?.title && isGenericGreetingTitle(rec.title) && !isGenericGreetingTitle(displayUserMsg)) {
+            resolvedTitle = persistedPreviewQuery && !isGenericGreetingTitle(persistedPreviewQuery)
+              ? String(persistedPreviewQuery).replace(/\s+/g, ' ').slice(0, 26)
+              : cleanMsgSnippet || rec.title
+            if (!persistedPreviewQuery && cleanMsgSnippet) {
+              persistedPreviewQuery = cleanMsgSnippet
+            }
+          }
+          const finalPreviewQuery =
+            persistedPreviewQuery ||
+            (rec?.previewQuery && !isGenericGreetingTitle(rec.previewQuery) ? rec.previewQuery : cleanReqPreview)
           const nextRec = {
             id,
-            title: rec?.title || chatTitle || displayUserMsg.slice(0, 28) || '新对话',
+            title: resolvedTitle,
             mode: rec?.mode === 'parent' ? 'parent' : mode,
             subMode: subMode || rec?.subMode || '',
             model: chosenModel,
             conversationId: nextConvId || rec?.conversationId || null,
-            previewQuery: persistedPreviewQuery || (rec?.previewQuery !== undefined ? rec.previewQuery : previewQuery),
+            previewQuery: finalPreviewQuery,
             activeProbKey: resolvedProbKey || rec?.activeProbKey || '',
             noteFullInjectedFor: {
               ...(rec?.noteFullInjectedFor || {}),
@@ -1733,9 +1991,12 @@ export function apply(ctx, config) {
             ],
           }
           await saveChatRecord(workspace, nextRec)
-          return id
+          if (nextRec.mode !== 'parent') {
+            scheduleAutoSync('chat-idle', 45_000)
+          }
+          return { id, title: resolvedTitle, previewQuery: finalPreviewQuery }
         } catch {
-          return reqChatId || null
+          return { id: reqChatId || null, title: chatTitle || '', previewQuery: persistedPreviewQuery }
         }
       }
 
@@ -1752,12 +2013,14 @@ export function apply(ctx, config) {
           )
         }
         const nextConvId = parsed.conversation_id || convId || null
-        const savedChatId = await persistTurn(replyText, nextConvId, parsed.duration_seconds ?? null)
+        const savedMeta = await persistTurn(replyText, nextConvId, parsed.duration_seconds ?? null)
         return sendJson(
           res,
           {
             ok: true,
-            chatId: savedChatId,
+            chatId: savedMeta.id,
+            title: savedMeta.title,
+            previewQuery: savedMeta.previewQuery,
             model: chosenModel,
             conversationId: nextConvId,
             durationSeconds: parsed.duration_seconds ?? null,
@@ -1770,12 +2033,14 @@ export function apply(ctx, config) {
       if (!fallbackText) {
         return sendJson(res, { ok: false, error: 'Antigravity 未返回有效输出，请检查 agy CLI 登录状态。' }, 502)
       }
-      const savedChatId = await persistTurn(fallbackText, convId || null, null)
+      const savedMeta = await persistTurn(fallbackText, convId || null, null)
       return sendJson(
         res,
         {
           ok: true,
-          chatId: savedChatId,
+          chatId: savedMeta.id,
+          title: savedMeta.title,
+          previewQuery: savedMeta.previewQuery,
           model: chosenModel,
           conversationId: convId || null,
           reply: fallbackText,
@@ -1896,6 +2161,7 @@ export function apply(ctx, config) {
       }
       if (method === 'DELETE') {
         const removed = await deleteChatRecord(workspace, id)
+        if (removed && existing?.mode !== 'parent') scheduleAutoSync('chat-deleted', 15_000)
         return sendJson(res, { ok: true, deleted: removed, id }, 200)
       }
       if (method !== 'GET') {
@@ -1928,6 +2194,7 @@ export function apply(ctx, config) {
         }
       }
       const deleted = await deleteChatRecord(workspace, id)
+      if (deleted && existing?.mode !== 'parent') scheduleAutoSync('chat-deleted', 15_000)
       return sendJson(res, { ok: true, deleted, id }, 200)
     } catch (err) {
       return sendJson(res, { ok: false, error: err?.message || String(err) }, 500)
@@ -1941,6 +2208,7 @@ export function apply(ctx, config) {
     try {
       const body = await readNodeJsonBody(req)
       const saved = await writeMistakeCard(workspace, body || {})
+      scheduleAutoSync('card-saved', 3_000)
       return sendJson(res, saved, 200)
     } catch (err) {
       return sendJson(res, { ok: false, error: err?.message || String(err) }, 400)
@@ -1954,6 +2222,7 @@ export function apply(ctx, config) {
       [`${API_BASE}/doc`, handleDoc],
       [`${API_BASE}/dispatch`, handleDispatch],
       [`${API_BASE}/sync`, handleSync],
+      [`${API_BASE}/sync-status`, handleSyncStatus],
       [`${API_BASE}/agy-chat`, handleAgyChat],
       [`${API_BASE}/chats`, handleListChats],
       [`${API_BASE}/chat`, handleSingleChat],
@@ -2026,6 +2295,7 @@ export function apply(ctx, config) {
           async execute(args) {
             try {
               const saved = await writeMistakeCard(workspace, args || {})
+              scheduleAutoSync('card-saved', 3_000)
               return JSON.stringify({ ok: true, saved: saved.saved })
             } catch (err) {
               return JSON.stringify({ ok: false, error: err?.message || String(err) })
@@ -2080,7 +2350,7 @@ export function apply(ctx, config) {
                     '1. 严禁输出完整可提交的 C++ AC 代码，也严禁在孩子亲手完成前序探索前提前剧透算法名或解题方向（如“拆左右 / 前缀和 / 差分 / 二分 / 双指针”）；',
                     '2. 走【实战探索 + 数学搭桥 5 步法】：先手玩 N=3~4 具体小数字/画图打表破冰并揪题眼陷阱（绝不一上来逼写 i,j 抽象式）→ 扶着把数字口算翻译成字母 → 让孩子自己找“哪步白干了”并注意部分分/剪枝/大模拟分流 → 代 2 组边界小数字慢放公式并用相邻交换/画图对齐/N<=3 反例微证明 → 过任氏验毒四件套与 N<=5 暴力对拍；每轮只推 1 步；',
                     '3. 低打字摩擦但绝不出“一眼假”送分题：只设计 1 个含真实易错干扰项的 A/B/C 选择或演草纸算完报 1~2 个关键数/简短式子；若孩子猜错或 WA，喂 1 组 N<=4 极小反例；',
-                    '4. 简明精炼（3~6 行内），严禁输出原始 LaTeX 源码（用清晰 Unicode 如 N ≤ 30万（3×10⁵）、⌊(a-1)/x⌋）。',
+                    '4. 简明精炼（3~6 行内），严禁输出原始 LaTeX 源码（用清晰 Unicode 如 N ≤ 30万（3×10⁵）、⌊(a-1)/x⌋），严禁对六年级甩“消元”等超前词或 e₁+...+eₖ 省略号下标（改用“算总账”，去括号后引导代 k=1 验正负号）。',
                     '',
                     '【本次咨询内容】',
                     rawPrompt,

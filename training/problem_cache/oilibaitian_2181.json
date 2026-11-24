@@ -1,0 +1,13 @@
+{
+  "platform": "信奥李拜天",
+  "pid": "2181",
+  "title": "2181 最佳围栏(Fence)",
+  "url": "https://www.oilibaitian.cn/p/2181",
+  "statement": "> **本题使用文件输入输出：输入文件 `Fence.in`，输出文件 `Fence.out`。**\n\n**题目描述**\n\n小明的农场有一排围栏，每根围栏的高度为 $h_i$。现在小明想选择两根围栏，在它们之间建造一个水槽。\n\n水槽的宽度等于两根围栏之间的距离（索引差），水槽的高度等于两根围栏中较矮的那根。\n\n水槽的容量定义为：宽度 × 高度。\n\n请找出所有可能的水槽中，容量最大的那个是多少？\n\n**输入格式**\n\n第一行一个整数 $n$（$2 \\le n \\le 10^5$）\n第二行 $n$ 个整数，$h_1, h_2, ..., h_n$（0 ≤ $h_i$ ≤ $10^4$）\n\n**输出格式**\n\n一个整数，表示最大水槽容量\n\n**样例输入输出**\n\n样例输入 1：\n\n```\n9\n1 8 6 2 5 4 8 3 7\n```\n\n样例输出 1：\n\n```\n49\n```\n\n**样例解释 1**\n\n选择第 2 根和第 9 根围栏（高度 8 和 7），宽度为 7，高度为 7，容量为 49。\n\n**子任务**\n\n- 子任务 1（30分）：$n \\le 100$\n- 子任务 2（70分）：$n \\le 100000$\n\n**提示**\n\n对于 100% 的数据：$2 \\le n \\le 10^5$，$0 \\le h_i \\le 10^4$",
+  "attempts": 2,
+  "best_score": 70,
+  "trajectory": "TLE→TLE",
+  "latest_verdict": "TLE",
+  "latest_score": 70,
+  "latest_code": "#include<bits/stdc++.h>\r\n#define int long long\r\nusing namespace std;\r\nint a[111111];\r\nsigned main() {\r\n\tfreopen(\"Fence.in\",\"r\",stdin);\r\n\tfreopen(\"Fence.out\",\"w\",stdout);\r\n\tint n;\r\n\tcin>>n;\r\n\tfor(int i=1;i<=n;i++){\r\n\t\tcin>>a[i];\r\n\t}\t\r\n\tint ans=0;\r\n\tfor(int i=1;i<=n;i++){\r\n\t\tfor(int j=i+1;j<=n;j++){\r\n\t\t\tans=max(ans,min(a[i],a[j])*(j-i));\r\n\t\t}\r\n\t}\r\n\tcout<<ans;\r\n\treturn 0;\r\n}\r\n"
+}

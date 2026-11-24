@@ -1,0 +1,11 @@
+{
+  "platform": "AtCoder",
+  "pid": "abc438_a",
+  "title": "abc438_a A - First Contest of the Year",
+  "url": "https://atcoder.jp/contests/abc438/tasks/abc438_a",
+  "statement": "Score : 100 points\r\n\r\n\n\r\n\r\n\nProblem Statement\nOn a certain planet, a year has D days, and contests are held every 7 days. Contests never span across days.\r\n\nThe first contest of a certain year was held on the F-th day of the year. On what day of the next year will the first contest of the next year be held?\r\n\nThe constraints of this problem guarantee that at least one contest will be held in the next year.\r\n\r\n\r\n\r\n\n\r\n\r\n\nConstraints\r\n\n10 \\leq D \\leq 366\r\n\n1 \\leq F \\leq 7\r\n\nAll input values are integers.\r\n\r\n\r\n\r\n\r\n\r\n\n\r\n\n\r\n\r\n\nInput\nThe input is given from Standard Input in the following format:\r\n\nD F\r\n\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nOutput\nPrint the integer N such that the next contest is held on the N-th day of the year.\r\n\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nSample Input 1\n365 4\r\n\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nSample Output 1\n3\r\n\r\n\r\n\nIf the first contest of a certain year was held on the 4th day of the year, the first contest of the next year will be held on the 3rd day of the year.\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nSample Input 2\n10 5\r\n\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nSample Output 2\n2",
+  "attempts": 1,
+  "trajectory": "WA",
+  "latest_code": "",
+  "note": "AtCoder 提交源码需登录后查看，题面与数据范围已自动拉取缓存。"
+}

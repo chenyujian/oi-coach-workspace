@@ -18,6 +18,7 @@ const execFileAsync = promisify(execFile)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = path.resolve(__dirname, '..')
 const SKIP_LIVE_AGY = process.argv.includes('--skip-live-agy')
+process.env.OI_DISABLE_BG_SYNC = '1'
 
 const results = []
 async function test(name, fn) {
@@ -108,6 +109,7 @@ await test('Route & tool registration completeness', async () => {
     '/dsh-oi-coach/api/doc',
     '/dsh-oi-coach/api/dispatch',
     '/dsh-oi-coach/api/sync',
+    '/dsh-oi-coach/api/sync-status',
     '/dsh-oi-coach/api/agy-chat',
     '/dsh-oi-coach/api/chats',
     '/dsh-oi-coach/api/chat',
@@ -325,7 +327,13 @@ await test('POST /api/sync validates method (405), unknown action (400), and run
   await routes.get('/dsh-oi-coach/api/sync')(makeReq('POST', '/dsh-oi-coach/api/sync', { action: 'timeline' }), r3)
   assert.equal(o3.status, 200, `timeline sync failed: ${o3.body.toString('utf8')}`)
   assert.equal(j3().ok, true)
-  return 'timeline rebuild succeeded'
+
+  const { res: r4, out: o4, json: j4 } = makeRes()
+  await routes.get('/dsh-oi-coach/api/sync-status')(makeReq('GET', '/dsh-oi-coach/api/sync-status'), r4)
+  assert.equal(o4.status, 200)
+  assert.equal(j4().ok, true)
+  assert.equal(typeof j4().sync?.lastMessage, 'string')
+  return 'timeline rebuild + sync-status succeeded'
 })
 
 await test('index.js has no undefined helper calls or hardcoded PIN / static AC numbers', async () => {
@@ -758,6 +766,28 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
     if (String(url).includes('/overview')) {
       return { ok: true, status: 200, json: async () => ({ ok: true, data: liveOverviewData }) }
     }
+    if (String(url).includes('/sync-status')) {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          ok: true,
+          sync: {
+            autoEnabled: true,
+            running: false,
+            lastSyncAt: '2026-11-24T23:30:00+08:00',
+            lastPullAt: '2026-11-24T23:30:00+08:00',
+            lastResult: 'ok',
+            lastMessage: '云端已是最新',
+            behindCount: 0,
+            aheadCount: 0,
+            pluginUpdated: true,
+            backendUpdated: false,
+            lastOjSync: { updatedAt: '2026-11-24T23:25:00+08:00', hasNewSubmissions: true },
+          },
+        }),
+      }
+    }
     if (String(url).includes('/api/chats')) {
       return {
         ok: true,
@@ -849,13 +879,22 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
   assert.ok(refreshBtn, 'Missing refresh button')
   await refreshBtn.props.onClick()
 
-  // 1. Coach room empty state + history sidebar visible
+  // 1. Coach room empty state + history sidebar + topbar auto-sync & upgrade pills visible
   tree = slots.main()
   const coachEmptyText = flattenText(tree)
   assert.ok(coachEmptyText.includes('今天想攻克哪道题'), 'Coach empty state missing headline')
   assert.ok(coachEmptyText.includes('历史对话（1）'), 'History sidebar missing loaded chats')
+  assert.ok(coachEmptyText.includes('自动同步'), 'Topbar missing ☁️ 自动同步 status button')
+  assert.ok(coachEmptyText.includes('收到新升级，点此更新'), 'Topbar missing ✨ 收到新升级，点此更新 pill when pluginUpdated=true')
   assert.ok(!coachEmptyText.includes('CodePlan'), 'Engineering jargon leaked into coach UI!')
   assert.ok(!coachEmptyText.includes('21:15'), 'Removed 21:15 cutoff still visible in coach UI!')
+
+  // Open & close SyncStatusModal from topbar
+  findButtons(tree).find((b) => flattenText(b).includes('自动同步')).props.onClick()
+  tree = slots.main()
+  assert.ok(flattenText(tree).includes('云端无感自动同步中心') && flattenText(tree).includes('立即双向同步'), 'SyncStatusModal did not open')
+  findButtons(tree).find((b) => flattenText(b).includes('关闭')).props.onClick()
+  tree = slots.main()
 
   // 1b. Open chat from history sidebar -> restores messages, lectureNote chips & enables 存秘籍卡 modal
   const histItem = (function findHist(n) {
@@ -973,7 +1012,7 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
   findButtons(tree).find((b) => flattenText(b).includes('成长')).props.onClick()
   tree = slots.main()
   assert.ok(flattenText(tree).includes('四平台累计独立 AC'))
-  assert.ok(flattenText(tree).includes('家长端教研与数据同步'), 'Mac parent mode should show parent tools')
+  assert.ok(flattenText(tree).includes('家长端教研与数据同步') && flattenText(tree).includes('一键同步四平台'), 'Mac parent mode should show parent 4-OJ sync button')
 
   // Open a doc shortcut -> verify DocModal renders rich math, table, details
   const docCard = (function findDocCard(n) {
@@ -1011,7 +1050,7 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
   await findButtons(slots.main()).find((b) => flattenText(b).includes('刷新')).props.onClick()
   tree = slots.main()
   const winArchiveText = flattenText(tree)
-  assert.ok(!winArchiveText.includes('家长端教研与数据同步'), 'Windows child mode leaked parent tools!')
+  assert.ok(!winArchiveText.includes('家长端教研与数据同步') && !winArchiveText.includes('一键同步四平台'), 'Windows child mode leaked parent tools!')
   assert.ok(!winArchiveText.includes('全局诊断报告'), 'Windows child mode leaked parent diagnosis report shortcut!')
   assert.ok(!winArchiveText.includes('Argon'), 'Windows child mode leaked Argon jargon!')
   assert.ok(winArchiveText.includes('全量 123 条提交时间线') && winArchiveText.includes('去重 45 题'), 'DOC_SHORTCUTS counts are not dynamic!')
@@ -1055,17 +1094,143 @@ await test('cordis.patch.yml YAML parse & !!js expressions evaluate cleanly', as
   return `skills=${entries.length}, parentDisabled(win32=${winDisabled}, darwin=${macDisabled})`
 })
 
-await test('sync_mac.sh syntax valid & sync_windows.bat guards every pause with NO_PAUSE', async () => {
+await test('sync_mac.sh, install_mac_oj_timer.sh & Python 4-OJ sync scripts compile cleanly', async () => {
   if (process.platform !== 'win32') {
     await execFileAsync('bash', ['-n', path.join(REPO_ROOT, 'scripts/sync_mac.sh')])
+    await execFileAsync('bash', ['-n', path.join(REPO_ROOT, 'scripts/install_mac_oj_timer.sh')])
   }
+  const pyScripts = [
+    'scripts/fetch_atcoder.py',
+    'scripts/fetch_haoba.py',
+    'scripts/fetch_oilibaitian.py',
+    'scripts/fetch_luogu.py',
+    'scripts/auto_sync_ojs.py',
+    'scripts/build_timeline.py',
+    'scripts/cache_problem_context.py',
+  ]
+  const pyCmd = process.platform === 'win32' ? 'python' : 'python3'
+  await execFileAsync(pyCmd, ['-m', 'py_compile', ...pyScripts.map((s) => path.join(REPO_ROOT, s))])
+
   const bat = await fs.readFile(path.join(REPO_ROOT, 'scripts/sync_windows.bat'), 'utf8')
   const pauseLines = bat.split(/\r?\n/).filter((l) => /(?:^|\s)pause(?:\s|$)/i.test(l) && !/^\s*REM\b/i.test(l))
   assert.ok(pauseLines.length > 0)
   for (const line of pauseLines) {
     assert.ok(/if not "%NO_PAUSE%"=="1"\s+pause/i.test(line), `Unguarded pause in sync_windows.bat: ${line}`)
   }
-  return `${pauseLines.length} pause lines all guarded`
+  return `${pyScripts.length} py scripts + shell + ${pauseLines.length} bat pause lines OK`
+})
+
+if (process.platform !== 'win32') {
+  await test('Greeting chat title ("探索建模 · 你好！") automatically upgrades on Turn 2 when real problem is pasted', async () => {
+    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'oi-coach-title-test-'))
+    const prevAgyBin = process.env.AGY_BIN
+    try {
+      const fakeBin = path.join(tmpDir, 'fake_agy.sh')
+      await fs.writeFile(
+        fakeBin,
+        '#!/usr/bin/env bash\necho \'{"status":"SUCCESS","conversation_id":"conv-mock-9","duration_seconds":0.2,"response":"收到！我们先拿 N=3 试一试。"}\'\n',
+        { encoding: 'utf8', mode: 0o755 },
+      )
+      process.env.AGY_BIN = fakeBin
+      const tmpRoutes = new Map()
+      pluginMod.apply(
+        {
+          inject(deps, fn) {
+            if (deps.includes('webServer')) {
+              fn({ effect: (cb) => cb(), webServer: { register: ({ path: p, handler }) => tmpRoutes.set(p, handler) } })
+            }
+          },
+          logger: { warn: () => {} },
+        },
+        { workspace: tmpDir },
+      )
+
+      // Turn 1: generic greeting with WA 排错 prefix & previewQuery='你好！'
+      const { res: r1, json: j1 } = makeRes()
+      await tmpRoutes.get('/dsh-oi-coach/api/agy-chat')(
+        makeReq('POST', '/dsh-oi-coach/api/agy-chat', {
+          title: 'WA 排错 · 你好！',
+          displayText: '你好！',
+          previewQuery: '你好！',
+          message: '你好！',
+          mode: 'coach',
+        }),
+        r1,
+      )
+      const cid = j1().chatId
+      assert.ok(cid, 'Expected chatId on Turn 1')
+
+      // Turn 2: real problem statement (even if stale client previewQuery='你好！' is sent)
+      const { res: r2, out: o2, json: j2 } = makeRes()
+      await tmpRoutes.get('/dsh-oi-coach/api/agy-chat')(
+        makeReq('POST', '/dsh-oi-coach/api/agy-chat', {
+          chatId: cid,
+          conversationId: 'conv-mock-9',
+          previewQuery: '你好！',
+          displayText: '题目描述 给定一个包含 n 个节点的无向连通图拆边改连',
+          message: '题目描述 给定一个包含 n 个节点的无向连通图拆边改连',
+          mode: 'coach',
+        }),
+        r2,
+      )
+      assert.equal(o2.status, 200)
+      assert.ok(j2().title.includes('给定一个包含 n 个节点'), `Expected upgraded title in Turn 2 response, got: ${j2().title}`)
+
+      // Turn 3: short answer '选 B' (verify stale previewQuery='你好！' does NOT overwrite upgraded previewQuery)
+      const { res: r3, out: o3 } = makeRes()
+      await tmpRoutes.get('/dsh-oi-coach/api/agy-chat')(
+        makeReq('POST', '/dsh-oi-coach/api/agy-chat', {
+          chatId: cid,
+          conversationId: 'conv-mock-9',
+          previewQuery: '你好！',
+          displayText: '选 B',
+          message: '选 B',
+          mode: 'coach',
+        }),
+        r3,
+      )
+      assert.equal(o3.status, 200)
+
+      const { res: rGet, json: jGet } = makeRes()
+      await tmpRoutes.get('/dsh-oi-coach/api/chat')(makeReq('GET', `/dsh-oi-coach/api/chat?id=${cid}`), rGet)
+      const upgradedTitle = jGet().chat.title
+      const savedPreviewQ = jGet().chat.previewQuery
+      assert.ok(!upgradedTitle.includes('你好'), `Expected greeting title to upgrade, still got: ${upgradedTitle}`)
+      assert.ok(upgradedTitle.includes('给定一个包含 n 个节点'), `Expected problem snippet in title, got: ${upgradedTitle}`)
+      assert.ok(!savedPreviewQ.includes('你好'), `Expected previewQuery not to regress to greeting, got: ${savedPreviewQ}`)
+      return `upgraded -> "${upgradedTitle}", previewQuery="${savedPreviewQ}"`
+    } finally {
+      if (prevAgyBin === undefined) delete process.env.AGY_BIN
+      else process.env.AGY_BIN = prevAgyBin
+      await fs.rm(tmpDir, { recursive: true, force: true })
+    }
+  })
+}
+
+await test('profile/*.md, .dsh/skills/*/SKILL.md & mistakes/*.md contain zero un-backticked raw LaTeX ($...$)', async () => {
+  async function walkMd(dir) {
+    let out = []
+    let entries = []
+    try { entries = await fs.readdir(dir, { withFileTypes: true }) } catch { return out }
+    for (const e of entries) {
+      const full = path.join(dir, e.name)
+      if (e.isDirectory()) out = out.concat(await walkMd(full))
+      else if (e.name.endsWith('.md')) out.push(full)
+    }
+    return out
+  }
+  const mdFiles = [
+    ...(await walkMd(path.join(REPO_ROOT, 'profile'))),
+    ...(await walkMd(path.join(REPO_ROOT, '.dsh', 'skills'))),
+    ...(await walkMd(path.join(REPO_ROOT, 'mistakes'))),
+  ]
+  for (const f of mdFiles) {
+    const raw = await fs.readFile(f, 'utf8')
+    const stripped = raw.replace(/```[\s\S]*?```/g, '').replace(/`[^`\n]+`/g, '')
+    const hit = /\$[^$\n]+\$/.exec(stripped)
+    assert.ok(!hit, `Raw LaTeX ${hit?.[0]} leaked in ${path.relative(REPO_ROOT, f)}`)
+  }
+  return `${mdFiles.length} markdown files verified raw-LaTeX-free`
 })
 
 // =========================================================================

@@ -1,0 +1,11 @@
+{
+  "platform": "AtCoder",
+  "pid": "abc401_c",
+  "title": "abc401_c C - K-bonacci",
+  "url": "https://atcoder.jp/contests/abc401/tasks/abc401_c",
+  "statement": "Score : 300 points\r\n\r\n\n\r\n\r\n\nProblem Statement\nYou are given positive integers N and K. Define a sequence A = (A_0, A_1, \\ldots, A_N) of length N+1 as follows:\r\n\r\n\nA_i = 1 for 0 \\le i < K;\r\n\nA_i=A_{i-K}+A_{i-K+1}+\\ldots+A_{i-1} for K \\le i.\r\n\r\n\nFind A_N modulo 10^9.\r\n\r\n\r\n\r\n\n\r\n\r\n\nConstraints\r\n\n1 \\le N, K \\le 10^{6}\r\n\nAll input values are integers.\r\n\r\n\r\n\r\n\r\n\r\n\n\r\n\n\r\n\r\n\nInput\nThe input is given from Standard Input in the following format:\r\n\nN K\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nOutput\nPrint the answer.\r\n\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nSample Input 1\n4 2\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nSample Output 1\n5\r\n\r\n\nWe have A_0 = A_1 = 1, and A_2=A_0+A_1=2,A_3=A_1+A_2=3,A_4=A_2+A_3=5.\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nSample Input 2\n10 20\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nSample Output 2\n1\r\n\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nSample Input 3\n1000000 500000\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nSample Output 3\n420890625\r\n\r\n\nRemember to print A_N modulo 10^9.",
+  "attempts": 1,
+  "trajectory": "TLE",
+  "latest_code": "",
+  "note": "AtCoder 提交源码需登录后查看，题面与数据范围已自动拉取缓存。"
+}

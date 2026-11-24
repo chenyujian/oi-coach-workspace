@@ -1,0 +1,13 @@
+{
+  "platform": "好吧(Cpp2023)",
+  "pid": "749",
+  "title": "749 区间计数查询",
+  "url": "https://haoba.vip/d/Cpp2023/p/749?tid=6986ac9bd57ae7ce90083d6b",
+  "statement": "## 问题描述\n给你一个长度为 $N$ 的序列：$A=(A_1,\\dots,A_N)$。\n\n回答 $Q$ 个以下格式的查询：\n\n- 给定整数 $L$、$R$ 和 $X$。\n找出 $A_L, \\dots, A_R$ 中值等于 $X$ 的元素个数。\n\n## 约束条件\n- $1 \\leq N \\leq 2 \\times 10^5$\n- $1 \\leq A_i \\leq N$\n- $1 \\leq Q \\leq 2 \\times 10^5$\n- 每个查询满足 $1 \\leq L \\leq R \\leq N$，$1 \\leq X \\leq N$。\n- 所有输入值都是整数。\n\n## 输入格式\n输入由标准输入给出，格式如下：\n\n$N$\n$A_1$ $A_2$ $\\ldots$ $A_N$\n$Q$\n$\\mathrm{Query}_1$\n$\\mathrm{Query}_2$\n$dots$\n$\\mathrm{Query}_Q$\n\n其中，$\\mathrm{Query}_i$ 表示第 $i$ 个查询。\n\n每个查询的格式如下：\n\n$L$ $R$ $X$\n\n## 输出格式\n输出 $Q$ 行，第 $i$ 行包含第 $i$ 个查询的答案。\n\n## 样例输入1\n```\n5\n3 1 4 1 5\n4\n1 5 1\n2 4 3\n1 5 2\n1 3 3\n```\n\n## 样例输出1\n```\n2\n0\n0\n1\n```\n\n对于第一个查询，$(A_1,A_2,A_3,A_4,A_5)=(3,1,4,1,5)$ 中有两个元素的值等于 $1$。\n\n对于第二个查询，$(A_2,A_3,A_4)=(1,4,1)$ 中没有元素的值等于 $3$。",
+  "attempts": 5,
+  "best_score": 5,
+  "trajectory": "RE→RE→TLE→TLE→TLE",
+  "latest_verdict": "TLE",
+  "latest_score": 0,
+  "latest_code": "#include<bits/stdc++.h>\n#define int long long\nusing namespace std;\n\nsigned main(){\n\tios::sync_with_stdio(0);cin.tie(0);cout.tie(0);\n\tint n;\n\tcin>>n;\n\tvector<int>v;\n\tfor(int i=0;i<n;i++){\n\t\tint x;\n\t\tcin>>x;\n\t\tv.push_back(x);\n\t}\n\tint q;\n\tcin>>q;\n\twhile(q--){\n\t\tint l,r,x;\n\t\tcin>>l>>r>>x;\n\t\tsort(v.begin()+l-1,v.begin()+r-1);\n\t\tcout<<((upper_bound(v.begin()+l-1,v.begin()+r-1,x)-v.begin())-(lower_bound(v.begin()+l-1,v.begin()+r-1,x)-v.begin()))<<endl;\n\t\n\t}\n\treturn 0;\n}\n"
+}

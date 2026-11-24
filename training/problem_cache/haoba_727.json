@@ -1,0 +1,13 @@
+{
+  "platform": "好吧(Cpp2023)",
+  "pid": "727",
+  "title": "727 Dubious Document 2",
+  "url": "https://haoba.vip/d/Cpp2023/p/727",
+  "statement": "### 题目描述\n<section>\n<p>E869120发现了一个可能藏有宝藏的箱子。<br>\n然而箱子被锁住了，需要输入一个由小写英文字母组成的字符串<var>S</var>才能打开。<br>\n他还找到了一个字符串<var>S'</var>，这个字符串其实是<var>S</var>的部分字母（可能是全部或没有）被替换成<code>?</code>后的结果。</p>\n<p>此外他还发现了一张写有以下事实的纸条：</p>\n<ul>\n<li>条件1：字符串<var>S</var>必须包含T作为连续子串</li>\n<li>条件2：在所有满足条件1的字符串中，<var>S</var>是字典序最小的那个</li>\n</ul>\n<p>请输出字符串<var>S</var>。<br>\n如果不存在这样的字符串，则输出<code>UNRESTORABLE</code>。</p>\n</section>\n\n### 输入格式\n<section>\n<p>输入通过标准输入给出，格式如下：</p>\n<pre><var>S'</var>\n<var>T</var>\n</pre>\n\n</section>\n\n### 输出格式\n<section>\n<p>输出字符串<var>S</var>。<br>\n如果不存在这样的字符串，则输出<code>UNRESTORABLE</code>。</p>\n</section>\n\n```input1\n?tc????\ncoder\n```\n\n```output1\natcoder\n```\n\n```input2\n??p??d??\nabc\n```\n\n```output2\nUNRESTORABLE\n```\n### 数据规模和约定\n$1\\le|S'|,|T|\\le 50$，$|S'|,|T|$ 分别表示字符串 $S'$ 和 $T$ 的长度。",
+  "attempts": 2,
+  "best_score": 0,
+  "trajectory": "TLE→WA",
+  "latest_verdict": "WA",
+  "latest_score": 0,
+  "latest_code": "#include<bits/stdc++.h>\n#define int long long\nusing namespace std;\n\nsigned main(){\n\tios::sync_with_stdio(0);cin.tie(0);cout.tie(0);\n\tstring s,t;\n\tcin>>s>>t;\n\tfor(int i=0;i<s.size();i++){\n\t\tif((s[i]==t[0]||s[i]=='?')&&i+t.size()<=s.size()){\n\t\t\tbool f=1;\n\t\t\t\n\t\t\tfor(int j=0;j<t.size();j++){\n//\t\t\t\tcout<<(j+i)<<endl;\n\t\t\t\tif(s[j+i]!=t[j]&&s[j+i]!='?'){\n\t\t\t\t\tf=0;\n\t\t\t\t\tbreak;\n\t\t\t\t}\n\t\t\t}\n//\t\t\tcout<<\"^_^\";\n\t\t\tif(f){\n\t\t\t\tfor(int j=0;j<t.size();j++){\n\t\t\t\t\ts[j+i]=t[j];\n\t\t\t\t}\n\t\t\t\tfor(int j=0;j<s.size();j++){\n\t\t\t\t\tif(s[j]=='?'){\n\t\t\t\t\t\ts[j]='a';\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\tcout<<s;\n\t\t\t\treturn 0;\n\t\t\t}\n\t\t}\n\t}\n\tcout<<\"UNRESTORABLE\";\n\treturn 0;\n}\n"
+}

@@ -230,10 +230,9 @@ def cache_haoba_problems(pids: list[str]) -> int:
 def cache_oilibaitian_problems(pids: list[str]) -> int:
     try:
         import fetch_oilibaitian as fo
-        cookie = fo.chrome_cookie_header("Default")
-        client = fo.HydroClient(cookie, delay=0.1)
+        client = fo.create_authenticated_client(delay=0.1)
     except Exception as e:
-        print(f"[Oilibaitian] skipped (needs homebrew python3 with pycryptodome): {e}")
+        print(f"[Oilibaitian] skipped (check OILIBAITIAN_USERNAME/PASSWORD in .env.local): {e}")
         return 0
 
     recs_path = WORKSPACE / "training" / "sync_logs" / "oilibaitian_uid79_records.json"

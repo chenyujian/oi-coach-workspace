@@ -46,11 +46,17 @@
       {
         "pid": "1505",
         "title": "[GESP202512 八级] 宝石项链",
-        "tags": [],
-        "submissions": 0,
-        "bestScore": null,
-        "bestStatus": null,
-        "verdicts": []
+        "tags": [
+          "贪心",
+          "双指针",
+          "GESP八级"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
       },
       {
         "pid": "2667",
@@ -4011,54 +4017,6 @@
       {
         "pid": "830",
         "title": "[USACO1.4] 母亲的牛奶 Mother's Milk",
-        "tags": [],
-        "submissions": 0,
-        "bestScore": null,
-        "bestStatus": null,
-        "verdicts": []
-      }
-    ]
-  },
-  {
-    "tid": "693fc2a2a9e4fbd3b12e0589",
-    "kind": "homework",
-    "title": "海淀信奥第三轮准备",
-    "rule": "homework",
-    "beginAt": "2025-12-14T16:00:00.000Z",
-    "endAt": "2025-12-24T15:59:00.000Z",
-    "startAt": null,
-    "dateSort": "2025-12-14T16:00:00.000Z",
-    "problems": [
-      {
-        "pid": "1090",
-        "title": "【24年第三题】拜访朋友",
-        "tags": [],
-        "submissions": 0,
-        "bestScore": null,
-        "bestStatus": null,
-        "verdicts": []
-      },
-      {
-        "pid": "1091",
-        "title": "【23年第四题】排座位(seats.cpp )",
-        "tags": [],
-        "submissions": 0,
-        "bestScore": null,
-        "bestStatus": null,
-        "verdicts": []
-      },
-      {
-        "pid": "1087",
-        "title": "【24年第四题】最短字符串",
-        "tags": [],
-        "submissions": 0,
-        "bestScore": null,
-        "bestStatus": null,
-        "verdicts": []
-      },
-      {
-        "pid": "1089",
-        "title": "【24年第六题】蜂窝网络",
         "tags": [],
         "submissions": 0,
         "bestScore": null,

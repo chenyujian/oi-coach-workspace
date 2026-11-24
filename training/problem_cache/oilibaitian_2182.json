@@ -1,0 +1,13 @@
+{
+  "platform": "信奥李拜天",
+  "pid": "2182",
+  "title": "2182 机器人路径（robot）",
+  "url": "https://www.oilibaitian.cn/p/2182",
+  "statement": "> **本题使用文件输入输出：输入文件 `robot.in`，输出文件 `robot.out`。**\n\n**题目描述**\n\n一个机器人位于一个 $m \\times n$ 的网格的左上角。机器人每次只能向下或者向右移动一步。机器人试图到达网格的右下角。\n\n问总共有多少条不同的路径？\n\n**输入格式**\n\n一行两个整数 $m$ 和 $n$（$1 \\le m, n \\le 10^5$）\n\n**输出格式**\n\n一个整数，表示不同的路径数量（答案对 1,000,000,007 取模）\n\n**样例输入输出**\n\n样例输入 1：\n\n```\n3 7\n```\n\n样例输出 1：\n\n```\n28\n```\n\n**样例解释 1**\n\n机器人需要从左上角 (1,1) 走到右下角 (3,7)，共需要向下走 2 步，向右走 6 步，总共 8 步。\n\n无论选择哪 2 步向下（其余 6 步向右），都能到达终点。不同的路径数等于选择向下步位置的方案数，即 $C_8^2 = \\frac{8 \\times 7}{2} = 28$。\n\n\n\n**子任务**\n\n- 子任务 1（20分）：$m = 1$（只有一行）\n- 子任务 2（30分）：$m = 2$ 或 $n = 2$（只有两行或两列）\n- 子任务 3（50分）：一般情况\n\n**提示**\n\n对于 100% 的数据：$1 \\le m, n \\le 10^5$，答案对 1,000,000,007 取模",
+  "attempts": 2,
+  "best_score": 20,
+  "trajectory": "WA→WA",
+  "latest_verdict": "WA",
+  "latest_score": 20,
+  "latest_code": "#include<bits/stdc++.h>\r\n#define int long long\r\nusing namespace std;\r\nint mod=1e9+7;\r\nint f(int x,int y){\r\n\tint sum=1;\r\n\tfor(int i=y;i<=x;i++){\r\n\t\tsum=(sum*i)%mod;\r\n\t}\r\n\treturn sum;\r\n}\r\nsigned main() {\r\n\tfreopen(\"robot.in\",\"r\",stdin);\r\n\tfreopen(\"robot.out\",\"w\",stdout);\r\n\tint n,m;\r\n\tcin>>n>>m;\r\n\tcout<<f(n+m-2,m)/f(n-1,1);\r\n\treturn 0;\r\n}\r\n"
+}

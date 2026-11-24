@@ -1,0 +1,11 @@
+{
+  "platform": "AtCoder",
+  "pid": "abc467_c",
+  "title": "abc467_c C - Adjacent Sums (easy)",
+  "url": "https://atcoder.jp/contests/abc467/tasks/abc467_c",
+  "statement": "Score : 300 points\r\n\r\n\n\r\n\r\n\nProblem Statement\nThe problem statement of Problem C is the same as Problem E. Only the constraint shown in red differ.\r\n\nYou are given integer sequences A=(A_1,A_2,\\dots,A_N),B=(B_1,B_2,\\dots,B_{N-1}) consisting of integers between 0 and M-1, inclusive.\r\nThe lengths of A and B are N and N-1, respectively.\n\r\nYou can perform the following operation on A any number of times.  \r\n\r\n\nChoose an integer i with 1 \\leq i \\leq N, and add 1 to A_i.  \r\n\r\n\nFind the minimum number of operations required to satisfy the following condition.\n\r\nIt can be proved that the condition can always be satisfied under the constraints of this problem.  \r\n\r\n\nFor i=1,2,\\dots,N-1, the remainder when A_i+A_{i+1} is divided by M equals B_i.\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nConstraints\r\n\n2 \\leq N \\leq 2 \\times 10^5\r\n\nM=2\r\n\n0 \\leq A_i \\leq M-1\r\n\n0 \\leq B_i \\leq M-1\r\n\nAll input values are integers.\r\n\r\n\r\n\r\n\r\n\r\n\n\r\n\n\r\n\r\n\nInput\nThe input is given from Standard Input in the following format:\r\n\nN M  \r\nA_1 A_2 \\ldots A_N\r\nB_1 B_2 \\ldots B_{N-1}\r\n\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nOutput\nOutput the answer on one line.\r\n\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nSample Input 1\n3 2\r\n1 1 1\r\n1 1\r\n\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nSample Output 1\n1\r\n\r\n\r\n\nIf we choose i=2 for the first operation, we get A=(1,2,1).\n\r\nSince A_1+A_2=1+2=3 and A_2+A_3=2+1=3, the condition is satisfied.\n\r\nA=(1,1,1) does not satisfy the condition, so the answer is 1.  \r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nSample Input 2\n2 2\r\n1 1\r\n0\r\n\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nSample Output 2\n0\r\n\r\n\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nSample Input 3\n10 2\r\n0 0 0 1 1 0 1 0 1 0\r\n0 1 0 1 0 1 0 1 0\r\n\r\n\r\n\r\n\r\n\r\n\n\r\n\r\n\nSample Output 3\n4",
+  "attempts": 10,
+  "trajectory": "CE→WA→WA→WA→WA→WA→WA→WA",
+  "latest_code": "",
+  "note": "AtCoder 提交源码需登录后查看，题面与数据范围已自动拉取缓存。"
+}

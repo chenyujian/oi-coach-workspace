@@ -781,9 +781,20 @@ window.__ModuleLoader__.load({
       showProblemPreview: false,
       saveCardModal: null,
       lectureDigestModal: null,
+      syncStatus: null,
+      showSyncModal: false,
       activePrimerId: 'combo-mod',
       primerAnswers: {},
       docModal: null,
+    }
+    let seenPullAt = undefined
+
+    function formatSyncTime(iso) {
+      if (!iso) return '等待首次自动巡检'
+      const d = new Date(iso)
+      if (Number.isNaN(d.getTime())) return String(iso).slice(0, 16)
+      const pad = (n) => String(n).padStart(2, '0')
+      return `${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`
     }
 
     function setState(patch) {
@@ -819,17 +830,42 @@ window.__ModuleLoader__.load({
       }
     }
 
+    async function pollSyncStatus() {
+      try {
+        const res = await fetchJson(`${API}/sync-status`)
+        const sync = res?.sync || null
+        if (!sync) return
+        setState({ syncStatus: sync })
+        if (seenPullAt !== undefined && sync.lastPullAt && sync.lastPullAt !== seenPullAt) {
+          if (!state.agyChat?.sending && !state.busy) {
+            seenPullAt = sync.lastPullAt
+            void loadOverview()
+          }
+        }
+      } catch {
+        // 静默忽略网络波动，不打扰孩子思考
+      }
+    }
+
     async function loadOverview() {
       setState({ loading: !state.data, error: null })
       try {
-        const [ovRes, chatsRes] = await Promise.all([
+        const [ovRes, chatsRes, syncRes] = await Promise.all([
           fetchJson(`${API}/overview`),
           fetchJson(`${API}/chats`).catch(() => ({ chats: state.chatHistory })),
+          fetchJson(`${API}/sync-status`).catch(() => ({ sync: state.syncStatus })),
         ])
+        const nextSync = syncRes?.sync ?? state.syncStatus
+        if (seenPullAt === undefined) {
+          seenPullAt = nextSync?.lastPullAt ?? null
+        } else if (nextSync?.lastPullAt) {
+          seenPullAt = nextSync.lastPullAt
+        }
         setState({
           loading: false,
           data: ovRes.data,
           chatHistory: Array.isArray(chatsRes?.chats) ? chatsRes.chats : state.chatHistory,
+          syncStatus: nextSync,
         })
       } catch (err) {
         setState({ loading: false, error: err?.message || String(err) })
@@ -1162,10 +1198,16 @@ window.__ModuleLoader__.load({
         if (activeAgyAbort !== controller) return
         activeAgyAbort = null
         if (agyTimerId) { clearInterval(agyTimerId); agyTimerId = null }
+        const nextPreviewQ = res.previewQuery || state.agyChat.previewQuery
+        if (!isNew && mode === 'coach' && !skipProblemContext && nextPreviewQ && nextPreviewQ !== prev.previewQuery) {
+          void fetchProblemPreview(nextPreviewQ)
+        }
         setState({
           agyChat: {
             ...state.agyChat,
             chatId: res.chatId || chatId,
+            title: res.title || state.agyChat.title,
+            previewQuery: nextPreviewQ,
             conversationId: res.conversationId || convId,
             sending: false,
             elapsed: 0,
@@ -1977,6 +2019,8 @@ window.__ModuleLoader__.load({
                         h(
                           'div',
                           { style: { display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' } },
+                          h('button', { type: 'button', className: 'oi-btn oi-btn-primary', disabled: !!st.busy, onClick: () => triggerSync('all-ojs', '四平台增量抓题') }, st.busy === 'sync:all-ojs' ? '四平台抓题中…' : '⚡ 一键同步四平台'),
+                          h('button', { type: 'button', className: 'oi-btn', disabled: !!st.busy, onClick: () => triggerSync('oilibaitian', '同步信奥李拜天') }, st.busy === 'sync:oilibaitian' ? '同步中…' : '🔄 同步李拜天'),
                           h('button', { type: 'button', className: 'oi-btn', disabled: !!st.busy, onClick: () => triggerSync('atcoder', '同步 AtCoder') }, st.busy === 'sync:atcoder' ? '同步中…' : '🔄 同步 AtCoder'),
                           h('button', { type: 'button', className: 'oi-btn', disabled: !!st.busy, onClick: () => triggerSync('haoba', '同步好吧平台') }, st.busy === 'sync:haoba' ? '同步中…' : '🔄 同步好吧'),
                           h('button', { type: 'button', className: 'oi-btn', disabled: !!st.busy, onClick: () => triggerSync('timeline', '重建时间线') }, st.busy === 'sync:timeline' ? '重建中…' : '⏱️ 重建时间线'),
@@ -2860,7 +2904,7 @@ window.__ModuleLoader__.load({
                       '💾 存秘籍卡',
                     )
                   : null,
-                !data?.isWindows
+                Boolean(data && !data.isWindows)
                   ? h(
                       'select',
                       {
@@ -3179,14 +3223,115 @@ window.__ModuleLoader__.load({
       )
     }
 
+    function SyncStatusModal({ open, sync, isWindows, busy }) {
+      if (!open) return null
+      const ojMeta = sync?.lastOjSync || null
+      return h(
+        'div',
+        { className: 'oi-modal-bg', onClick: () => setState({ showSyncModal: false }) },
+        h(
+          'div',
+          { className: 'oi-modal', style: { width: 'min(480px, 94vw)' }, onClick: (e) => e.stopPropagation() },
+          h(
+            'div',
+            {
+              style: {
+                padding: '14px 20px',
+                borderBottom: `1px solid ${C.border}`,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 10,
+              },
+            },
+            h('div', { style: { fontWeight: 800, fontSize: 15 } }, '☁️ 云端无感自动同步中心'),
+            h('button', { type: 'button', className: 'oi-btn oi-btn-ghost', onClick: () => setState({ showSyncModal: false }) }, '关闭'),
+          ),
+          h(
+            'div',
+            { style: { padding: '16px 20px', display: 'grid', gap: 12 } },
+            h(
+              'div',
+              {
+                style: {
+                  padding: '12px 14px',
+                  borderRadius: 10,
+                  background: C.layer,
+                  border: `1px solid ${C.border}`,
+                  fontSize: 13,
+                  lineHeight: 1.65,
+                  color: C.text,
+                },
+              },
+              isWindows
+                ? '✅ 后台自动同步已守护中：存通关秘籍卡 3 秒自动上云 · 对话停笔 45 秒自动备份 · 每 5 分钟自动收新讲义与新题单（断网静默重试，平时完全无需手动点击）。'
+                : '✅ 家长中枢守护中：每 3 分钟自动接收孩子端新对话与错题卡 · 每 2 小时后台定时增量抓取四平台刷题记录并推送更新。',
+            ),
+            h(
+              'div',
+              { style: { display: 'grid', gap: 6, fontSize: 12.5, color: C.sub } },
+              h('div', null, `最近云端同步：${formatSyncTime(sync?.lastSyncAt)} · ${sync?.lastMessage || '后台自动守护已就绪'}`),
+              ojMeta?.updatedAt
+                ? h(
+                    'div',
+                    null,
+                    `最近四平台抓题：${formatSyncTime(ojMeta.updatedAt)}${ojMeta.hasNewSubmissions ? '（抓到新提交并已同步）' : '（四平台已是最新）'}`,
+                  )
+                : null,
+            ),
+            h(
+              'div',
+              { style: { display: 'flex', gap: 8, flexWrap: 'wrap', paddingTop: 4 } },
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: 'oi-btn oi-btn-primary',
+                  disabled: !!busy,
+                  onClick: () => {
+                    setState({ showSyncModal: false })
+                    void triggerSync('git-sync', '云端双向同步')
+                  },
+                },
+                busy === 'sync:git-sync' ? '同步中…' : '🔄 立即双向同步',
+              ),
+              !isWindows
+                ? h(
+                    'button',
+                    {
+                      type: 'button',
+                      className: 'oi-btn',
+                      disabled: !!busy,
+                      onClick: () => {
+                        setState({ showSyncModal: false })
+                        void triggerSync('all-ojs', '四平台增量抓题')
+                      },
+                    },
+                    busy === 'sync:all-ojs' ? '抓题中…' : '⚡ 立即抓四平台新题',
+                  )
+                : null,
+            ),
+          ),
+        ),
+      )
+    }
+
     function OiCoachPage() {
       const st = useStore()
       React.useEffect(() => {
         void loadOverview()
+        const timer = setInterval(() => {
+          void pollSyncStatus()
+        }, 45_000)
+        return () => clearInterval(timer)
       }, [])
 
       const data = st.data
       const hasLiveChat = Boolean(st.agyChat?.open && (st.agyChat.messages.length > 0 || st.agyChat.sending))
+      const sync = st.syncStatus
+      const isSyncing = st.busy === 'sync:git-sync' || st.busy === 'sync:all-ojs' || Boolean(sync?.running)
+      const behindCount = Number(sync?.behindCount || 0)
+      const hasUpgrade = Boolean(sync?.pluginUpdated || sync?.backendUpdated)
 
       return h(
         'div',
@@ -3248,13 +3393,65 @@ window.__ModuleLoader__.load({
             ),
           ),
           h(
-            'button',
-            {
-              type: 'button',
-              className: 'oi-btn oi-btn-ghost',
-              onClick: () => loadOverview(),
-            },
-            '↻ 刷新',
+            'div',
+            { style: { display: 'flex', alignItems: 'center', gap: 8 } },
+            hasUpgrade
+              ? h(
+                  'button',
+                  {
+                    type: 'button',
+                    className: 'oi-btn oi-btn-primary',
+                    style: { height: 30, padding: '0 11px', fontSize: 12, background: C.ok, borderColor: C.ok, color: '#fff' },
+                    onClick: () => {
+                      if (sync?.backendUpdated) {
+                        setState({
+                          notice: { text: '已自动拉取最新教练服务升级，重启一次 DeepSeek Harness 即可完全生效（当前界面也可正常使用）。' },
+                          syncStatus: { ...sync, pluginUpdated: false, backendUpdated: false },
+                        })
+                      } else if (typeof window !== 'undefined' && typeof window.location?.reload === 'function') {
+                        window.location.reload()
+                      } else {
+                        setState({ syncStatus: { ...sync, pluginUpdated: false } })
+                        return loadOverview()
+                      }
+                    },
+                  },
+                  sync?.backendUpdated ? '✨ 收到新升级（重启生效）' : '✨ 收到新升级，点此更新',
+                )
+              : null,
+            h(
+              'button',
+              {
+                type: 'button',
+                className: 'oi-btn',
+                style: {
+                  height: 30,
+                  padding: '0 10px',
+                  fontSize: 12,
+                  borderColor: behindCount > 0 ? C.accent : C.border,
+                },
+                onClick: () => setState({ showSyncModal: !st.showSyncModal }),
+              },
+              h('span', {
+                style: {
+                  width: 7,
+                  height: 7,
+                  borderRadius: '50%',
+                  background: isSyncing ? C.accent : sync?.lastResult === 'retry' ? C.warn : C.ok,
+                  display: 'inline-block',
+                },
+              }),
+              isSyncing ? '同步中…' : behindCount > 0 ? `有 ${behindCount} 项新记录` : '☁️ 自动同步',
+            ),
+            h(
+              'button',
+              {
+                type: 'button',
+                className: 'oi-btn oi-btn-ghost',
+                onClick: () => loadOverview(),
+              },
+              '↻ 刷新',
+            ),
           ),
         ),
 
@@ -3312,6 +3509,12 @@ window.__ModuleLoader__.load({
         h(DocModal, { modal: st.docModal }),
         h(SaveCardModal, { modal: st.saveCardModal }),
         h(LectureDigestModal, { modal: st.lectureDigestModal }),
+        h(SyncStatusModal, {
+          open: st.showSyncModal,
+          sync: st.syncStatus,
+          isWindows: data ? Boolean(data.isWindows) : true,
+          busy: st.busy,
+        }),
       )
     }
 

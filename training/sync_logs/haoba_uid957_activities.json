@@ -1089,6 +1089,24 @@
         "bestScore": null,
         "bestStatus": null,
         "verdicts": []
+      },
+      {
+        "pid": "4013",
+        "title": "数独2",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "3541",
+        "title": "[ABC273D][ABC-D]LRUD 指令",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
       }
     ]
   },
