@@ -158,6 +158,7 @@ window.__ModuleLoader__.load({
       const unsolvedCnt = Number(data?.totals?.trueUnsolved ?? 0)
       const acCnt = Number(data?.totals?.uniqueAc ?? 0)
       const list = [
+        { path: 'courses/notes/00-ren-teacher-modeling-playbook.md', title: '📌 任老师 OI 建模心法总纲', desc: '五步拆题骨架、十大高频转化抓手与写码验毒四件套' },
         { path: 'profile/learning_journey.md', title: '30 个月完整成长路径', desc: '从 9 岁启蒙到六年级八级攻坚的七阶段轨迹' },
         ...(data?.isWindows
           ? []
@@ -180,45 +181,73 @@ window.__ModuleLoader__.load({
     const MODELING_DRILLS = [
       {
         id: 'abs-prefix-suffix',
-        title: '绝对值与前后缀拆解',
-        subtitle: '如最近异色点、接雨水、左右最值',
-        signal: '看到 |i - j| 或“每个位置依赖左右两边所有点”',
-        focus: '去绝对值按 j < i / j > i 分类 → 分离变量 → 相邻状态集合对比推递推',
+        title: '抓手 1 · 挂靠右端点、绝对值与前后缀拆解',
+        subtitle: '如 PJ02 合唱团排练、ABC485-C 最近异色点、ABC483-D 翻转一步',
+        signal: '看到 |i - j| 或区间 [l, r] 双变量同时动、枚举点对必超时',
+        focus: '固定右端点 r（或按 j<i / j>i 去绝对值）→ 把左边 l 的最优选择变成滑动窗口或前后缀递推',
       },
       {
         id: 'contrib-separation',
-        title: '分离变量与拆贡献',
-        subtitle: '如子数组总和、配对计数、整体平移',
-        signal: '看到两重求和 ∑∑ 或枚举所有区间 [L, R] 必超时',
-        focus: '交换求和顺序，固定单个元素问它被算了几次，用乘法分配律降维',
+        title: '抓手 2 · 翻转视角按边与元素算贡献',
+        subtitle: '如 PJ06 树上染色、PJ11 路径最大边权之和、PJ05 走廊泼水节',
+        signal: '看到所有点对 (u, v) 或所有子区间求和，N ≤ 10⁵ 无法两两枚举',
+        focus: '反过来盯着每一条边或单个元素，算它被多少对合法点经过（如 Kruskal 首次连通 a×b）',
       },
       {
-        id: 'invariant-parity',
-        title: '不变量与奇偶性守恒',
-        subtitle: '如操作能否达成目标、黑白染色、逆序对',
-        signal: '看到“可以任意次执行某种操作，问能否变成目标状态”',
-        focus: '盯住每次操作后总和、奇偶性、差值或模余数中死活不变的量',
+        id: 'diff-and-reverse',
+        title: '抓手 3 · 先记账后结算与逆序看最后一次',
+        subtitle: '如 PJ04 活动覆盖、PJ09 黑板擦写、ABC474-C / ABC477-D 覆盖操作',
+        signal: '看到批量区间修改只问最终结果，或后操作覆盖前操作',
+        focus: '可叠加用一维两端 / 二维四角差分记账最后前缀和还原；后盖前从 q=Q 倒着扫定稿',
       },
       {
-        id: 'greedy-exchange',
-        title: '邻项交换与贪心证明',
-        subtitle: '如排队最小代价、国王游戏、任务排序',
-        signal: '看到“安排最优顺序使总代价/最大值最小”',
-        focus: '只取相邻两项写代数表达式，比较 (1在前) 与 (2在前) 推严格不等式',
+        id: 'mod-earliest',
+        title: '抓手 4 · 差转同余与只记最早位置',
+        subtitle: '如 PJ06 最长 K 倍区间、ABC484-E 子段和计数',
+        signal: '看到连续子段和是 K 的倍数、等于定值或满足不等式',
+        focus: 'P[r] - P[l] 整除 K ⇔ 模 K 余数相同；预登 first[0]=0，负数取模写 ((sum%k)+k)%k',
       },
       {
         id: 'binary-answer',
-        title: '二分答案转判定',
-        subtitle: '如最大化最小值、最小化最大值、切木头',
-        signal: '看到“最大值最小”或“答案越大越容易满足”的单调性',
-        focus: '把最优化目标设成参数 X，反向转化成 O(N) 判定式 check(X)',
+        title: '抓手 5 · 二分答案转判定与整除消浮点',
+        subtitle: '如 PJ02 分蛋糕、PJ06 树苗间隔、PJ11 切木头、PJ05 半度时钟',
+        signal: '看到“最大化最小值 / 最小化最大值”单调分界，或讨厌的小数切割',
+        focus: '猜参数 x 写 feasible(x) 判定；熟用 ⌊(a-1)/x⌋、(a+b-1)/b 与最小单位整数化消浮点',
       },
       {
-        id: 'div-ceil-mod',
-        title: '整除、上下取整与差 1 边界',
-        subtitle: '如分组、周期循环、负数取模、区间长度',
-        signal: '看到分组向上取整、环形下标、闭区间端点计数',
-        focus: '建立 ⌈a/b⌉ = ⌊(a+b-1)/b⌋、r - l + 1 与 ((x%m)+m)%m 严谨代数式',
+        id: 'greedy-exchange',
+        title: '抓手 6 · 贪心交换论证与遮挡淘汰证明',
+        subtitle: '如 PJ07 打印排队、PJ03 紧急通知 max(i+tᵢ)、PJ10 单调栈',
+        signal: '看到决定先后顺序、选点位置或单调栈/队列弹掉旧候选',
+        focus: '排顺序写相邻两项交换不等式；选点做逐项对齐比较；栈队证“又老又差永无出头之日”',
+      },
+      {
+        id: 'dp-state-slim',
+        title: '抓手 7 · 状态瘦身只留影响未来的最小量',
+        subtitle: '如 PJ04 单词接龙 dp[26]、PJ02 限 K 条边最短路、PJ11 换根 down/up',
+        signal: '看到历史路径太长存不下，或额外多了一条 K ≤ 20 的小参数约束',
+        focus: '追问“决定下一步能不能接上，最少只需记住什么？”压掉无关历史或把小约束收进维度',
+      },
+      {
+        id: 'unique-anchor',
+        title: '抓手 8 · 抓唯一中心与极小操作防重复计数',
+        subtitle: '如 PJ09 最长回文 2n-1 中心、PJ10 欧拉筛、ABC484-C/D 极小移位',
+        signal: '看到不同操作/不同路径会造出相同结果，计数怕重怕漏',
+        focus: '给每个结果绑定唯一锚点（奇偶中心、最小质因子、首尾必异的极小操作区间 [l, r]）',
+      },
+      {
+        id: 'break-cycle-dim',
+        title: '抓手 9 · 破环按值域拓扑与二维压一维',
+        subtitle: '如 PJ07 环形分糖下标升序、PJ09 最大子矩阵压列和、ABC482-C 行列解耦',
+        signal: '看到围成圆圈两趟扫描失灵，或二维子矩阵四重循环超时',
+        focus: '环形无端点改按数值升序排下标 ord 定稿；二维枚举上下行压成一维 colsum 跑 Kadane',
+      },
+      {
+        id: 'graph-and-cycle',
+        title: '抓手 10 · 抽象关系建图染色与尾链循环节',
+        subtitle: '如 PJ07 数字变换 BFS、PJ04 树距离 2 二部染色、PJ11 传送器走 10¹⁸ 步',
+        signal: '看到操作求最少步数、距离/不等式约束构造、或唯一后继走 10¹⁸ 步',
+        focus: '数当点操作当边跑 BFS；距离 2 转同色连通块双星构造；大步数先扣尾链 s + (K-s)%L',
       },
     ]
 
@@ -894,7 +923,7 @@ window.__ModuleLoader__.load({
     }
 
     function inferCardDraftFromChat(chat, pv) {
-      const title = String(pv?.title || chat?.title || '').replace(/^(代数建模|建模|排错|复盘|旧题重斩|变形手算|建模快练)\s*·\s*/i, '').trim() || '未命名题目'
+      const title = String(pv?.title || chat?.title || '').replace(/^(任氏建模|代数建模|讲义变式|建模|排错|复盘|旧题重斩|变形手算|建模快练)\s*·\s*/i, '').trim() || '未命名题目'
       const combined = `${pv?.platform || ''} ${title}`.toLowerCase()
       let platform = 'oj'
       if (/atcoder|abc\d+|arc\d+|agc\d+/.test(combined)) platform = 'atcoder'
@@ -1240,9 +1269,9 @@ window.__ModuleLoader__.load({
 
     function buildQuickPrompt(mode, raw) {
       const prompts = {
-        hint: `教练你好！我做这道题卡住了，请严格按【代数建模 5 步锁步】（立数学目标式 → 判 N 并盯“碍眼结构”让我自己选数学变形 → 分离变量引记号 → 比相邻状态推递推并验毒 → 译代码并挂母模型牌）带我从第 1 步开始，严禁首轮剧透解法方向或算法名，别出送分二选一，绝不给完整 AC 代码：\n\n${raw}`,
-        wa: `教练你好！我这道题 WA 了，请先帮我核对数学模型和边界条件（绝不要直接剧透正解思路或替我改代码；若已连错 2 次可先喂 1 组 N<=4 极小反例让我手算抓虫）：\n\n${raw}`,
-        tle: `教练你好！我这道题超时 TLE 了，先别告诉我怎么优化！请严格按【代数建模 5 步锁步】从第 1 步「剥故事立数学目标式」重新带我做代数拆解（核心变形让我自己选，严禁提前剧透算法方向，绝不给 AC 代码）：\n\n${raw}`,
+        hint: `教练你好！我做这道题卡住了，请严格按【任氏建模 5 步锁步】（题意复述立目标并揪陷阱 → 看 N 诊朴素死穴让我自选转化抓手 → 等价改写并做微证明 → 逐项拆解与任氏验毒四件套 → 译代码并挂课堂同门题）带我从第 1 步开始，严禁首轮剧透解法方向或算法名，别出送分二选一，绝不给完整 AC 代码：\n\n${raw}`,
+        wa: `教练你好！我这道题 WA 了，请先帮我核对数学模型和任氏验毒四件套边界（绝不要直接剧透正解思路或替我改代码；若已连错 2 次可先喂 1 组 N<=4 极小反例让我手算抓虫）：\n\n${raw}`,
+        tle: `教练你好！我这道题超时 TLE 了，先别告诉我怎么优化！请严格按【任氏建模 5 步锁步】从第 1 步「题意复述立目标式并揪陷阱」重新带我诊出朴素死穴（核心转化抓手让我自己选，严禁提前剧透算法方向，绝不给 AC 代码）：\n\n${raw}`,
         re: `教练你好！我这道题 RE/CE 了，请带我自己定位数组越界、初始化或语法问题（绝不替我改代码）：\n\n${raw}`,
         pm: `教练你好！我刚刚把这道题 AC 了！请按 post-mortem 的 3 秒“敲 1 确认”模式直接帮我提炼 3 行通关秘籍卡，我确认后请你调用 save_mistake_card 存入错题库：\n\n${raw}`,
       }
@@ -1254,9 +1283,9 @@ window.__ModuleLoader__.load({
         return launchCoachSession({
           presetId: 'oi-coach',
           title: p.title,
-          displayText: `我想用代数建模补这道题：${p.title}（${p.platform} · ${p.trajectory}）`,
+          displayText: `我想用任氏建模法补这道题：${p.title}（${p.platform} · ${p.trajectory}）`,
           previewQuery: p.title,
-          prompt: `教练，我要补这道题：【${p.title}】（平台：${p.platform}，我之前交了 ${p.attempts} 次，最高 ${p.bestScore} 分，轨迹：${p.trajectory}）。请严格按【代数建模 5 步锁步】从第 1 步「剥故事立数学目标式」带我一步步推导（核心数学变形让我自己选，别出送分题，严禁首轮剧透解法方向或算法名称，绝不要直接给代码）。`,
+          prompt: `教练，我要补这道题：【${p.title}】（平台：${p.platform}，我之前交了 ${p.attempts} 次，最高 ${p.bestScore} 分，轨迹：${p.trajectory}）。请严格按【任氏建模 5 步锁步】从第 1 步「题意复述立目标式并揪陷阱」带我一步步推导（核心转化抓手让我自己选，别出送分题，严禁首轮剧透解法方向或算法名称，绝不要直接给代码）。`,
         })
       }
       if (kind === 'debug') {
@@ -1265,7 +1294,7 @@ window.__ModuleLoader__.load({
           title: `排错 · ${p.title}`,
           displayText: `帮我排错：${p.title}（${p.platform} · ${p.trajectory}）`,
           previewQuery: p.title,
-          prompt: `教练，我在【${p.title}】（平台：${p.platform}，轨迹：${p.trajectory}，最高 ${p.bestScore} 分）上卡住了。先别直接剧透正解方向！若是 WA 请喂 1 组 N<=4 极小反例让我手算找错；若是 TLE 请严格按【代数建模 5 步锁步】从第 1 步「剥故事立数学目标式」重新带我做代数拆解。`,
+          prompt: `教练，我在【${p.title}】（平台：${p.platform}，轨迹：${p.trajectory}，最高 ${p.bestScore} 分）上卡住了。先别直接剧透正解方向！若是 WA 请喂 1 组 N<=4 极小反例让我手算找错；若是 TLE 请严格按【任氏建模 5 步锁步】从第 1 步重新带我诊断朴素死穴。`,
         })
       }
       return launchCoachSession({
@@ -1467,7 +1496,7 @@ window.__ModuleLoader__.load({
           displayText: `开始「${drill.title}」专题建模快练（${activeLevel.label}）`,
           previewQuery: '',
           skipProblemContext: true,
-          prompt: `教练，我想做 1 道【${drill.title}】专题的 10 分钟纯演草纸代数建模快练（难度：${activeLevel.label}，不需要急着写代码）。请你先现编 1 道简短干净、数据范围明确（如 N ≤ 20万）的原创或经典变式微题，只给题面和约束，**绝不剧透解法或算法名**，然后严格按【代数建模 5 步锁步】从第 1 步「剥故事立数学目标式」开始带我一步步推导！`,
+          prompt: `教练，我想做 1 道【${drill.title}】（重点：${drill.focus}）的 10 分钟演草纸任氏建模快练（难度：${activeLevel.label}，不需要急着写代码）。请你先现编 1 道简短干净、数据范围明确（如 N ≤ 20万）的原创或变式微题，只给题面和约束，**绝不剧透解法或算法名**，然后严格按【任氏建模 5 步锁步】从第 1 步「题意复述立目标式并揪陷阱」开始带我一步步推导！`,
         })
       }
 
@@ -1509,7 +1538,7 @@ window.__ModuleLoader__.load({
                 className: `oi-nav-btn ${st.practiceSubTab === 'drills' ? 'oi-nav-btn-active' : ''}`,
                 onClick: () => setState({ practiceSubTab: 'drills' }),
               },
-              '⚡ 专题建模快练（6 大母模型）',
+              '⚡ 专题建模快练（任氏 10 法）',
             ),
             h(
               'button',
@@ -1589,8 +1618,8 @@ window.__ModuleLoader__.load({
                   h(
                     'div',
                     { style: { display: 'grid', gap: 4 } },
-                    h('div', { style: { fontSize: 18, fontWeight: 800 } }, '⚡ 每日 10 分钟 · 专题代数建模快练'),
-                    h('div', { style: { fontSize: 13.5, color: C.sub } }, '不用打开 OJ、不用急着写代码：选一个母模型专题，在演草纸上跟教练走完 5 步代数推导，练出秒认题型的肌肉记忆。'),
+                    h('div', { style: { fontSize: 18, fontWeight: 800 } }, '⚡ 每日 10 分钟 · 任氏十大建模转化快练'),
+                    h('div', { style: { fontSize: 13.5, color: C.sub } }, '提炼自任衍硕老师 20 场普及模拟赛与 ABC 题解：选一个核心转化抓手，在演草本上跟教练走完「任氏建模 5 步锁步」，练出秒破朴素死穴的肌肉记忆。'),
                   ),
                   h(
                     'div',
@@ -1866,7 +1895,7 @@ window.__ModuleLoader__.load({
                                   displayText: `基于讲义「${n.title}」出 1 道全新变式建模题练手`,
                                   previewQuery: '',
                                   skipProblemContext: true,
-                                  prompt: `教练，我刚复习完课程讲义「${n.title}」（${n.summary || '建模专题'}）。请你基于同一类核心母模型，**新编 1 道变式建模微题**（不要照抄讲义原题结论，绝不剧透算法方向），然后严格按【代数建模 5 步锁步】从第 1 步「剥故事立数学目标式」带我演草纸推一遍！`,
+                                  prompt: `教练，我刚复习完课程讲义「${n.title}」（${n.summary || '建模专题'}）。请你基于同一类核心母模型，**新编 1 道变式建模微题**（不要照抄讲义原题结论，绝不剧透算法方向），然后严格按【任氏建模 5 步锁步】从第 1 步「题意复述立目标式并揪陷阱」带我演草纸推一遍！`,
                                 }),
                             },
                             '🎯 练 1 道变式建模题',
@@ -2758,6 +2787,17 @@ window.__ModuleLoader__.load({
                         onClick: () => setState({ showProblemPreview: !st.showProblemPreview }),
                       },
                       st.showProblemPreview ? '📄 收起原题' : '📄 看原题',
+                    )
+                  : null,
+                pv && pv.lectureNote && pv.lectureNote.file
+                  ? h(
+                      'button',
+                      {
+                        type: 'button',
+                        className: 'oi-chip',
+                        onClick: () => openDoc(pv.lectureNote.file, pv.lectureNote.title),
+                      },
+                      '📚 对应讲义',
                     )
                   : null,
                 chat.messages.length >= 2 && chat.mode !== 'parent'

@@ -12,7 +12,7 @@
   - 使用 **Antigravity** 打开本工作区（自动加载 `GEMINI.md` 进入架构师/教研模式）+ **DeepSeek Harness** 实测验收。
   - 负责：维护教学规则（`AGENTS.md`）、5 个专项技能（`.dsh/skills/`）、原生插件（`plugins/dsh-oi-coach/`）、讲义精炼入库（`courses/notes/`）、四平台提交同步与时间线重建、阶段性四维诊断报告（`profile/reports/`）。
 - **孩子端（Windows 电脑）**：
-  - **AI 建模辅导**：使用 **DeepSeek Harness 桌面版**（挂载 `dsh-oi-coach` 插件 + 可选本机 `agy` CLI 专家外脑），严格执行「代数建模 5 步锁步」（不给 AC 代码、不提前剧透解法、不设作息时间打断）。
+  - **AI 建模辅导**：使用 **DeepSeek Harness 桌面版**（挂载 `dsh-oi-coach` 插件 + 可选本机 `agy` CLI 专家外脑），严格执行与任衍硕老师课堂同频的「任氏建模 5 步锁步」（不给 AC 代码、不提前剧透解法、不设作息时间打断）。
   - **手写代码**：使用不开启 AI 自动补全的纯净 C++ 编辑器，保持考场手写手感。
 - **四大日常训练平台**：信奥李拜天 OJ（UID `79`）、洛谷（`qiq2015`）、好吧平台（UID `957`）、AtCoder（`chenyanxu`）。
 
@@ -23,7 +23,7 @@
 | 层次 | 家长端（macOS） | 孩子端（Windows） | 隔离实现机制 |
 | :--- | :--- | :--- | :--- |
 | **1. IDE 规则层** | Antigravity 加载 `GEMINI.md`（架构师权限） | DeepSeek Harness 仅加载 `AGENTS.md` + `.dsh/skills/` | 客户端入口文件分离 |
-| **2. DSH Preset 层** | 同时可见 `oi-coach` 与 `oi-parent` | 物理禁用 `preset-oi-parent`（`disabled: !!js process.platform === 'win32'`），`oi-coach` 文件系统物理只读且禁 `bash` | `cordis.patch.yml` 硬件级权限锁 |
+| **2. DSH Preset 层** | 同时可见 `oi-coach` 与 `oi-parent` | 物理禁用 `preset-oi-parent`（`disabled: !!js process.platform !== 'darwin'`），`oi-coach` 文件系统物理只读且禁 `bash` | `cordis.patch.yml` 硬件级权限锁 |
 | **3. `agy` 外脑直连层** | 输入 `.env.local` 中的 `OI_PARENT_PIN` 可开启家长教研模式 | 强制锁死 `coach` 模式，运行于仓外隔离目录 `os.tmpdir()/oi-coach-child-isolated`（绝不加载 `GEMINI.md`），且拦截读取/篡改任何 `parent` 历史记录（`403`） | `plugins/dsh-oi-coach/index.js` 服务端硬锁 |
 
 ---
@@ -55,11 +55,11 @@
 
 ## 四、 上线进度与演进状态
 
-- [x] 本地工作区骨架、`AGENTS.md`（代数建模 5 步锁步）与 5 个 `.dsh/skills/`
+- [x] 本地工作区骨架、`AGENTS.md`（任氏建模 5 步锁步）与 5 个 `.dsh/skills/`
 - [x] GitHub 私有远程仓库绑定（`git@github.com:chenyujian/oi-coach-workspace.git`）与 Mac/Windows 同步脚本
 - [x] 四平台全量基线拉取、跨站同题去重时间线（`build_timeline.py`）与未过题题面增量缓存（`cache_problem_context.py`）
 - [x] 6 课交互式「OI 读题与建模训练营」（`courses/math_lab/index.html`）
-- [x] 原生 `dsh-oi-coach` 四空间插件（全屏教练室 + 历史对话续聊 + 一键存秘籍卡 + 6 大母模型快练 + 讲义直读 + Windows 全兼容）
-- [x] 15 项端到端自动化门禁测试（`scripts/test_oi_coach.mjs`）与 `GEMINI.md` 研发质量门禁
-- [ ] **待推进**：批量精炼入库 `/Users/chenyujian/oippt` 中剩余 18 份老师讲义至 `courses/notes/`
+- [x] 任衍硕老师建模心法总纲（`00-ren-teacher-modeling-playbook.md`）+ 全部 20 场普及模拟赛与 ABC 讲义结构化入库（共 21 份 `courses/notes/*.md`）
+- [x] 原生 `dsh-oi-coach` 四空间插件（全屏教练室 + 对应讲义联动 + 历史对话续聊 + 一键存秘籍卡 + 任氏十大建模抓手快练 + Windows 全兼容）
+- [x] 16 项端到端自动化门禁测试（`scripts/test_oi_coach.mjs`）与 `GEMINI.md` 研发质量门禁
 - [ ] **待推进**：在孩子 Windows 电脑实装验收，并按需补充“3~7 天无提示盲重做”打卡状态与洛谷增量抓取脚本

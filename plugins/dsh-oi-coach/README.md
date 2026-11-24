@@ -5,25 +5,25 @@
 ## 一、 四个独立功能空间（`client.js`）
 1. **💬 教练室（默认全屏首页）**
    - 100% 视口高度沉浸式对话空间 + 左侧可折叠**历史对话栏**（落盘于 `training/chat_history/*.json`，跨设备无缝续聊）；
-   - 自动匹配 `training/problem_cache/` 提供 **「📄 看原题」** 折叠抽屉；
+   - 自动匹配 `training/problem_cache/` 与 `courses/notes/` 提供 **「📄 看原题」** 折叠抽屉与 **「📚 对应讲义」** 一键联动（首轮零剧透、次轮同频任老师拆题脉络）；
    - 对话满 1 轮后支持顶栏 **「💾 存秘籍卡」** 一键抽取并落盘至 `mistakes/`。
 2. **📋 题单**
    - 按平台筛选清洗去重后的「近期待补题」与「隔月旧题冷启动重斩」，一键切入全屏教练室。
 3. **🧮 建模练习（独立专区）**
    - **读题建模训练营（6 课交互实验）**：全高内嵌 `courses/math_lab/index.html` + 一键调起系统浏览器打印 A4 闯关单；
-   - **专题建模快练（6 大母模型 × 3 档难度）**：演草纸空手走完「代数建模 5 步锁步」；
+   - **专题建模快练（任氏十大转化抓手 × 3 档难度）**：演草纸空手走完「任氏建模 5 步锁步」；
    - **15 分钟手算微卡片（5 套）**：即时判分与标准术语挂牌。
 4. **📚 错题与档案**
    - **我的通关秘籍**：展示 `mistakes/` 卡片墙（支持教科书分式与数学排版直读）；
-   - **课程讲义**：自动扫描 `courses/notes/` 讲义并提供「🎯 练 1 道变式建模题」；
+   - **课程讲义**：置顶《任老师 OI 建模心法总纲》并展示全部 20 场普及模拟赛 / ABC 讲义，提供「🎯 练 1 道变式建模题」；
    - **成长与同步**：动态统计四平台独立 AC 进度与一键 Git 同步（Windows 孩子端自动隐藏家长同步运维与模型下拉框）。
 
 ## 二、 物理权限隔离与双端护栏（`cordis.patch.yml` & `index.js`）
-- `oi-coach`（麒麒 OI 教练）：`tool-fs` 物理只读（`write/edit/applyPatch: false`）、无 Shell 写权限；直连 `agy` 时运行在仓外隔离目录（不加载 `GEMINI.md`）并每轮强制注入反套话与「代数建模 5 步锁步」护栏。
+- `oi-coach`（麒麒 OI 教练）：`tool-fs` 物理只读（`write/edit/applyPatch: false`）、无 Shell 写权限；直连 `agy` 时运行在仓外隔离目录（不加载 `GEMINI.md`）并每轮强制注入反套话与「任氏建模 5 步锁步」护栏。
 - `oi-parent`（OI 家长教研官）：Windows 下由 `cordis.patch.yml` 直接物理禁用；Mac 家长端需校验 `.env.local` 中的 `OI_PARENT_PIN` 口令方可访问。
 
 ## 三、 回归测试
 ```bash
-node scripts/test_oi_coach.mjs --skip-live-agy   # 1 秒本地全量单测（13 项）
-node scripts/test_oi_coach.mjs                   # 含真实 agy-chat 防剧透与防越狱 E2E（15 项）
+node scripts/test_oi_coach.mjs --skip-live-agy   # 1 秒本地全量单测（14 项）
+node scripts/test_oi_coach.mjs                   # 含真实 agy-chat 防剧透与防越狱 E2E（16 项）
 ```

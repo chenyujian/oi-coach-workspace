@@ -136,7 +136,63 @@ await test('GET /api/overview returns real 4-platform stats, courseNotes & agy r
   assert.ok(Array.isArray(d.unsolvedRecent) && d.unsolvedRecent.length > 0, 'unsolvedRecent empty')
   assert.ok(Array.isArray(d.retentionQueue), 'retentionQueue missing')
   assert.ok(Array.isArray(d.mistakeCards), 'mistakeCards missing')
-  assert.ok(Array.isArray(d.courseNotes) && d.courseNotes.length >= 2, `Expected >=2 courseNotes, got ${d.courseNotes?.length}`)
+  assert.ok(Array.isArray(d.courseNotes) && d.courseNotes.length >= 21, `Expected >=21 courseNotes (playbook + 20 lectures), got ${d.courseNotes?.length}`)
+  assert.equal(d.courseNotes[0].file, 'courses/notes/00-ren-teacher-modeling-playbook.md', 'Master modeling playbook must be pinned at index 0')
+  assert.equal(d.courseNotes[0].pinned, true)
+  // Audit all courseNotes files: zero leaked full C++ programs, zero raw LaTeX, balanced <details> tags, & strict un-AC anti-spoiler guards
+  const SPOILER_RE = /二分|单调栈|单调队列|前缀和|差分|背包|并查集|换根|容斥|斯特林|归并|树状数组|线段树|Dilworth|LIS|Kruskal|SCC|折半枚举/i
+  for (const n of d.courseNotes) {
+    const md = await fs.readFile(path.join(REPO_ROOT, n.file), 'utf8')
+    assert.ok(!/#include\s*</.test(md) && !/\bint\s+main\s*\(/.test(md), `Course note leaked full C++ code: ${n.file}`)
+    assert.ok(!/\$[^$\n]+\$/.test(md) && !/\\(?:le|ge|times|frac|lfloor|rfloor|lceil|rceil)\b/.test(md), `Course note leaked raw LaTeX in ${n.file}`)
+    const openCnt = (md.match(/<details>/g) || []).length
+    const closeCnt = (md.match(/<\/details>/g) || []).length
+    assert.equal(openCnt, closeCnt, `Unbalanced <details> tags in ${n.file}: open=${openCnt}, close=${closeCnt}`)
+
+    if (!n.pinned) {
+      // Collect un-AC'd problem IDs from - [ ] checklist
+      const unacPids = new Set()
+      for (const line of md.split(/\r?\n/)) {
+        const st = line.trim()
+        if (st.startsWith('- [ ]')) {
+          assert.ok(!/[：:]/.test(st.replace(/\*\*(?:P[0-2][^：:]*|待补重点)\*\*[：:]/g, '')), `Un-AC checklist leaked formula/hint in ${n.file}: ${st}`)
+          assert.ok(!SPOILER_RE.test(st), `Un-AC checklist leaked algorithm spoiler in ${n.file}: ${st}`)
+          for (const pm of st.matchAll(/`([a-z0-9_]+)`/gi)) unacPids.add(pm[1].toLowerCase())
+        }
+      }
+      // Strip all <details>...</details> blocks and ensure uncollapsed text never spoils un-AC'd problems
+      const uncollapsed = md.replace(/<details>[\s\S]*?<\/details>/g, '[FOLDED]')
+      const unacSlots = new Set()
+      for (const line of uncollapsed.split(/\r?\n/)) {
+        const st = line.trim()
+        if (st.startsWith('| T')) {
+          const cols = st.split('|').slice(1, -1).map((c) => c.trim())
+          const pm = /`(\d{4,6})`/.exec(cols[1] || '')
+          if (pm && unacPids.has(pm[1].toLowerCase())) {
+            unacSlots.add(cols[0].toUpperCase())
+            assert.ok(!SPOILER_RE.test(cols[2] || ''), `Table Col 3 abstract leaked algorithm in ${n.file}: ${st}`)
+            assert.ok((cols[3] || '').startsWith('🔒 待补题'), `Table Col 4 not folded for un-AC problem in ${n.file}: ${st}`)
+          }
+        }
+      }
+      for (const sec of md.split(/\n(?=###\s+\d+\.)/)) {
+        if (!sec.startsWith('### ')) continue
+        const head = sec.split(/\r?\n/)[0]
+        const pidMatch = /`([a-z0-9_]+)`/i.exec(head)
+        if (pidMatch && unacPids.has(pidMatch[1].toLowerCase())) {
+          assert.ok(sec.includes('<details>'), `Un-AC ### section missing <details> in ${n.file}: ${head}`)
+          assert.ok(!SPOILER_RE.test(head), `Un-AC ### heading leaked algorithm in ${n.file}: ${head}`)
+        }
+      }
+      for (const line of uncollapsed.split(/\r?\n/)) {
+        const st = line.trim()
+        const sm = /^-\s*\*\*(T[1-6])\b/.exec(st)
+        if (sm && unacSlots.has(sm[1].toUpperCase())) {
+          assert.fail(`Un-AC pitfall bullet leaked outside <details> in ${n.file}: ${st}`)
+        }
+      }
+    }
+  }
   assert.equal(d.agy.ready, true, `Expected agy.ready=true, got ${JSON.stringify(d.agy)}`)
   liveOverviewData = d
   return `${d.totals.submissions} subs, ${d.totals.uniqueAc} AC, ${d.courseNotes.length} notes, agy=${d.agy.version}`
@@ -187,7 +243,41 @@ await test('GET /api/problem-preview matches by ID, Chinese keyword, and handles
   await routes.get('/dsh-oi-coach/api/problem-preview')(makeReq('GET', '/dsh-oi-coach/api/problem-preview?q=nonexistent_xyz_999'), r2)
   assert.equal(o2.status, 200)
   assert.equal(j2().found, false)
-  return `abc485_c statement=${j1().problem.statement.length} chars`
+
+  // Verify lecture note association on cached & note-indexed problems (without leaking <details> spoiler)
+  const { res: r3, json: j3 } = makeRes()
+  await routes.get('/dsh-oi-coach/api/problem-preview')(makeReq('GET', '/dsh-oi-coach/api/problem-preview?q=5313'), r3)
+  assert.equal(j3().found, true)
+  assert.ok(j3().problem.lectureNote?.file?.includes('pj11'), `Expected pj11 lectureNote for 5313, got ${JSON.stringify(j3().problem.lectureNote)}`)
+
+  const { res: r4, json: j4 } = makeRes()
+  await routes.get('/dsh-oi-coach/api/problem-preview')(makeReq('GET', '/dsh-oi-coach/api/problem-preview?q=5162'), r4)
+  assert.equal(j4().found, true)
+  assert.ok(j4().problem.lectureNote?.file?.includes('pj05'), 'Expected pj05 lectureNote for 5162')
+  assert.ok(!j4().problem.statement.includes('sz_x'), 'Preview abstract must NOT leak <details> solution formula!')
+
+  const { res: r5, json: j5 } = makeRes()
+  await routes.get('/dsh-oi-coach/api/problem-preview')(makeReq('GET', '/dsh-oi-coach/api/problem-preview?q=abc484_d'), r5)
+  assert.equal(j5().found, true)
+  assert.ok(j5().problem.lectureNote?.file?.includes('abc484'), 'Expected abc484 lectureNote for abc484_d')
+  assert.ok(!j5().problem.statement.includes('cnt[A'), 'Preview abstract for abc484_d must NOT leak solution formula!')
+
+  // Prose constants like 2000 or 1005 must NOT false-match as problem IDs
+  const { res: r6, json: j6 } = makeRes()
+  await routes.get('/dsh-oi-coach/api/problem-preview')(makeReq('GET', '/dsh-oi-coach/api/problem-preview?q=N%3D2000'), r6)
+  assert.equal(j6().found, false, 'Prose constant 2000 must not false-match a lecture problem ID!')
+
+  // Parenthetical alias ID (abc174_e -> pj11) & multi-item checklist ID (abc476_b -> abc476) also match
+  const { res: r7, json: j7 } = makeRes()
+  await routes.get('/dsh-oi-coach/api/problem-preview')(makeReq('GET', '/dsh-oi-coach/api/problem-preview?q=abc174_e'), r7)
+  assert.equal(j7().found, true)
+  assert.ok(j7().problem.lectureNote?.file?.includes('pj11'), 'Expected pj11 lectureNote for alias abc174_e')
+
+  const { res: r8, json: j8 } = makeRes()
+  await routes.get('/dsh-oi-coach/api/problem-preview')(makeReq('GET', '/dsh-oi-coach/api/problem-preview?q=abc476_b'), r8)
+  assert.equal(j8().found, true)
+  assert.ok(j8().problem.lectureNote?.file?.includes('abc476'), 'Expected abc476 lectureNote for multi-item abc476_b')
+  return `abc485_c=${j1().problem.statement.length} chars, lectureNote link & no-false-match OK`
 })
 
 await test('GET /dsh-oi-coach/math-lab serves valid HTML & embedded JS has zero syntax errors', async () => {
@@ -802,11 +892,14 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
   assert.ok(openBrowserBtn, 'Missing open in browser button')
   await openBrowserBtn.props.onClick()
 
-  // Switch to 专题建模快练 subtab
+  // Switch to 专题建模快练 subtab -> verify all 10 Ren teacher modeling drills render
   findButtons(tree).find((b) => flattenText(b).includes('专题建模快练')).props.onClick()
   tree = slots.main()
   const drillsText = flattenText(tree)
   assert.ok(drillsText.includes('绝对值与前后缀拆解') && drillsText.includes('二分答案转判定'), 'Modeling drills missing')
+  for (let k = 1; k <= 10; k++) {
+    assert.ok(drillsText.includes(`抓手 ${k} ·`), `Missing Ren teacher modeling drill #${k}`)
+  }
 
   // Switch to primers subtab and answer a question
   findButtons(tree).find((b) => flattenText(b).includes('手算微卡片')).props.onClick()
@@ -933,7 +1026,7 @@ if (!SKIP_LIVE_AGY) {
     const { res, out, json } = makeRes()
     await routes.get('/dsh-oi-coach/api/agy-chat')(
       makeReq('POST', '/dsh-oi-coach/api/agy-chat', {
-        message: '教练，我要补这道题：【abc485_c】（平台：AtCoder，轨迹：TLE→TLE→TLE）。请严格按【代数建模 5 步锁步】从第 1 步开始，绝不剧透算法方向，绝不给代码。',
+        message: '教练，我要补这道题：【abc485_c】（平台：AtCoder，轨迹：TLE→TLE→TLE）。请严格按【任氏建模 5 步锁步】从第 1 步开始，绝不剧透算法方向，绝不给代码。',
         model: 'gemini-4-neon-high',
         mode: 'coach',
         ephemeral: true,
