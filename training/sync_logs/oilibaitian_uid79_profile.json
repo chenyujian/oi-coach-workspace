@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-24T15:36:59.217444+00:00",
+  "fetchedAt": "2026-11-24T17:24:45.026280+00:00",
   "udoc": {
     "_id": 79,
     "uname": "陈彦旭",
@@ -8,7 +8,7 @@
     "role": "学员",
     "priv": 16842756,
     "regat": "2026-03-15T02:18:17.642Z",
-    "loginat": "2026-11-24T15:36:55.028Z",
+    "loginat": "2026-11-24T17:24:40.316Z",
     "tfa": false,
     "authn": false,
     "displayName": "大香蕉917825",
@@ -16,8 +16,8 @@
     "studentId": ""
   },
   "sdoc": {
-    "createAt": "2026-11-24T15:36:55.031Z",
-    "updateAt": "2026-11-24T15:36:55.031Z"
+    "createAt": "2026-11-24T17:24:40.319Z",
+    "updateAt": "2026-11-24T17:24:40.319Z"
   },
   "tags": [
     [
@@ -3162,188 +3162,11 @@
   ],
   "extraPdocs": [
     {
-      "pid": "2667",
-      "title": "CF25D Roads not only in Berland",
-      "tag": []
-    },
-    {
-      "pid": "1504",
-      "title": "[GESP202512 八级] 猫和老鼠",
-      "tag": []
-    },
-    {
-      "pid": "2234",
-      "title": "[ABC282D] Make Bipartite 2",
-      "tag": []
-    },
-    {
-      "pid": "2659",
-      "title": "[USACO01OPEN] 垃圾陷阱",
-      "tag": [
-        "背包",
-        "USACO"
-      ]
-    },
-    {
-      "pid": "1631",
-      "title": "[USACO11NOV] Tile Exchanging S",
-      "tag": []
-    },
-    {
-      "pid": "2604",
-      "title": "[GESP七级模拟]魔法括号串",
-      "tag": [
-        "线性DP",
-        "组合数学",
-        "GESP七级"
-      ]
-    },
-    {
-      "pid": "2605",
-      "title": "[GESP七级模拟]旅行",
-      "tag": [
-        "拓扑排序",
-        "线性DP",
-        "GESP七级"
-      ]
-    },
-    {
-      "pid": "865",
-      "title": "[IOI 1999] 花店橱窗布置",
-      "tag": [
-        "线性DP"
-      ]
-    },
-    {
-      "pid": "2542",
-      "title": "[GESP七级模拟]乘积末尾的零",
-      "tag": [
-        "背包",
-        "GESP七级"
-      ]
-    },
-    {
       "pid": "673",
       "title": "[GESP202409 七级] 矩阵移动",
       "tag": [
         "线性DP",
         "GESP七级"
-      ]
-    },
-    {
-      "pid": "1558",
-      "title": "[ABC315E] Prerequisites",
-      "tag": [
-        "DFS",
-        "AtCoder"
-      ]
-    },
-    {
-      "pid": "2413",
-      "title": "*",
-      "tag": []
-    },
-    {
-      "pid": "2414",
-      "title": "*",
-      "tag": []
-    },
-    {
-      "pid": "1941",
-      "title": "[USACO16FEB] Milk Pails S",
-      "tag": [
-        "BFS",
-        "USACO"
-      ]
-    },
-    {
-      "pid": "2181",
-      "title": "最佳围栏(Fence)",
-      "tag": [
-        "双指针"
-      ]
-    },
-    {
-      "pid": "2182",
-      "title": "机器人路径（robot）",
-      "tag": [
-        "组合数学"
-      ]
-    },
-    {
-      "pid": "804",
-      "title": "蜘蛛",
-      "tag": []
-    },
-    {
-      "pid": "2024",
-      "title": "[BalticOI 2011] Switch the Lamp On (Day1)",
-      "tag": []
-    },
-    {
-      "pid": "2137",
-      "title": "宿舍夜查（art）",
-      "tag": [
-        "模拟"
-      ]
-    },
-    {
-      "pid": "1099",
-      "title": "汉诺塔问题",
-      "tag": []
-    },
-    {
-      "pid": "1024",
-      "title": "[蓝桥杯 2024 省 A] 训练士兵",
-      "tag": []
-    },
-    {
-      "pid": "2070",
-      "title": "字符串相等(string)",
-      "tag": [
-        "字符串处理"
-      ]
-    },
-    {
-      "pid": "2071",
-      "title": "键盘又坏了(email)",
-      "tag": [
-        "字符串处理",
-        "模拟"
-      ]
-    },
-    {
-      "pid": "2039",
-      "title": "画布(Canvas)",
-      "tag": [
-        "模拟"
-      ]
-    },
-    {
-      "pid": "2040",
-      "title": "靴子(Boots)",
-      "tag": [
-        "线性DP"
-      ]
-    },
-    {
-      "pid": "1091",
-      "title": "【23年第四题】排座位(seats.cpp )",
-      "tag": []
-    },
-    {
-      "pid": "1243",
-      "title": "[AHOI2008] 紧急集合 / 聚会",
-      "tag": [
-        "LCA"
-      ]
-    },
-    {
-      "pid": "2200",
-      "title": "[COCI 2019/2020 #5] Putovanje",
-      "tag": [
-        "树上差分",
-        "COCI"
       ]
     },
     {
@@ -3364,11 +3187,188 @@
       ]
     },
     {
+      "pid": "804",
+      "title": "蜘蛛",
+      "tag": []
+    },
+    {
+      "pid": "865",
+      "title": "[IOI 1999] 花店橱窗布置",
+      "tag": [
+        "线性DP"
+      ]
+    },
+    {
+      "pid": "1024",
+      "title": "[蓝桥杯 2024 省 A] 训练士兵",
+      "tag": []
+    },
+    {
+      "pid": "1091",
+      "title": "【23年第四题】排座位(seats.cpp )",
+      "tag": []
+    },
+    {
+      "pid": "1099",
+      "title": "汉诺塔问题",
+      "tag": []
+    },
+    {
+      "pid": "1243",
+      "title": "[AHOI2008] 紧急集合 / 聚会",
+      "tag": [
+        "LCA"
+      ]
+    },
+    {
+      "pid": "1504",
+      "title": "[GESP202512 八级] 猫和老鼠",
+      "tag": []
+    },
+    {
+      "pid": "1558",
+      "title": "[ABC315E] Prerequisites",
+      "tag": [
+        "DFS",
+        "AtCoder"
+      ]
+    },
+    {
+      "pid": "1631",
+      "title": "[USACO11NOV] Tile Exchanging S",
+      "tag": []
+    },
+    {
       "pid": "1939",
       "title": "三倍经验",
       "tag": [
         "线性DP"
       ]
+    },
+    {
+      "pid": "1941",
+      "title": "[USACO16FEB] Milk Pails S",
+      "tag": [
+        "BFS",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "2024",
+      "title": "[BalticOI 2011] Switch the Lamp On (Day1)",
+      "tag": []
+    },
+    {
+      "pid": "2039",
+      "title": "画布(Canvas)",
+      "tag": [
+        "模拟"
+      ]
+    },
+    {
+      "pid": "2040",
+      "title": "靴子(Boots)",
+      "tag": [
+        "线性DP"
+      ]
+    },
+    {
+      "pid": "2070",
+      "title": "字符串相等(string)",
+      "tag": [
+        "字符串处理"
+      ]
+    },
+    {
+      "pid": "2071",
+      "title": "键盘又坏了(email)",
+      "tag": [
+        "字符串处理",
+        "模拟"
+      ]
+    },
+    {
+      "pid": "2137",
+      "title": "宿舍夜查（art）",
+      "tag": [
+        "模拟"
+      ]
+    },
+    {
+      "pid": "2181",
+      "title": "最佳围栏(Fence)",
+      "tag": [
+        "双指针"
+      ]
+    },
+    {
+      "pid": "2182",
+      "title": "机器人路径（robot）",
+      "tag": [
+        "组合数学"
+      ]
+    },
+    {
+      "pid": "2200",
+      "title": "[COCI 2019/2020 #5] Putovanje",
+      "tag": [
+        "树上差分",
+        "COCI"
+      ]
+    },
+    {
+      "pid": "2234",
+      "title": "[ABC282D] Make Bipartite 2",
+      "tag": []
+    },
+    {
+      "pid": "2413",
+      "title": "*",
+      "tag": []
+    },
+    {
+      "pid": "2414",
+      "title": "*",
+      "tag": []
+    },
+    {
+      "pid": "2542",
+      "title": "[GESP七级模拟]乘积末尾的零",
+      "tag": [
+        "背包",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "2604",
+      "title": "[GESP七级模拟]魔法括号串",
+      "tag": [
+        "线性DP",
+        "组合数学",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "2605",
+      "title": "[GESP七级模拟]旅行",
+      "tag": [
+        "拓扑排序",
+        "线性DP",
+        "GESP七级"
+      ]
+    },
+    {
+      "pid": "2659",
+      "title": "[USACO01OPEN] 垃圾陷阱",
+      "tag": [
+        "背包",
+        "USACO"
+      ]
+    },
+    {
+      "pid": "2667",
+      "title": "CF25D Roads not only in Berland",
+      "tag": []
     }
   ]
 }
