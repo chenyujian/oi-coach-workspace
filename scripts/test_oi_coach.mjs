@@ -115,6 +115,7 @@ await test('Route & tool registration completeness', async () => {
     '/dsh-oi-coach/api/chat',
     '/dsh-oi-coach/api/chat-delete',
     '/dsh-oi-coach/api/save-card',
+    '/dsh-oi-coach/api/quiz-progress',
     '/dsh-oi-coach/api/open-math-lab',
     '/dsh-oi-coach/api/open-oj',
     '/dsh-oi-coach/api/problem-preview',
@@ -711,7 +712,30 @@ await test('Chat history APIs (list, get, delete, path traversal rejection) & PO
       }
     }
 
-    return 'history CRUD + .env.local PIN parse + parent isolation 403/200 OK'
+    // Verify POST /api/quiz-progress persists GESP8 interactive quiz answers & first-attempt telemetry to training/quiz_progress.json
+    const { res: rQz1, out: oQz1 } = makeRes()
+    await tmpRoutes.get('/dsh-oi-coach/api/quiz-progress')(
+      makeReq('POST', '/dsh-oi-coach/api/quiz-progress', {
+        answers: { 'oop-1': 0 },
+        event: { qid: 'oop-1', picked: 0, correct: false },
+      }),
+      rQz1,
+    )
+    assert.equal(oQz1.status, 200)
+    const { res: rQz2, out: oQz2 } = makeRes()
+    await tmpRoutes.get('/dsh-oi-coach/api/quiz-progress')(
+      makeReq('POST', '/dsh-oi-coach/api/quiz-progress', {
+        answers: { 'oop-1': 1 },
+        event: { qid: 'oop-1', picked: 1, correct: true },
+      }),
+      rQz2,
+    )
+    assert.equal(oQz2.status, 200)
+    const qzSaved = JSON.parse(await fs.readFile(path.join(tmpDir, 'training', 'quiz_progress.json'), 'utf8'))
+    assert.equal(qzSaved.gesp8Answers['oop-1'], 1, 'Latest answer should be updated to 1')
+    assert.equal(qzSaved.firstAttempts['oop-1'].correct, false, 'First-attempt miss must be preserved for parent diagnosis')
+
+    return 'history CRUD + quiz_progress + .env.local PIN parse + parent isolation 403/200 OK'
   } finally {
     await fs.rm(tmpDir, { recursive: true, force: true })
   }

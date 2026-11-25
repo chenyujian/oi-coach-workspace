@@ -1281,8 +1281,10 @@ export function apply(ctx, config) {
         const oldHead = String((await execGit(['rev-parse', 'HEAD'], 8_000)).stdout || '').trim()
 
         if (process.platform !== 'darwin') {
-          // Windows 孩子端：仅自动打包上传 chat_history 与 mistakes（绝不误提交其他文件导致冲突），并自动拉取家长新讲义/规则
-          const childPaths = ['training/chat_history', 'mistakes'].filter((rel) => existsSync(path.join(workspace, rel)))
+          // Windows 孩子端：仅自动打包上传 chat_history、mistakes 与闯关答题记录 quiz_progress.json，并自动拉取家长新讲义/规则
+          const childPaths = ['training/chat_history', 'mistakes', 'training/quiz_progress.json'].filter((rel) =>
+            existsSync(path.join(workspace, rel)),
+          )
           if (childPaths.length > 0) {
             const stOut = String((await execGit(['status', '--porcelain', '--', ...childPaths], 10_000)).stdout || '').trim()
             if (stOut) {
@@ -1410,10 +1412,11 @@ export function apply(ctx, config) {
 
   async function loadOverviewData(includeAgy = true) {
     const syncDir = path.join(workspace, 'training/sync_logs')
-    const [allSubs, solved, oiRecords, solvedMd, unsolvedCleaned, mistakeCards, courseNotes, mOi, mLg, mHb, mAc, agyStatus] = await Promise.all([
+    const [allSubs, solved, oiRecords, quizProg, solvedMd, unsolvedCleaned, mistakeCards, courseNotes, mOi, mLg, mHb, mAc, agyStatus] = await Promise.all([
       readJsonFile(path.join(syncDir, 'all_submissions_timeline.json')),
       readJsonFile(path.join(syncDir, 'solved_timeline.json')),
       readJsonFile(path.join(syncDir, 'oilibaitian_uid79_records.json')),
+      readJsonFile(path.join(workspace, 'training', 'quiz_progress.json')),
       fs.readFile(path.join(workspace, 'profile', 'solved_timeline.md'), 'utf8').catch(() => ''),
       parseCleanedUnsolved(workspace),
       listMistakeCards(workspace),
@@ -1435,6 +1438,7 @@ export function apply(ctx, config) {
     )
     data.courseNotes = courseNotes
     data.gesp8 = buildGesp8SprintStats(oiRecords || [], solved || [])
+    data.quizProgress = quizProg || null
     if (includeAgy) data.agy = agyStatus
     return data
   }
@@ -2625,6 +2629,48 @@ export function apply(ctx, config) {
     }
   }
 
+  async function handleQuizProgress(req, res) {
+    if ((req.method || 'GET').toUpperCase() !== 'POST') {
+      return sendJson(res, { ok: false, error: '仅支持 POST' }, 405)
+    }
+    try {
+      const body = await readNodeJsonBody(req, 64 * 1024)
+      const progPath = path.join(workspace, 'training', 'quiz_progress.json')
+      await fs.mkdir(path.dirname(progPath), { recursive: true })
+      const existing = (await readJsonFile(progPath)) || { gesp8Answers: {}, firstAttempts: {}, history: [] }
+      const incoming = body?.answers && typeof body.answers === 'object' ? body.answers : {}
+      const cleanAnswers = { ...(existing.gesp8Answers || {}) }
+      for (const [k, v] of Object.entries(incoming)) {
+        if (/^[a-z0-9_-]{1,32}$/i.test(k) && Number.isInteger(v) && v >= 0 && v <= 9) {
+          cleanAnswers[k] = v
+        }
+      }
+      const firstAttempts = { ...(existing.firstAttempts || {}) }
+      const history = Array.isArray(existing.history) ? existing.history.slice(-499) : []
+      const ev = body?.event
+      const nowIso = new Date().toISOString()
+      if (ev && typeof ev === 'object' && /^[a-z0-9_-]{1,32}$/i.test(String(ev.qid || '')) && Number.isInteger(ev.picked)) {
+        const qid = String(ev.qid)
+        const correct = Boolean(ev.correct)
+        if (!(qid in firstAttempts)) {
+          firstAttempts[qid] = { picked: ev.picked, correct, ts: nowIso }
+        }
+        history.push({ ts: nowIso, qid, picked: ev.picked, correct })
+      }
+      const nextDoc = {
+        updatedAt: nowIso,
+        gesp8Answers: cleanAnswers,
+        firstAttempts,
+        history,
+      }
+      await fs.writeFile(progPath, JSON.stringify(nextDoc, null, 2) + '\n', 'utf8')
+      scheduleAutoSync('quiz-progress', 10_000)
+      return sendJson(res, { ok: true, count: Object.keys(cleanAnswers).length }, 200)
+    } catch (err) {
+      return sendJson(res, { ok: false, error: err?.message || String(err) }, 400)
+    }
+  }
+
   async function handleSaveCard(req, res) {
     if ((req.method || 'GET').toUpperCase() !== 'POST') {
       return sendJson(res, { ok: false, error: '仅支持 POST' }, 405)
@@ -2652,6 +2698,7 @@ export function apply(ctx, config) {
       [`${API_BASE}/chat`, handleSingleChat],
       [`${API_BASE}/chat-delete`, handleDeleteChatPost],
       [`${API_BASE}/save-card`, handleSaveCard],
+      [`${API_BASE}/quiz-progress`, handleQuizProgress],
       [`${API_BASE}/open-math-lab`, handleOpenMathLab],
       [`${API_BASE}/open-oj`, handleOpenOj],
       [`${API_BASE}/problem-preview`, handleProblemPreview],

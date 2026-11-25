@@ -891,12 +891,24 @@ window.__ModuleLoader__.load({
             // ignore doc fallback failure
           }
         }
+        const serverQuiz = ovRes.data?.quizProgress?.gesp8Answers || {}
+        const localQuiz = state.gesp8QuizAnswers || {}
+        const mergedQuiz = { ...serverQuiz, ...localQuiz }
+        const hasUnsyncedLocalQuiz = Object.keys(localQuiz).some((k) => serverQuiz[k] !== localQuiz[k])
+        if (hasUnsyncedLocalQuiz) {
+          fetchJson(`${API}/quiz-progress`, {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ answers: mergedQuiz }),
+          }).catch(() => {})
+        }
         setState({
           loading: false,
           data: ovRes.data,
           chatHistory: Array.isArray(chatsRes?.chats) ? chatsRes.chats : state.chatHistory,
           syncStatus: nextSync,
           fallbackSolvedPids: nextFallbackPids,
+          gesp8QuizAnswers: mergedQuiz,
         })
       } catch (err) {
         setState({ loading: false, error: err?.message || String(err) })
@@ -1330,7 +1342,7 @@ window.__ModuleLoader__.load({
       }
     }
 
-    function answerGesp8Quiz(qid, idx) {
+    function answerGesp8Quiz(qid, idx, isCorrect = false) {
       const next = { ...(state.gesp8QuizAnswers || {}), [qid]: idx }
       setState({ gesp8QuizAnswers: next })
       try {
@@ -1340,6 +1352,11 @@ window.__ModuleLoader__.load({
       } catch {
         // ignore storage quota
       }
+      fetchJson(`${API}/quiz-progress`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ answers: next, event: { qid, picked: idx, correct: Boolean(isCorrect) } }),
+      }).catch(() => {})
     }
 
     async function openOjUrl(url, label = '题目页') {
@@ -4174,7 +4191,7 @@ window.__ModuleLoader__.load({
                                     : isChosen
                                       ? { borderColor: C.err, color: C.err }
                                       : {},
-                                  onClick: () => answerGesp8Quiz(q.id, oIdx),
+                                  onClick: () => answerGesp8Quiz(q.id, oIdx, oIdx === q.ans),
                                 },
                                 opt,
                               )
@@ -4460,7 +4477,7 @@ window.__ModuleLoader__.load({
                                     : isChosen
                                       ? { borderColor: C.err, color: C.err }
                                       : {},
-                                  onClick: () => answerGesp8Quiz(q.id, oIdx),
+                                  onClick: () => answerGesp8Quiz(q.id, oIdx, oIdx === q.ans),
                                 },
                                 opt,
                               )
