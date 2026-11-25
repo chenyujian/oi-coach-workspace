@@ -1,0 +1,19 @@
+{
+  "platform": "信奥李拜天",
+  "pid": "787",
+  "title": "787 [GESP样题 八级] 小杨的旅游",
+  "url": "https://www.oilibaitian.cn/p/787",
+  "tags": [
+    "最短路",
+    "LCA",
+    "GESP八级"
+  ],
+  "is_objective": false,
+  "statement": "\n\n## 题目描述\n\n小杨准备前往 B 国旅游。\n\nB 国有 $n$ 座城市，这 $n$ 座城市依次以 $1$ 至 $n$ 编号。城市之间由 $n - 1$ 条双向道路连接，任意两座城市之间均可达（即任意两座城市之间存在可达的路径）。\n\n小杨可以通过双向道路在城市之间移动，通过一条双向道路需要 $1$ 单位时间。\n\nB 国城市中有 $k$ 座城市设有传送门。设有传送门的城市的编号依次为 $b_1, b_2, \\cdots, b_k$。小杨可以从任意一座设有传送门的城市花费 $0$ 单位时间前往另一座设有传送门的城市。\n\n注：如果两座设有传送门的城市之间存在双向道路，那么小杨可以选择通过双向道路移动，也可以选择通过传送门传送。\n\n小杨计划在 B 国旅游 $q$ 次。第 $i$ 次旅游（$1 \\le i \\le q$），⼩杨计划从编号为 $u_i$ 的城市前往编号为 $v_i$ 的城市，小杨希望你能求出所需要的最短时间。\n\n## 输入格式\n\n第一行包含三个正整数 $n, k, q$，分别表示 B 国的城市数量，设有传送门的城市数量，以及小杨计划在 B 国旅游的次数。  \n接下来 $n - 1$ 行，每行包含两个正整数 $x_i, y_i$，表示一条双向道路连接的两座城市的编号。  \n第 $n + 1$ 行包含 $k$ 个正整数，表示设有传送门的城市的编号。  \n接下来 $q$ 行，每行包含两个正整数 $u_i, v_i$，表示小杨第 $i$ 次旅游行程的起点城市编号与终点城市编号。\n\n## 输出格式\n\n输出共 $q$ 行。第 $i$ 行（$1 \\leq i \\leq q$）输出一个非负整数，表示小杨计划第 $i$ 次旅游从编号为 $u_i$ 的城市前往编号为 $v_i$ 的城市所需要的最短时间。\n\n## 输入输出样例 #1\n\n### 输入 #1\n\n```\n7 2 1\n5 7\n3 6\n2 3\n1 5\n5 4\n1 2\n7 4\n3 7\n```\n\n### 输出 #1\n\n```\n4\n```\n\n## 输入输出样例 #2\n\n### 输入 #2\n\n```\n5 0 3\n2 3\n5 1\n5 2\n1 4\n4 5\n1 4\n4 3\n```\n\n### 输出 #2\n\n```\n2\n1\n4\n```\n\n## 说明/提示\n\n| 子任务 | 分值 | $n \\leq$ | $k \\leq$ | $q \\leq$ |\n|:-: | :-: | :-: | :-: | :-:|\n| $1$ | $30$ | $500$ | $500$ | $1$ |\n| $2$ | $30$ | $2 \\times 10^5$ | $0$ | $2 \\times 10^5$ |\n| $3$ | $40$ | $2 \\times 10^5$ | $2 \\times 10^5$ | $2 \\times 10^5$ |\n\n对全部的测试数据，$1 \\leq n \\leq 2 \\times 10^5$，$0 \\leq k \\leq n$，$1 \\leq x_i, y_i, u_i, v_i \\leq n$，$u_i \\neq v_i$。",
+  "attempts": 5,
+  "best_score": 100,
+  "trajectory": "RE→CE→WA→AC→AC",
+  "latest_verdict": "AC",
+  "latest_score": 100,
+  "latest_code": "#include<bits/stdc++.h>\r\n#define int long long\r\nusing namespace std;\r\nvector<int>v[222222];\r\nint f[222222],d[222222],vis[222222],di[222222];\r\nint dp[555555][22];\r\nvoid dfs(int p,int g,int fa){\r\n\td[p]=g;\r\n\tdp[p][0]=fa;\r\n\tfor(int i=1;i<=20;i++){\r\n\t\tdp[p][i]=dp[dp[p][i-1]][i-1];\r\n\t}\r\n\tfor(int i=0;i<v[p].size();i++){\r\n\t\tif(v[p][i]!=fa){\r\n\t\t\tf[v[p][i]]=p;\r\n\t\t\tdfs(v[p][i],g+1,p);\r\n\t\t}\r\n\t}\r\n}\r\nint lca(int x,int y){\r\n\tif(d[x]<d[y]){\r\n\t\tswap(x,y);\r\n\t}\r\n\tfor(int i=20;i>=0;i--){\r\n\t\tif(d[dp[x][i]]>=d[y]){\r\n\t\t\tx=dp[x][i];\r\n\t\t}\r\n\t}\r\n\tif(x==y){\r\n\t\treturn d[x];\r\n\t}\r\n\tfor(int i=20;i>=0;i--){\r\n\t\tif(dp[x][i]!=dp[y][i]){\r\n\t\t\tx=dp[x][i];\r\n\t\t\ty=dp[y][i];\r\n\t\t}\r\n\t} \r\n\treturn d[dp[x][0]];\r\n}\r\nint dis(int x,int y){\r\n\treturn d[x]+d[y]-2*lca(x,y);\r\n} \r\nsigned main(){\r\n\tios::sync_with_stdio(0);cin.tie(0);cout.tie(0);\r\n\tint n,k,qq;\r\n\tcin>>n>>k>>qq;\r\n\tfor(int i=1;i<n;i++){\r\n\t\tint x,y;\r\n\t\tcin>>x>>y;\r\n\t\tv[x].push_back(y);\r\n\t\tv[y].push_back(x);\r\n\t}\r\n\tdfs(1,1,0);\r\n\tqueue<int>q;\r\n\tfor(int i=1;i<=k;i++){\r\n\t\tint x;\r\n\t\tcin>>x;\r\n\t\tvis[x]=1;\r\n\t\tq.push(x);\r\n\t}\r\n\twhile(!q.empty()){\r\n\t\tint x=q.front();\r\n\t\tq.pop();\r\n\t\tfor(int i=0;i<v[x].size();i++){\r\n\t\t\tif(vis[v[x][i]]==0){\r\n\t\t\t\tq.push(v[x][i]);\r\n\t\t\t\tvis[v[x][i]]=1;\r\n\t\t\t\tdi[v[x][i]]=di[x]+1;\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n\twhile(qq--){\r\n\t\tint x,y;\r\n\t\tcin>>x>>y;\r\n\t\tif(k==0){\r\n\t\t\tcout<<dis(x,y)<<endl;\r\n\t\t\tcontinue;\r\n\t\t}\r\n\t\tcout<<min(dis(x,y),di[x]+di[y])<<endl;\r\n\t}\r\n    return 0;\r\n}\r\n"
+}

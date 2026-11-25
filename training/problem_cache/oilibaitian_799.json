@@ -1,0 +1,19 @@
+{
+  "platform": "信奥李拜天",
+  "pid": "799",
+  "title": "799 [GESP202503 八级] 割裂",
+  "url": "https://www.oilibaitian.cn/p/799",
+  "tags": [
+    "LCA",
+    "树上差分",
+    "GESP八级"
+  ],
+  "is_objective": false,
+  "statement": "\n## 题目描述\n\n小杨有一棵包含 $n$ 个节点的树，其中节点的编号从 1 到 $n$。\n\n小杨设置了一个好点对 $\\{\\langle u_1, v_1 \\rangle, \\langle u_2, v_2 \\rangle, \\dots, \\langle u_a, v_a \\rangle\\}$ 和一个坏点对 $\\langle b_u, b_v \\rangle$。一个节点能被删除，当且仅当：\n\n- 删除该节点后对于所有的 $1 \\leq i \\leq a$，好点对 $u_i$ 和 $v_i$ 仍然连通；\n- 删除该节点后坏点对 $b_u$ 和 $b_v$ 不连通。\n\n如果点对中的任意一个节点被删除，其视为不连通。\n\n小杨想知道，还有多少个节点能被删除。\n\n## 输入格式\n\n第一行包含两个非负整数 $n$, $a$，含义如下题面所示。\n\n接下来 $n - 1$ 行，每行包含两个正整数 $x_i, y_i$，代表存在一条连接节点 $x_i$ 和 $y_i$ 的边；\n\n之后 $a$ 行，每行包含两个正整数 $u_i, v_i$，代表一个好点对 $\\langle u_i, v_i \\rangle$；\n\n最后一行包含两个正整数 $b_u, b_v$，代表坏点对 $\\langle b_u, b_v \\rangle$。\n\n## 输出格式\n\n输出一个非负整数，代表删除的节点个数。\n\n## 输入输出样例 #1\n\n### 输入 #1\n\n```\n6 2\n1 3\n1 5\n3 6\n3 2\n5 4\n5 4\n5 3\n2 6\n```\n\n### 输出 #1\n\n```\n2\n```\n\n## 说明/提示\n\n| 子任务编号 | 分值 | $n$ | $a$ |\n|:-:|:-:|:-:|:-:|\n| 1          | $20$  | $= 10$     | $= 0$      |\n| 2          | $20$  | $\\leq 100$ | $\\leq 100$ |\n| 3          | $60$  | $\\leq 10^6$ | $\\leq 10^5$ |\n\n对于全部数据，保证有 $1 \\leq n \\leq 10^6$, $0 \\leq a \\leq 10^5$, $u_i \\neq v_i$, $b_u \\neq b_v$。",
+  "attempts": 4,
+  "best_score": 100,
+  "trajectory": "RE→RE→WA→AC",
+  "latest_verdict": "AC",
+  "latest_score": 100,
+  "latest_code": "#include<bits/stdc++.h>\r\n#define int long long\r\nusing namespace std;\r\nvector<int>v[1111111];\r\nint f[1111111],d[1111111];\r\nint dp[1111111][22],vis[1111111];\r\nint fff[1111111],ffff[1111111];\r\nint aa[1111111],bb[1111111];\r\nvoid dfs(int p,int g,int fa){\r\n\tdp[p][0]=fa;\r\n\td[p]=g;\r\n\tfor(int i=1;i<=20;i++){\r\n\t\tdp[p][i]=dp[dp[p][i-1]][i-1];\r\n\t}\r\n\tfor(int i=0;i<v[p].size();i++){\r\n\t\tif(v[p][i]!=fa){\r\n\t\t\tf[v[p][i]]=p;\r\n\t\t\tdfs(v[p][i],g+1,p);\r\n\t\t}\r\n\t}\r\n}\r\nint ff(int p){\r\n\tint x=aa[p];\r\n\tfor(int i=0;i<v[p].size();i++){\r\n\t\tif(vis[v[p][i]]==0){\r\n\t\t\tvis[v[p][i]]=1;\r\n\t\t\tx+=ff(v[p][i]);\r\n\t\t}\r\n\t}\r\n\treturn fff[p]=x;\r\n}\r\nint fffff(int p){\r\n\tint x=bb[p];\r\n\tfor(int i=0;i<v[p].size();i++){\r\n\t\tif(vis[v[p][i]]==0){\r\n\t\t\tvis[v[p][i]]=1;\r\n\t\t\tx+=fffff(v[p][i]);\r\n\t\t}\r\n\t}\r\n\treturn ffff[p]=x;\r\n}\r\nint lca(int x,int y){\r\n\tif(d[x]<d[y]){\r\n\t\tswap(x,y);\r\n\t}\r\n\tfor(int i=20;i>=0;i--){\r\n\t\tif(d[dp[x][i]]>=d[y]){\r\n\t\t\tx=dp[x][i];\r\n\t\t}\r\n\t}\r\n\tif(x==y){\r\n\t\treturn x;\r\n\t}\r\n\tfor(int i=20;i>=0;i--){\r\n\t\tif(dp[x][i]!=dp[y][i]){\r\n\t\t\tx=dp[x][i];\r\n\t\t\ty=dp[y][i];\r\n\t\t}\r\n\t}    \r\n\treturn dp[x][0];\r\n}\r\nsigned main(){\r\n\tios::sync_with_stdio(0);cin.tie(0);cout.tie(0);\r\n\tint n,m;\r\n\tcin>>n>>m;\r\n\tfor(int i=1;i<n;i++){\r\n\t\tint x,y;\r\n\t\tcin>>x>>y;\r\n\t\tv[x].push_back(y);\r\n\t\tv[y].push_back(x);\r\n\t}\r\n\tdfs(1,0,0);\r\n\tfor(int i=1;i<=m;i++){\r\n\t\tint x,y;\r\n\t\tcin>>x>>y;\r\n\t\taa[x]+=1;\r\n\t\taa[y]+=1;\r\n\t\taa[f[lca(x,y)]]-=1;\r\n\t\taa[lca(x,y)]-=1;\r\n\t}\r\n\tint x,y;\r\n\tcin>>x>>y;\r\n\tbb[x]++;\r\n\tbb[y]++;\r\n\tbb[f[lca(x,y)]]--;\r\n\tbb[lca(x,y)]--;\r\n\tvis[1]=1;\r\n\tff(1);\r\n\tmemset(vis,0,sizeof(vis));\r\n\tvis[1]=1;\r\n\tfffff(1);\r\n\tint ans=0;\r\n\tfor(int i=1;i<=n;i++){\r\n//\t\tcout<<fff[i]<<\" \"<<ffff[i]<<endl;\r\n\t\tif(fff[i]==0&&ffff[i]>0){\r\n\t\t\tans++;\r\n\t\t}\r\n\t}\r\n\tcout<<ans;\r\n    return 0;\r\n}"
+}

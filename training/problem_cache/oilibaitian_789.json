@@ -1,0 +1,18 @@
+{
+  "platform": "信奥李拜天",
+  "pid": "789",
+  "title": "789 [GESP202312 八级] 大量的工作沟通",
+  "url": "https://www.oilibaitian.cn/p/789",
+  "tags": [
+    "LCA",
+    "GESP八级"
+  ],
+  "is_objective": false,
+  "statement": "\n\n## 题目描述\n\n某公司有 $N$ 名员工，编号从 $0$ 至 $N - 1$。其中，除了 $0$ 号员工是老板，其余每名员工都有一个直接领导。我们假设编号为 $i$ 的员工的直接领导是 $f_i$。\n\n该公司有严格的管理制度，每位员工只能受到本人或直接领导或间接领导的管理。具体来说，规定员工 $x$ 可以管理员工 $y$，当且仅当 $x = y$，或 $x = f_y$，或 $x$ 可以管理 $f_y$。特别地，$0$ 号员工老板只能自我管理，无法由其他任何员工管理。\n\n现在，有一些同事要开展合作，他们希望找到一位同事来主持这场合作，这位同事必须能够管理参与合作的所有同事。如果有多名满足这一条件的员工，他们希望找到编号最大的员工。你能帮帮他们吗？\n\n## 输入格式\n\n第一行一个整数 $N$ ，表示员工的数量。\n\n第二行 $N - 1$ 个用空格隔开的非负整数，依次为 $f_1, f_2, \\dots f_{N - 1}$。\n\n第三行一个整数 $Q$ ，表示共有 $Q$ 场合作需要安排。\n\n接下来 $Q$ 行，每行描述一场合作：开头是一个整数 $m$（$2 \\leq m \\leq N$），表示参与本次合作的员工数量；接着是 $m$ 个整数，依次表示参与本次合作的员工编号（保证编号合法且不重复）。\n\n保证公司结构合法，即不存在任意一名员工，其本人是自己的直接或间接领导。\n\n## 输出格式\n\n输出 $Q$ 行，每行一个整数，依次为每场合作的主持人选。\n\n## 输入输出样例 #1\n\n### 输入 #1\n\n```\n5\n0 0 2 2\n3\n2 3 4\n3 2 3 4\n2 1 4\n```\n\n### 输出 #1\n\n```\n2\n2\n0\n```\n\n## 输入输出样例 #2\n\n### 输入 #2\n\n```\n7\n0 1 0 2 1 2\n5\n2 4 6\n2 4 5\n3 4 5 6\n4 2 4 5 6\n2 3 4\n```\n\n### 输出 #2\n\n```\n2\n1\n1\n1\n0\n```\n\n## 说明/提示\n\n**样例解释 1**\n\n对于第一场合作，员工 $3, 4$ 有共同领导 $2$ ，可以主持合作。\n\n对于第二场合作，员工 $2$ 本人即可以管理所有参与者。\n\n对于第三场合作，只有 $0$ 号老板才能管理所有员工。\n\n**数据范围**\n\n对于 $25\\%$ 的测试点，保证 $N \\leq 50$。 \n\n对于 $50\\%$ 的测试点，保证 $N \\leq 300$。\n\n对于所有测试点，保证 $3 \\leq N \\leq 10^5$，$Q \\leq 100$，$m \\leq 10^4$。\n\n\n------------\n2024/2/8 添加一组 hack 数据。\n\n直接领导编号满足 $0 \\le f_i < N$；不保证 $f_i < i$。编号大小不表示管理层级，其他公司结构合法性约定不变。\n",
+  "attempts": 7,
+  "best_score": 100,
+  "trajectory": "WA→WA→WA→WA→WA→WA→AC",
+  "latest_verdict": "AC",
+  "latest_score": 100,
+  "latest_code": "#include<bits/stdc++.h>\r\n#define int long long\r\nusing namespace std;\r\nvector<int>v[111111];\r\nint f[111111],a[111111],d[111111];\r\nint dp[555555][22];\r\nint mf[111111];\r\nvoid dfs(int p,int g,int fa){\r\n\tdp[p][0]=fa;\r\n\td[p]=g;\r\n\tfor(int i=1;i<=20;i++){\r\n\t\tdp[p][i]=dp[dp[p][i-1]][i-1];\r\n\t}\r\n\tmf[p]=max(mf[fa],p);\r\n\tfor(int i=0;i<v[p].size();i++){\r\n\t\tif(v[p][i]!=fa){\r\n\t\t\tf[v[p][i]]=p;\r\n\t\t\tdfs(v[p][i],g+1,p);\r\n\t\t}\r\n\t}\r\n}\r\nint lca(int x,int y){\r\n\tif(d[x]<d[y]){\r\n\t\tswap(x,y);\r\n\t}\r\n\tfor(int i=20;i>=0;i--){\r\n\t\tif(d[dp[x][i]]>=d[y]){\r\n\t\t\tx=dp[x][i];\r\n\t\t}\r\n\t}\r\n\tif(x==y){\r\n\t\treturn x;\r\n\t}\r\n\tfor(int i=20;i>=0;i--){\r\n\t\tif(dp[x][i]!=dp[y][i]){\r\n\t\t\tx=dp[x][i];\r\n\t\t\ty=dp[y][i];\r\n\t\t}\r\n\t}    \r\n\treturn dp[x][0];\r\n}\r\nsigned main(){\r\n\tios::sync_with_stdio(0);cin.tie(0);cout.tie(0);\r\n\tint n;\r\n\tcin>>n;\r\n\tfor(int i=1;i<n;i++){\r\n\t\tint x;\r\n\t\tcin>>x;\r\n\t\tv[x].push_back(i);\r\n\t}\r\n\tmf[0]=0;\r\n\tdfs(0,0,0);\r\n\tint m;\r\n\tcin>>m;\r\n\twhile(m--){\r\n\t\tint g,t;\r\n\t\tcin>>g;\r\n\t\tfor(int i=1;i<=g;i++){\r\n\t\t\tcin>>a[i];\r\n\t\t}\r\n\t\tfor(int i=2;i<=g;i++){\r\n\t\t\tt=lca(a[i-1],a[i]);\r\n\t\t\ta[i]=t;\r\n\t\t}\r\n\t\tif(g==1){\r\n\t\t\tcout<<a[1];\r\n\t\t\tcontinue;\r\n\t\t}\r\n\t\tcout<<mf[t]<<endl;\r\n\t}\r\n    return 0;\r\n}"
+}
