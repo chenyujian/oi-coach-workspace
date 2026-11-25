@@ -326,7 +326,7 @@ await test('GET /api/problem-preview matches by ID, Chinese keyword, and handles
   assert.equal(j10().found, true)
   assert.equal(j10().problem.pid, '1504')
 
-  for (const mockQ of ['1800', 'P15804', '线网建设']) {
+  for (const mockQ of ['1800', 'P15804', '堆石子']) {
     const { res: r11, json: j11 } = makeRes()
     await routes.get('/dsh-oi-coach/api/problem-preview')(makeReq('GET', `/dsh-oi-coach/api/problem-preview?q=${encodeURIComponent(mockQ)}`), r11)
     assert.equal(j11().found, true, `Expected preview match for ${mockQ}`)
@@ -372,7 +372,7 @@ await test('POST /api/open-oj enforces POST (405) & strict URL whitelist, and GE
   }
 
   // Also verify consult_antigravity tool blocks locked mock problem in child session
-  const rawToolOut = await tools.get('consult_antigravity').execute({ prompt: '请给我 P17016 线网建设 的思路' }, {})
+  const rawToolOut = await tools.get('consult_antigravity').execute({ prompt: '请给我 P17017 堆石子 的思路' }, {})
   assert.equal(JSON.parse(rawToolOut).locked, true, 'consult_antigravity must also block unsubmitted black-box mock problem!')
   return 'open-oj whitelist 403 + multi-surface GESP8 spoiler lock OK'
 })
@@ -1028,7 +1028,7 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
   tree = slots.main()
   const gespBoardText = flattenText(tree)
   assert.ok(gespBoardText.includes('80+ 分直免 CSP-S 初赛') && gespBoardText.includes('猫和老鼠') && gespBoardText.includes('生成树计数'), 'GESP8 board missing core P0 problems')
-  assert.ok(!gespBoardText.includes('几何距离 + Kruskal') && !gespBoardText.includes('组合数学 + 逆元'), 'Locked mock cards on GESP8 board leaked algorithm tags!')
+  assert.ok(!gespBoardText.includes('倍增跳步') && !gespBoardText.includes('组合数学 + 逆元'), 'Locked mock cards on GESP8 board leaked algorithm tags!')
   assert.ok(!/\bauto\s+\[[^\]]+\]\s*[:=]/.test(code), 'GESP8 template leaked C++17 structured binding incompatible with GESP C++14!')
   const gespCoachBtn = findButtons(tree).find((b) => flattenText(b).includes('80+ 双保险辅导'))
   assert.ok(gespCoachBtn, 'Missing 80+ 双保险辅导 button on GESP8 board')
@@ -1160,6 +1160,7 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
           ok: true,
           data: {
             ...liveOverviewData,
+            gesp8: undefined,
             isWindows: true,
             totals: { ...liveOverviewData.totals, submissions: 123, uniqueAc: 45, trueUnsolved: 6 },
           },
@@ -1175,6 +1176,12 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
   assert.ok(!winArchiveText.includes('全局诊断报告'), 'Windows child mode leaked parent diagnosis report shortcut!')
   assert.ok(!winArchiveText.includes('Argon'), 'Windows child mode leaked Argon jargon!')
   assert.ok(winArchiveText.includes('全量 123 条提交时间线') && winArchiveText.includes('去重 45 题'), 'DOC_SHORTCUTS counts are not dynamic!')
+  // Verify GESP8 Sprint tab renders FULL content via buildClientFallbackGesp8 even when backend has NOT been restarted (data.gesp8 === undefined)!
+  findButtons(tree).find((b) => flattenText(b).includes('八级冲刺')).props.onClick()
+  tree = slots.main()
+  const fallbackGespText = flattenText(tree)
+  assert.ok(!fallbackGespText.includes('正在加载八级冲刺'), 'GESP8 tab hung on loading when data.gesp8 is undefined!')
+  assert.ok(fallbackGespText.includes('猫和老鼠') && fallbackGespText.includes('已使用内置题库秒开八级冲刺专区'), 'GESP8 client fallback did not render full board')
   findButtons(tree).find((b) => flattenText(b).includes('教练室')).props.onClick()
   tree = slots.main()
   assert.equal(findByType(tree, 'select').length, 0, 'Windows child mode leaked model selector!')

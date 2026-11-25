@@ -1260,6 +1260,13 @@ export function apply(ctx, config) {
       }
       if (changed.some((f) => f === 'plugins/dsh-oi-coach/index.js' || f === 'plugins/dsh-oi-coach/cordis.patch.yml')) {
         syncState.backendUpdated = true
+        try {
+          const cordisYml = path.join(os.homedir(), '.dsh', 'profiles', 'desktop', 'cordis.yml')
+          const nowDate = new Date()
+          await fs.utimes(cordisYml, nowDate, nowDate)
+        } catch {
+          // ignore if host profile path differs
+        }
       }
     } catch {
       // ignore diff error

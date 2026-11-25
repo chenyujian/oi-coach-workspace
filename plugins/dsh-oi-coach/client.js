@@ -764,6 +764,7 @@ window.__ModuleLoader__.load({
       gesp8PackId: 'oop',
       gesp8TplId: 'dijkstra',
       gesp8QuizAnswers: loadSavedGesp8Quiz(),
+      fallbackSolvedPids: ['787', '788', '789', '791', '794', '795', '799', '800', '1505', '1344', '2322'],
       problemSubTab: 'unsolved',
       platformFilter: 'ALL',
       practiceSubTab: 'lab',
@@ -874,11 +875,28 @@ window.__ModuleLoader__.load({
         } else if (nextSync?.lastPullAt) {
           seenPullAt = nextSync.lastPullAt
         }
+        let nextFallbackPids = state.fallbackSolvedPids
+        if (!ovRes.data?.gesp8) {
+          try {
+            const docRes = await fetchJson(`${API}/doc?path=profile/solved_timeline.md`)
+            const merged = new Set(nextFallbackPids)
+            for (const line of String(docRes?.content || '').split(/\r?\n/)) {
+              if (line.includes('信奥李拜天')) {
+                const m = /`(\d{3,5})`/.exec(line)
+                if (m) merged.add(m[1])
+              }
+            }
+            nextFallbackPids = [...merged]
+          } catch {
+            // ignore doc fallback failure
+          }
+        }
         setState({
           loading: false,
           data: ovRes.data,
           chatHistory: Array.isArray(chatsRes?.chats) ? chatsRes.chats : state.chatHistory,
           syncStatus: nextSync,
+          fallbackSolvedPids: nextFallbackPids,
         })
       } catch (err) {
         setState({ loading: false, error: err?.message || String(err) })
@@ -3689,11 +3707,139 @@ window.__ModuleLoader__.load({
       },
     ]
 
-    function Gesp8SprintTab({ data, st }) {
-      const g = data?.gesp8
-      if (!g) {
-        return h('div', { className: 'oi-scroll', style: { color: C.sub, textAlign: 'center', paddingTop: 60 } }, '正在加载八级冲刺战情室…')
+    const CLIENT_GESP8_PROG = [
+      { pid: '787', luoguPid: 'P10288', session: '样题', title: '小杨的旅游', quadrant: 'shortest_path', tier: 'baseline', week: '已过', tag: '最短路 + LCA' },
+      { pid: '1504', luoguPid: 'P14923', session: '2025.12', title: '猫和老鼠', quadrant: 'shortest_path', tier: 'p0', week: 'W1', tag: '最短路建模' },
+      { pid: '798', luoguPid: 'P11966', session: '2025.03', title: '上学', quadrant: 'shortest_path', tier: 'p0', week: 'W1', tag: '单源最短路' },
+      { pid: '2700', luoguPid: 'P17462', session: '2026.09', title: '末班车', quadrant: 'shortest_path', tier: 'p0', week: 'W1', tag: '逆向时序最短路' },
+      { pid: '1801', luoguPid: 'P15805', session: '2026.03', title: '子图最短路', quadrant: 'shortest_path', tier: 'mock', mockId: 'mock-202603', week: 'W3模考', tag: '枚举 + 最短路' },
+      { pid: '1345', luoguPid: 'P14080', session: '2025.09', title: '最小生成树', quadrant: 'mst_dsu', tier: 'p0', week: 'W2', tag: 'MST + 树上倍增' },
+      { pid: '2699', luoguPid: 'P17461', session: '2026.09', title: '生成树计数', quadrant: 'mst_dsu', tier: 'p0', week: 'W2', tag: '连通块 + 乘法原理' },
+      { pid: '797', luoguPid: 'P11380', session: '2024.12', title: '排队', quadrant: 'mst_dsu', tier: 'p0', week: 'W2', tag: '并查集 + 组合计数' },
+      { pid: '2322', luoguPid: 'P17016', session: '2026.06', title: '线网建设', quadrant: 'mst_dsu', tier: 'mock', mockId: 'mock-202606', week: 'W4模考', tag: '几何距离 + Kruskal' },
+      { pid: '788', luoguPid: 'P10112', session: '2023.12', title: '奖品分配', quadrant: 'combo_math', tier: 'baseline', week: '已过', tag: '组合数学' },
+      { pid: '794', luoguPid: 'P11250', session: '2024.09', title: '手套配对', quadrant: 'combo_math', tier: 'baseline', week: '已过', tag: '组合计数' },
+      { pid: '1344', luoguPid: 'P14079', session: '2025.09', title: '最短距离', quadrant: 'combo_math', tier: 'p0', week: 'W3', tag: 'GCD 数论转化' },
+      { pid: '801', luoguPid: 'P13020', session: '2025.06', title: '遍历计数', quadrant: 'combo_math', tier: 'p0', week: 'W3', tag: '图的遍历 + 计数' },
+      { pid: '790', luoguPid: 'P10263', session: '2024.03', title: '公倍数问题', quadrant: 'combo_math', tier: 'p0', week: 'W3', tag: '倍数枚举 + 计数' },
+      { pid: '2321', luoguPid: 'P17017', session: '2026.06', title: '堆石子', quadrant: 'combo_math', tier: 'mock', mockId: 'mock-202606', week: 'W4模考', tag: '组合数学 + 逆元' },
+      { pid: '789', luoguPid: 'P10113', session: '2023.12', title: '大量的工作沟通', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', tag: '树上 LCA' },
+      { pid: '791', luoguPid: 'P10264', session: '2024.03', title: '接竹竿', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', tag: '栈与序列递推' },
+      { pid: '795', luoguPid: 'P11251', session: '2024.09', title: '美丽路径', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', tag: '树形 DP / 直径' },
+      { pid: '799', luoguPid: 'P11967', session: '2025.03', title: '割裂', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', tag: 'LCA + 树上差分' },
+      { pid: '800', luoguPid: 'P13019', session: '2025.06', title: '树上旅行', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', tag: '树与遍历模拟' },
+      { pid: '1505', luoguPid: 'P14924', session: '2025.12', title: '宝石项链', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', tag: '贪心 + 双指针' },
+      { pid: '792', luoguPid: 'P10725', session: '2024.06', title: '最远点对', quadrant: 'doubling_tree_dp', tier: 'p0', week: 'W4', tag: '树形 DP + 直径' },
+      { pid: '796', luoguPid: 'P11379', session: '2024.12', title: '树上移动', quadrant: 'doubling_tree_dp', tier: 'p0', week: 'W4', tag: 'DFS 树性质' },
+      { pid: '1800', luoguPid: 'P15804', session: '2026.03', title: '消息查找', quadrant: 'doubling_tree_dp', tier: 'mock', mockId: 'mock-202603', week: 'W3模考', tag: '倍增跳步' },
+      { pid: '786', luoguPid: 'P10289', session: '样题', title: '区间', quadrant: 'doubling_tree_dp', tier: 'p1', week: '机动', tag: '二分 + 哈希' },
+      { pid: '793', luoguPid: 'P10726', session: '2024.06', title: '空间跳跃', quadrant: 'doubling_tree_dp', tier: 'p1', week: '机动', tag: '线性 DP' },
+    ]
+
+    const CLIENT_GESP8_OBJS = [
+      { pid: '2718', session: '2026.09', title: '[GESP202609 八级] 客观题', week: 'W1', isMock: false, focus: '圆排列 · 杨辉三角从0编号 · 哈夫曼合并 · Prim/Kruskal' },
+      { pid: '1734', session: '2025.12', title: '[GESP202512 八级] 客观题', week: 'W1', isMock: false, focus: '分治递推复杂度 · 排列组合 · 图论基础' },
+      { pid: '1717', session: '2025.09', title: '[GESP202509 八级] 客观题', week: 'W2', isMock: false, focus: '组合恒等式 · 最短路与生成树辨析 · C++ 多态' },
+      { pid: '1726', session: '2025.06', title: '[GESP202506 八级] 客观题', week: 'W2', isMock: false, focus: '古典概率 · 二项式展开系数 · 倍增与树性质' },
+      { pid: '1709', session: '2025.03', title: '[GESP202503 八级] 客观题', week: 'W2', isMock: false, focus: '容斥计数 · 类构造析构顺序 · 几何公式' },
+      { pid: '1702', session: '2024.12', title: '[GESP202412 八级] 客观题', week: 'W3', isMock: false, focus: '球盒计数 · 邻接表复杂度 · 树遍历还原' },
+      { pid: '1694', session: '2024.09', title: '[GESP202409 八级] 客观题', week: 'W3', isMock: false, focus: '类与对象访问权限 · 虚函数 · 组合计数' },
+      { pid: '1686', session: '2024.06', title: '[GESP202406 八级] 客观题', week: 'W4', isMock: false, focus: '平面几何基础 · 倍增快速幂 · 图连通性' },
+      { pid: '1677', session: '2024.03', title: '[GESP202403 八级] 客观题', week: 'W4', isMock: false, focus: '数论 GCD/LCM · 动态规划转移 · OOP 继承' },
+      { pid: '1761', session: '2023.12', title: '[GESP202312 八级] 客观题', week: '选刷', isMock: false, focus: '加乘原理 · 杨辉三角 · 最短路适用条件' },
+      { pid: '1760', session: '样题', title: '[GESP样题 八级] 客观题', week: '选刷', isMock: false, focus: '八级考纲基线样卷 · 概念全覆盖自测' },
+      { pid: '2269', session: '2026.03', title: '[GESP202603 八级] 客观题', week: 'W3模考', isMock: true, mockId: 'mock-202603', focus: '全真黑盒模考卷一（上半场 50 分）' },
+      { pid: '2632', session: '2026.06', title: '[GESP202606 八级] 客观题', week: 'W4模考', isMock: true, mockId: 'mock-202606', focus: '全真黑盒模考卷二（上半场 50 分）' },
+    ]
+
+    function buildClientFallbackGesp8(solvedPidArr) {
+      const solvedSet = new Set((solvedPidArr || []).map(String))
+      const progByPid = new Map()
+      const problems = CLIENT_GESP8_PROG.map((item) => {
+        const solved = item.tier === 'baseline' || solvedSet.has(item.pid)
+        const enriched = {
+          ...item,
+          url: `https://www.oilibaitian.cn/p/${item.pid}`,
+          attempts: solved ? 1 : 0,
+          bestScore: solved ? 100 : null,
+          solved,
+          scaled25: solved ? 25 : null,
+        }
+        progByPid.set(item.pid, enriched)
+        return enriched
+      })
+      const objectivePapers = CLIENT_GESP8_OBJS.map((item) => ({
+        ...item,
+        url: `https://www.oilibaitian.cn/p/${item.pid}`,
+        attempts: 0,
+        rawBest: null,
+        scaledBest: null,
+        meetsTarget: false,
+      }))
+      const objByPid = new Map(objectivePapers.map((x) => [x.pid, x]))
+      const mockDefs = [
+        { id: 'mock-202603', title: '全真模考一 · GESP 2026年3月 八级合卷', week: 'W3 周末（建议 180 分钟限时）', objPid: '2269', t1Pid: '1800', t2Pid: '1801' },
+        { id: 'mock-202606', title: '全真模考二 · GESP 2026年6月 八级合卷', week: 'W4 周末（考前 85+ 终极检验）', objPid: '2632', t1Pid: '2322', t2Pid: '2321' },
+      ]
+      const mockSuites = mockDefs.map((m) => {
+        const obj = objByPid.get(m.objPid)
+        const t1 = progByPid.get(m.t1Pid)
+        const t2 = progByPid.get(m.t2Pid)
+        const started = Boolean((obj?.attempts || 0) + (t1?.attempts || 0) + (t2?.attempts || 0) > 0)
+        const totalScore = started ? Math.round(((obj?.scaledBest || 0) + (t1?.scaled25 || 0) + (t2?.scaled25 || 0)) * 10) / 10 : null
+        return {
+          ...m,
+          obj: { pid: m.objPid, title: obj?.title || '', url: obj?.url || '', attempts: 0, points: null, maxPoints: 50 },
+          t1: { pid: m.t1Pid, title: t1?.title || '', url: t1?.url || '', attempts: t1?.attempts || 0, points: t1?.scaled25 ?? null, maxPoints: 25, solved: Boolean(t1?.solved) },
+          t2: { pid: m.t2Pid, title: t2?.title || '', url: t2?.url || '', attempts: t2?.attempts || 0, points: t2?.scaled25 ?? null, maxPoints: 25, solved: Boolean(t2?.solved) },
+          started,
+          completedAll3: false,
+          totalScore,
+          passed80: false,
+          passed85: false,
+        }
+      })
+      const now = new Date()
+      const todayMid = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+      const examMid = new Date(2026, 11, 26).getTime()
+      const daysLeft = Math.max(0, Math.round((examMid - todayMid) / 86_400_000))
+      const p0List = problems.filter((p) => p.tier === 'p0')
+      const qDefs = [
+        { id: 'shortest_path', title: '① 最短路与分层/逆向建图', badge: '头号必补短板' },
+        { id: 'mst_dsu', title: '② 最小生成树与连通计数', badge: '二号必补短板' },
+        { id: 'combo_math', title: '③ 组合计数、逆元与数论', badge: '客观+编程双考' },
+        { id: 'doubling_tree_dp', title: '④ 倍增、树论与序列 DP', badge: '优势稳分盘' },
+      ]
+      return {
+        isClientFallback: true,
+        summary: {
+          examDate: '2026-12-26',
+          daysLeft,
+          examPassed: todayMid > examMid,
+          targetScore: 80,
+          safetyScore: 85,
+          objTarget50: 44,
+          progTotal: problems.length,
+          progSolved: problems.filter((p) => p.solved).length,
+          p0Total: p0List.length,
+          p0Solved: p0List.filter((p) => p.solved).length,
+          p0Remaining: p0List.filter((p) => !p.solved).length,
+          objRegularTotal: 11,
+          objRegularDone: 0,
+          objTotalDone: 0,
+          objRecentAvg50: null,
+        },
+        quadrants: qDefs.map((qd) => {
+          const items = problems.filter((p) => p.quadrant === qd.id)
+          return { ...qd, total: items.length, solved: items.filter((p) => p.solved).length, items }
+        }),
+        objectivePapers,
+        mockSuites,
       }
+    }
+
+    function Gesp8SprintTab({ data, st }) {
+      const g = data?.gesp8 || buildClientFallbackGesp8(st.fallbackSolvedPids)
       const s = g.summary || {}
       const ansMap = st.gesp8QuizAnswers || {}
       const allBlindIds = GESP8_BLIND_PACKS.flatMap((p) => p.questions.map((q) => q.id))
@@ -3741,6 +3887,22 @@ window.__ModuleLoader__.load({
         h(
           'div',
           { className: 'oi-container' },
+          data && !data.gesp8
+            ? h(
+                'div',
+                {
+                  style: {
+                    padding: '10px 14px',
+                    borderRadius: 10,
+                    border: `1px solid ${C.accent}`,
+                    background: C.layer,
+                    fontSize: 12.5,
+                    color: C.text,
+                  },
+                },
+                '💡 已使用内置题库秒开八级冲刺专区（全部题单与 36 道互动卡均可直接使用）！如需启用客观卷自动折算计分，彻底退出一次软件（Windows 右下角托盘右键退出 / Mac 按 Cmd+Q）再重开即可激活新版后台引擎。',
+              )
+            : null,
           // Top 80+ War-Room Banner
           h(
             'div',
@@ -4515,7 +4677,7 @@ window.__ModuleLoader__.load({
           : null,
 
         // Main dedicated room
-        st.loading && !data && st.tab !== 'practice'
+        st.loading && !data && st.tab !== 'practice' && st.tab !== 'gesp8'
           ? h('div', { className: 'oi-scroll', style: { color: C.sub, textAlign: 'center', paddingTop: 60 } }, '正在加载学习台…')
           : st.tab === 'coach'
             ? h(CoachRoomTab, { data, st })
