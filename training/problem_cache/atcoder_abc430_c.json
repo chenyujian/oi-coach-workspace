@@ -7,5 +7,13 @@
   "attempts": 1,
   "trajectory": "WA",
   "latest_code": "",
-  "note": "AtCoder 提交源码需登录后查看，题面与数据范围已自动拉取缓存。"
+  "note": "AtCoder 提交源码需登录后查看，题面与数据范围已自动拉取缓存。",
+  "title_zh": "卡车司机（C - Truck Driver）",
+  "statement_zh": "## 题目大意（300 分）\n给定长度为 `N`、仅由字符 `'a'` 和 `'b'` 组成的字符串 `S`，以及正整数 `A, B`。\n请统计有多少对整数下标 `(l, r)` 同时满足以下三个条件：\n1. `1 ≤ l ≤ r ≤ N`；\n2. 连续子串 `S[l..r]` 中字符 `'a'` 的个数 **大于等于 `A`**（`≥ A`）；\n3. 连续子串 `S[l..r]` 中字符 `'b'` 的个数 **严格小于 `B`**（`< B`）。\n\n## 数据范围\n- `1 ≤ N ≤ 3×10⁵`（30万），`1 ≤ A, B ≤ N`\n\n## 样例对照\n- **样例 1**：`N = 11, A = 4, B = 2, S = abbaaabaaba` → 输出 `3`（满足条件的区间为 `(4,8), (4,9), (5,9)`）。",
+  "vocab": [
+    "substring 连续子串",
+    "greater than or equal to 大于等于",
+    "less than 严格小于",
+    "integer pairs 整数对"
+  ]
 }

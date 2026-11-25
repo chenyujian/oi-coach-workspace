@@ -66,6 +66,9 @@ def save_cache(key: str, payload: dict) -> None:
                 payload = {**payload, "statement": prev["statement"]}
             if not str(payload.get("latest_code") or "").strip() and str(prev.get("latest_code") or "").strip():
                 payload = {**payload, "latest_code": prev["latest_code"]}
+            for keep_k in ("title_zh", "statement_zh", "vocab"):
+                if not payload.get(keep_k) and prev.get(keep_k):
+                    payload = {**payload, keep_k: prev[keep_k]}
         except Exception:
             pass
     out_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")

@@ -793,6 +793,11 @@ window.__ModuleLoader__.load({
       },
       problemPreview: null,
       showProblemPreview: false,
+      previewLang: 'bi',
+      returnNav: null,
+      studyFoldersInfo: null,
+      studyPathDraft: '',
+      studyLabelDraft: '',
       saveCardModal: null,
       lectureDigestModal: null,
       syncStatus: null,
@@ -864,10 +869,11 @@ window.__ModuleLoader__.load({
     async function loadOverview() {
       setState({ loading: !state.data, error: null })
       try {
-        const [ovRes, chatsRes, syncRes] = await Promise.all([
+        const [ovRes, chatsRes, syncRes, studyRes] = await Promise.all([
           fetchJson(`${API}/overview`),
           fetchJson(`${API}/chats`).catch(() => ({ chats: state.chatHistory })),
           fetchJson(`${API}/sync-status`).catch(() => ({ sync: state.syncStatus })),
+          fetchJson(`${API}/study-folders`).catch(() => null),
         ])
         const nextSync = syncRes?.sync ?? state.syncStatus
         if (seenPullAt === undefined) {
@@ -892,9 +898,18 @@ window.__ModuleLoader__.load({
           }
         }
         const serverQuiz = ovRes.data?.quizProgress?.gesp8Answers || {}
-        const localQuiz = state.gesp8QuizAnswers || {}
-        const mergedQuiz = { ...serverQuiz, ...localQuiz }
-        const hasUnsyncedLocalQuiz = Object.keys(localQuiz).some((k) => serverQuiz[k] !== localQuiz[k])
+        const savedLocal = loadSavedGesp8Quiz()
+        const mergedQuiz = { ...savedLocal, ...serverQuiz }
+        const hasUnsyncedLocalQuiz = Object.keys(savedLocal).some((k) => !(k in serverQuiz))
+        if (Object.keys(serverQuiz).length > 0) {
+          try {
+            if (typeof localStorage !== 'undefined') {
+              localStorage.setItem('oi_gesp8_quiz_v1', JSON.stringify(mergedQuiz))
+            }
+          } catch {
+            // ignore storage quota
+          }
+        }
         if (hasUnsyncedLocalQuiz) {
           fetchJson(`${API}/quiz-progress`, {
             method: 'POST',
@@ -909,6 +924,7 @@ window.__ModuleLoader__.load({
           syncStatus: nextSync,
           fallbackSolvedPids: nextFallbackPids,
           gesp8QuizAnswers: mergedQuiz,
+          studyFoldersInfo: studyRes?.ok ? studyRes : state.studyFoldersInfo,
         })
       } catch (err) {
         setState({ loading: false, error: err?.message || String(err) })
@@ -939,6 +955,7 @@ window.__ModuleLoader__.load({
         if (!rec) return
         setState({
           tab: 'coach',
+          returnNav: null,
           problemPreview: null,
           showProblemPreview: false,
           agyChat: {
@@ -1020,7 +1037,7 @@ window.__ModuleLoader__.load({
     }
 
     function inferCardDraftFromChat(chat, pv) {
-      const title = String(pv?.title || chat?.title || '').replace(/^(讲义慢放|任氏建模|代数建模|讲义变式|建模|排错|复盘|旧题重斩|变形手算|建模快练)\s*·\s*/i, '').trim() || '未命名题目'
+      const title = String(pv?.title || chat?.title || '').replace(/^(讲义慢放|任氏建模|代数建模|讲义变式|八级冲刺|八级闯关|暗雷排毒|本地代码|八级客观复盘|建模|排错|复盘|旧题重斩|变形手算|建模快练)\s*·\s*/i, '').trim() || '未命名题目'
       const combined = `${pv?.platform || ''} ${title}`.toLowerCase()
       let platform = 'oj'
       if (/atcoder|abc\d+|arc\d+|agc\d+/.test(combined)) platform = 'atcoder'
@@ -1140,7 +1157,7 @@ window.__ModuleLoader__.load({
         agyTimerId = null
       }
       setState({
-        ...(clearMessages ? { problemPreview: null, showProblemPreview: false } : {}),
+        ...(clearMessages ? { problemPreview: null, showProblemPreview: false, returnNav: null } : {}),
         agyChat: {
           ...state.agyChat,
           sending: false,
@@ -1198,6 +1215,7 @@ window.__ModuleLoader__.load({
         error: null,
         notice: null,
         intakeText: '',
+        ...(opts.returnNav !== undefined ? { returnNav: opts.returnNav } : isNew ? { returnNav: null } : {}),
         ...(isNew ? { problemPreview: null, showProblemPreview: false } : {}),
         agyChat: {
           open: true,
@@ -1286,7 +1304,16 @@ window.__ModuleLoader__.load({
       }
     }
 
-    async function launchCoachSession({ presetId = 'oi-coach', title, prompt, displayText, previewQuery, skipProblemContext = false, subMode = '' }) {
+    async function launchCoachSession({
+      presetId = 'oi-coach',
+      title,
+      prompt,
+      displayText,
+      previewQuery,
+      skipProblemContext = false,
+      subMode = '',
+      returnNav = null,
+    }) {
       const wantsParent = !state.data?.isWindows && presetId === 'oi-parent'
       const pin = wantsParent ? ensureParentPin('请输入家长口令以进入家长教研模式：') : ''
       if (wantsParent && !pin) return
@@ -1300,6 +1327,7 @@ window.__ModuleLoader__.load({
           mode: wantsParent ? 'parent' : 'coach',
           subMode: wantsParent ? '' : subMode,
           parentPin: wantsParent ? pin : undefined,
+          returnNav,
         })
         return
       }
@@ -1357,6 +1385,75 @@ window.__ModuleLoader__.load({
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ answers: next, event: { qid, picked: idx, correct: Boolean(isCorrect) } }),
       }).catch(() => {})
+    }
+
+    async function manageStudyFolder(action, payload = {}) {
+      setState({ busy: `study:${action}`, error: null, notice: null })
+      try {
+        const res = await fetchJson(`${API}/study-folders`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ action, ...payload }),
+        })
+        const refreshed = await fetchJson(`${API}/study-folders`).catch(() => res)
+        setState({
+          busy: null,
+          studyPathDraft: action === 'add' ? '' : state.studyPathDraft,
+          studyLabelDraft: action === 'add' ? '' : state.studyLabelDraft,
+          studyFoldersInfo: refreshed?.ok ? refreshed : state.studyFoldersInfo,
+          data: state.data ? { ...state.data, localCppCatalog: refreshed?.catalog || res?.catalog || state.data.localCppCatalog } : state.data,
+          notice: {
+            text:
+              action === 'add'
+                ? '已成功绑定本地 C++ 学习目录！该窗口的原生提问与代码将自动归档同步。'
+                : action === 'remove'
+                  ? '已解除该目录关联'
+                  : `已重新扫描本地目录与原生对话（归档 ${res?.mirroredChats ?? 0} 条会话）`,
+          },
+        })
+        void loadChatHistory()
+      } catch (err) {
+        setState({ busy: null, error: `学习目录设置失败：${err?.message || err}` })
+      }
+    }
+
+    async function openLocalCppFile(folderLabel, relPath, askCoach = false) {
+      if (!relPath) return
+      if (askCoach) {
+        try {
+          const res = await fetchJson(
+            `${API}/local-cpp-file?label=${encodeURIComponent(folderLabel || '')}&rel=${encodeURIComponent(relPath)}`,
+          )
+          const code = String(res?.content || '').slice(0, 2600)
+          void launchCoachSession({
+            presetId: 'oi-coach',
+            title: `本地代码 · ${relPath.split('/').pop()}`,
+            displayText: `请帮我结合我的本地文件【${folderLabel ? `${folderLabel}/` : ''}${relPath}】做启发排错或复盘`,
+            previewQuery: '',
+            skipProblemContext: true,
+            returnNav: { tab: 'archive', archiveSubTab: 'localcpp', label: '↩ 返回本地 C++ 资料库' },
+            prompt: [
+              `教练，这是我在本地学习目录（${folderLabel || 'C++学习'}）里的文件 \`${relPath}\`：`,
+              '```cpp',
+              code,
+              '```',
+              '请先别直接给我改好的完整代码！帮我看懂这份代码的核心逻辑或潜在坑点，用 1 个有含金量的小问题或 N≤4 极小测试例子考考我！',
+            ].join('\n'),
+          })
+        } catch (err) {
+          setState({ error: `读取本地代码失败：${err?.message || err}` })
+        }
+        return
+      }
+      setState({ docModal: { path: `${folderLabel || '本地'}/${relPath}`, title: relPath.split('/').pop() || relPath, loading: true, content: '', error: null } })
+      try {
+        const res = await fetchJson(
+          `${API}/local-cpp-file?label=${encodeURIComponent(folderLabel || '')}&rel=${encodeURIComponent(relPath)}`,
+        )
+        setState({ docModal: { path: `${folderLabel || '本地'}/${relPath}`, title: relPath.split('/').pop() || relPath, loading: false, content: res.content || '', error: null } })
+      } catch (err) {
+        setState({ docModal: { path: `${folderLabel || '本地'}/${relPath}`, title: relPath.split('/').pop() || relPath, loading: false, content: '', error: err?.message || String(err) } })
+      }
     }
 
     async function openOjUrl(url, label = '题目页') {
@@ -1936,6 +2033,15 @@ window.__ModuleLoader__.load({
                 'button',
                 {
                   type: 'button',
+                  className: `oi-nav-btn ${st.archiveSubTab === 'localcpp' ? 'oi-nav-btn-active' : ''}`,
+                  onClick: () => setState({ archiveSubTab: 'localcpp' }),
+                },
+                `📂 本地 C++ 资料库（${data.localCppCatalog?.totalIndexed || 0}）`,
+              ),
+              h(
+                'button',
+                {
+                  type: 'button',
                   className: `oi-nav-btn ${st.archiveSubTab === 'stats' ? 'oi-nav-btn-active' : ''}`,
                   onClick: () => setState({ archiveSubTab: 'stats' }),
                 },
@@ -2058,6 +2164,219 @@ window.__ModuleLoader__.load({
                       ),
                     ),
                   )
+              : st.archiveSubTab === 'localcpp'
+                ? (() => {
+                    const sf = st.studyFoldersInfo || {}
+                    const bound = Array.isArray(sf.boundFolders) ? sf.boundFolders : []
+                    const cands = (Array.isArray(sf.candidates) ? sf.candidates : []).filter((c) => !c.alreadyBound)
+                    const cat = sf.catalog || data.localCppCatalog || null
+                    const displayFolders = data.isWindows ? bound : bound.length > 0 ? bound : cat?.folders || []
+                    const recentFiles = Array.isArray(cat?.recentFiles) ? cat.recentFiles : []
+                    return h(
+                      'div',
+                      { style: { display: 'grid', gap: 16 } },
+                      h(
+                        'div',
+                        { className: 'oi-card', style: { display: 'grid', gap: 12 } },
+                        h(
+                          'div',
+                          { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 } },
+                          h(
+                            'div',
+                            { style: { display: 'grid', gap: 3 } },
+                            h('div', { style: { fontWeight: 800, fontSize: 15.5 } }, '📂 桥接本地「C++学习」工作区与历史代码库'),
+                            h(
+                              'div',
+                              { style: { fontSize: 13, color: C.sub, lineHeight: 1.6 } },
+                              data.isWindows
+                                ? '自动识别并关联本机 DeepSeek Harness 里的「C++学习」主目录：你在原生窗口问的每一道题会自动归档进历史对话，以前的 .cpp 练习与笔记也能直接在这里查阅或发给教练（绝不上传 .exe 等大体积编译垃圾）。'
+                                : '自动接收孩子 Windows 端关联的「C++学习」目录索引与最近修改的 .cpp 源码摘要（孩子端原生窗口提问已同步在教练室左侧历史对话中）。',
+                            ),
+                          ),
+                          data.isWindows
+                            ? h(
+                                'button',
+                                {
+                                  type: 'button',
+                                  className: 'oi-btn',
+                                  disabled: !!st.busy,
+                                  onClick: () => manageStudyFolder('rescan'),
+                                },
+                                st.busy === 'study:rescan' ? '扫描中…' : '🔄 立即扫描原生提问与代码',
+                              )
+                            : null,
+                        ),
+                        displayFolders.length > 0
+                          ? h(
+                              'div',
+                              { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } },
+                              ...displayFolders.map((b) =>
+                                h(
+                                  'div',
+                                  {
+                                    key: b.label,
+                                    style: {
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: 8,
+                                      padding: '7px 12px',
+                                      borderRadius: 9,
+                                      border: `1px solid ${C.ok}`,
+                                      background: C.layer,
+                                      fontSize: 12.5,
+                                    },
+                                  },
+                                  h('span', { style: { fontWeight: 700, color: C.ok } }, `✓ 已关联：${b.label}`),
+                                  b.path ? h('span', { style: { color: C.sub } }, b.path) : null,
+                                  b.cppCount !== undefined ? h('span', { style: { color: C.sub } }, `（${b.cppCount} 份代码 / ${b.docCount || 0} 份资料）`) : null,
+                                  data.isWindows
+                                    ? h(
+                                        'button',
+                                        {
+                                          type: 'button',
+                                          className: 'oi-btn oi-btn-ghost',
+                                          style: { padding: '2px 6px', fontSize: 11.5 },
+                                          onClick: () => manageStudyFolder('remove', { label: b.label, folderPath: b.path }),
+                                        },
+                                        '解除',
+                                      )
+                                    : null,
+                                ),
+                              ),
+                            )
+                          : h(
+                              'div',
+                              { style: { fontSize: 13, color: C.sub } },
+                              data.isWindows
+                                ? '暂未检测到关联目录，可从下方本机工作区一键点选或直接粘贴文件夹路径（如 D:\\C++学习）：'
+                                : '等待孩子在 Windows 端打开一次学习台，系统将自动识别他的「C++学习」目录并同步目录清单过来。',
+                            ),
+                        data.isWindows && cands.length > 0
+                          ? h(
+                              'div',
+                              { style: { display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' } },
+                              h('span', { style: { fontSize: 12.5, color: C.sub, fontWeight: 600 } }, '发现本机工作区（点此一键接入）：'),
+                              ...cands.map((c) =>
+                                h(
+                                  'button',
+                                  {
+                                    key: c.path,
+                                    type: 'button',
+                                    className: c.matchedByName ? 'oi-btn oi-btn-primary' : 'oi-btn',
+                                    disabled: !!st.busy,
+                                    onClick: () => manageStudyFolder('add', { folderPath: c.path, label: c.label }),
+                                  },
+                                  `+ 接入「${c.label}」`,
+                                ),
+                              ),
+                            )
+                          : null,
+                        data.isWindows
+                          ? h(
+                              'div',
+                              { style: { display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', paddingTop: 2 } },
+                              h('input', {
+                                type: 'text',
+                                className: 'oi-input-sm',
+                                style: { flex: '1 1 260px', maxWidth: 420 },
+                                placeholder: '手动指定本地 C++ 资料夹路径（例如 D:\\C++学习）…',
+                                value: st.studyPathDraft,
+                                onChange: (e) => setState({ studyPathDraft: e.target.value }),
+                              }),
+                              h('input', {
+                                type: 'text',
+                                className: 'oi-input-sm',
+                                style: { width: 150 },
+                                placeholder: '别名（可选，如 C++学习）',
+                                value: st.studyLabelDraft,
+                                onChange: (e) => setState({ studyLabelDraft: e.target.value }),
+                              }),
+                              h(
+                                'button',
+                                {
+                                  type: 'button',
+                                  className: 'oi-btn oi-btn-primary',
+                                  disabled: !!st.busy || !st.studyPathDraft.trim(),
+                                  onClick: () =>
+                                    manageStudyFolder('add', {
+                                      folderPath: st.studyPathDraft.trim(),
+                                      label: st.studyLabelDraft.trim() || undefined,
+                                    }),
+                                },
+                                '绑定目录',
+                              ),
+                            )
+                          : null,
+                      ),
+                      recentFiles.length > 0
+                        ? h(
+                            'div',
+                            { className: 'oi-card', style: { display: 'grid', gap: 10 } },
+                            h(
+                              'div',
+                              { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 } },
+                              h('div', { style: { fontWeight: 800, fontSize: 15 } }, `📄 最近活跃的本地 C++ 源码与学习资料（共索引 ${cat?.totalIndexed || recentFiles.length} 份文件）`),
+                              cat?.updatedAt ? h('span', { style: { fontSize: 12, color: C.sub } }, `索引时间：${fmtIsoShort(cat.updatedAt)}`) : null,
+                            ),
+                            h(
+                              'div',
+                              { className: 'oi-grid-2' },
+                              ...recentFiles.map((f) =>
+                                h(
+                                  'div',
+                                  {
+                                    key: `${f.folderLabel}:${f.relPath}`,
+                                    style: {
+                                      padding: '11px 14px',
+                                      borderRadius: 10,
+                                      border: `1px solid ${C.border}`,
+                                      background: C.layer,
+                                      display: 'grid',
+                                      gap: 7,
+                                    },
+                                  },
+                                  h(
+                                    'div',
+                                    { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 } },
+                                    h('div', { style: { fontWeight: 700, fontSize: 13.5, wordBreak: 'break-all' } }, f.relPath),
+                                    h('span', { className: 'oi-pill', style: { color: C.accent, whiteSpace: 'nowrap' } }, f.folderLabel),
+                                  ),
+                                  h(
+                                    'div',
+                                    { style: { fontSize: 12, color: C.sub } },
+                                    `更新：${fmtIsoShort(f.updatedAt)} · ${(Math.max(0.1, (f.sizeBytes || 0) / 1024)).toFixed(1)} KB`,
+                                  ),
+                                  f.ext !== '.pdf'
+                                    ? h(
+                                        'div',
+                                        { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } },
+                                        h(
+                                          'button',
+                                          {
+                                            type: 'button',
+                                            className: 'oi-btn',
+                                            onClick: () => openLocalCppFile(f.folderLabel, f.relPath, false),
+                                          },
+                                          '📖 查看内容',
+                                        ),
+                                        h(
+                                          'button',
+                                          {
+                                            type: 'button',
+                                            className: 'oi-btn oi-btn-primary',
+                                            onClick: () => openLocalCppFile(f.folderLabel, f.relPath, true),
+                                          },
+                                          '💬 拿这份代码问教练',
+                                        ),
+                                      )
+                                    : h('div', { style: { fontSize: 12, color: C.sub } }, 'PDF 资料（请在本地目录直接打开阅读）'),
+                                ),
+                              ),
+                            ),
+                          )
+                        : null,
+                    )
+                  })()
               : h(
                   'div',
                   { style: { display: 'grid', gap: 18 } },
@@ -2554,7 +2873,10 @@ window.__ModuleLoader__.load({
                     ),
                     h(
                       'div',
-                      { style: { fontSize: 11.5, color: C.sub, display: 'flex', gap: 6, flexWrap: 'wrap' } },
+                      { style: { fontSize: 11.5, color: C.sub, display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' } },
+                      item.source === 'dsh-native'
+                        ? h('span', { className: 'oi-pill', style: { fontSize: 10.5, padding: '1px 6px', color: C.accent, borderColor: C.accent } }, '原生窗口')
+                        : null,
                       h('span', null, `${item.turns || 1} 轮`),
                       h('span', null, fmtIsoShort(item.updatedAt)),
                     ),
@@ -2925,6 +3247,27 @@ window.__ModuleLoader__.load({
                   },
                   '← 新题',
                 ),
+                st.returnNav
+                  ? h(
+                      'button',
+                      {
+                        type: 'button',
+                        className: 'oi-btn',
+                        style: { borderColor: C.accent, color: C.accent, fontWeight: 700, padding: '4px 10px', fontSize: 12.5 },
+                        onClick: () => {
+                          const nav = st.returnNav
+                          setState({
+                            tab: nav.tab || 'gesp8',
+                            ...(nav.gesp8SubTab ? { gesp8SubTab: nav.gesp8SubTab } : {}),
+                            ...(nav.gesp8PackId ? { gesp8PackId: nav.gesp8PackId } : {}),
+                            ...(nav.gesp8TplId ? { gesp8TplId: nav.gesp8TplId } : {}),
+                            ...(nav.archiveSubTab ? { archiveSubTab: nav.archiveSubTab } : {}),
+                          })
+                        },
+                      },
+                      st.returnNav.label || '↩ 返回原题',
+                    )
+                  : null,
                 h(
                   'div',
                   { style: { fontWeight: 700, fontSize: 14.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } },
@@ -3010,20 +3353,78 @@ window.__ModuleLoader__.load({
                   'div',
                   {
                     style: {
-                      maxWidth: 840,
+                      maxWidth: pv.statementZh ? 960 : 840,
                       margin: '10px auto 2px',
                       padding: '12px 16px',
                       borderRadius: 12,
                       background: C.layer,
                       border: `1px solid ${C.border}`,
-                      maxHeight: 240,
+                      maxHeight: 290,
                       overflowY: 'auto',
                       fontSize: 13.5,
                       lineHeight: 1.7,
+                      display: 'grid',
+                      gap: 8,
                     },
                   },
-                  h('div', { style: { fontWeight: 700, marginBottom: 6, fontSize: 13.5 } }, `${pv.title}（${pv.platform}）`),
-                  ...renderRichMessage(pv.statement, 'pv'),
+                  h(
+                    'div',
+                    { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 } },
+                    h('div', { style: { fontWeight: 800, fontSize: 13.5 } }, `${pv.title}（${pv.platform}）`),
+                    pv.statementZh
+                      ? h(
+                          'div',
+                          { className: 'oi-nav-seg', style: { padding: 2 } },
+                          ...[
+                            { id: 'bi', label: '🌐 中英对照' },
+                            { id: 'zh', label: '🇨🇳 中文题意' },
+                            { id: 'en', label: '🇬🇧 英文原卷' },
+                          ].map((opt) =>
+                            h(
+                              'button',
+                              {
+                                key: opt.id,
+                                type: 'button',
+                                className: `oi-nav-btn ${st.previewLang === opt.id ? 'oi-nav-btn-active' : ''}`,
+                                style: { padding: '3px 9px', fontSize: 12 },
+                                onClick: () => setState({ previewLang: opt.id }),
+                              },
+                              opt.label,
+                            ),
+                          ),
+                        )
+                      : null,
+                  ),
+                  Array.isArray(pv.vocab) && pv.vocab.length > 0
+                    ? h(
+                        'div',
+                        { style: { display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' } },
+                        h('span', { style: { fontSize: 12, color: C.accent, fontWeight: 700 } }, '📖 本题竞赛英语词卡：'),
+                        ...pv.vocab.map((v, vi) =>
+                          h('span', { key: vi, className: 'oi-pill', style: { fontSize: 11.5, color: C.text } }, v),
+                        ),
+                      )
+                    : null,
+                  pv.statementZh && st.previewLang === 'bi'
+                    ? h(
+                        'div',
+                        { className: 'oi-grid-2', style: { alignItems: 'start', gap: 14 } },
+                        h(
+                          'div',
+                          { style: { paddingRight: 6, borderRight: `1px solid ${C.border}` } },
+                          h('div', { style: { fontSize: 12, fontWeight: 800, color: C.ok, marginBottom: 4 } }, '🇨🇳 中文题意与数据范围'),
+                          ...renderRichMessage(pv.statementZh, 'pv-zh'),
+                        ),
+                        h(
+                          'div',
+                          null,
+                          h('div', { style: { fontSize: 12, fontWeight: 800, color: C.sub, marginBottom: 4 } }, '🇬🇧 AtCoder 英文原题对照'),
+                          ...renderRichMessage(pv.statement, 'pv-en'),
+                        ),
+                      )
+                    : pv.statementZh && st.previewLang === 'zh'
+                      ? h('div', null, ...renderRichMessage(pv.statementZh, 'pv-zh-only'))
+                      : h('div', null, ...renderRichMessage(pv.statement, 'pv')),
                 )
               : null,
           ),
@@ -3091,7 +3492,15 @@ window.__ModuleLoader__.load({
               h(
                 'div',
                 { style: { display: 'flex', gap: 6, flexWrap: 'wrap' } },
-                ...['A', 'B', 'C', '给我一组 N≤4 的小反例', '下一步呢？', '请按 3 行通关秘籍卡帮我总结这道题'].map((quick) =>
+                ...[
+                  'A',
+                  'B',
+                  'C',
+                  '给我一组 N≤4 的小反例',
+                  '🧩 给模块步骤清单（我自己看公式敲）',
+                  '下一步呢？',
+                  '请按 3 行通关秘籍卡帮我总结这道题',
+                ].map((quick) =>
                   h(
                     'button',
                     {
@@ -3798,17 +4207,52 @@ window.__ModuleLoader__.load({
         { id: 'mock-202603', title: '全真模考一 · GESP 2026年3月 八级合卷', week: 'W3 周末（建议 180 分钟限时）', objPid: '2269', t1Pid: '1800', t2Pid: '1801' },
         { id: 'mock-202606', title: '全真模考二 · GESP 2026年6月 八级合卷', week: 'W4 周末（考前 85+ 终极检验）', objPid: '2632', t1Pid: '2322', t2Pid: '2321' },
       ]
+      const pickFallbackSub = (slotProb, used) => {
+        if (!slotProb) return null
+        const cand =
+          problems.find((p) => !p.solved && p.tier !== 'mock' && p.quadrant === slotProb.quadrant && !used.has(p.pid)) ||
+          problems.find((p) => !p.solved && p.tier !== 'mock' && !used.has(p.pid))
+        if (!cand) return null
+        used.add(cand.pid)
+        return { pid: cand.pid, luoguPid: cand.luoguPid, session: cand.session, title: cand.title, tag: cand.tag, url: cand.url }
+      }
+      const usedFallbackSubs = new Set()
       const mockSuites = mockDefs.map((m) => {
         const obj = objByPid.get(m.objPid)
         const t1 = progByPid.get(m.t1Pid)
         const t2 = progByPid.get(m.t2Pid)
+        const t1EarlySolved = Boolean(t1?.solved)
+        const t2EarlySolved = Boolean(t2?.solved)
+        const t1Substitute = t1EarlySolved ? pickFallbackSub(t1, usedFallbackSubs) : null
+        const t2Substitute = t2EarlySolved ? pickFallbackSub(t2, usedFallbackSubs) : null
         const started = Boolean((obj?.attempts || 0) + (t1?.attempts || 0) + (t2?.attempts || 0) > 0)
         const totalScore = started ? Math.round(((obj?.scaledBest || 0) + (t1?.scaled25 || 0) + (t2?.scaled25 || 0)) * 10) / 10 : null
         return {
           ...m,
           obj: { pid: m.objPid, title: obj?.title || '', url: obj?.url || '', attempts: 0, points: null, maxPoints: 50 },
-          t1: { pid: m.t1Pid, title: t1?.title || '', url: t1?.url || '', attempts: t1?.attempts || 0, points: t1?.scaled25 ?? null, maxPoints: 25, solved: Boolean(t1?.solved) },
-          t2: { pid: m.t2Pid, title: t2?.title || '', url: t2?.url || '', attempts: t2?.attempts || 0, points: t2?.scaled25 ?? null, maxPoints: 25, solved: Boolean(t2?.solved) },
+          t1: {
+            pid: m.t1Pid,
+            title: t1?.title || '',
+            url: t1?.url || '',
+            attempts: t1?.attempts || 0,
+            points: t1?.scaled25 ?? null,
+            maxPoints: 25,
+            solved: Boolean(t1?.solved),
+            earlySolved: t1EarlySolved,
+            substitute: t1Substitute,
+          },
+          t2: {
+            pid: m.t2Pid,
+            title: t2?.title || '',
+            url: t2?.url || '',
+            attempts: t2?.attempts || 0,
+            points: t2?.scaled25 ?? null,
+            maxPoints: 25,
+            solved: Boolean(t2?.solved),
+            earlySolved: t2EarlySolved,
+            substitute: t2Substitute,
+          },
+          hasEarlySolvedConflict: t1EarlySolved || t2EarlySolved,
           started,
           completedAll3: false,
           totalScore,
@@ -3891,9 +4335,51 @@ window.__ModuleLoader__.load({
           title: `八级客观复盘 · ${paper.session}`,
           displayText: `慢放复盘【${paper.title}】的错题（当前最高折算 ${paper.scaledBest ?? '--'}/50 分）`,
           previewQuery: paper.pid,
+          returnNav: { tab: 'gesp8', gesp8SubTab: 'objective', label: '↩ 返回八级客观真题卷' },
           prompt: `教练，我刚在信奥李拜天交了【${paper.title}】（题号 ${paper.pid}，折算得分 ${paper.scaledBest ?? '?'}/50 分，目标 ≥ 44/50 分）。请开启【GESP 八级客观卷错题慢放清零模式】，千万别一次性列出整套卷答案！如果系统已识别出我答错的题号，请先挑第 1 道错题用六年级具体小数字带我推算；如果没有识别到具体错题号，请先问我想先复盘第几题！`,
         })
       }
+
+      const launchQuizDrill = (groupTitle, q, pickedIdx, navBack) => {
+        const hasPicked = pickedIdx !== undefined && q.options[pickedIdx]
+        const pickedStr = hasPicked ? q.options[pickedIdx] : ''
+        const rightStr = q.options[q.ans] || ''
+        void launchCoachSession({
+          presetId: 'oi-coach',
+          subMode: 'gesp8-quiz-drill',
+          title: `八级闯关 · ${q.id}`,
+          displayText: hasPicked
+            ? `这道闯关题我选了「${pickedStr}」，请拿极小例子带我推清楚【${q.q.slice(0, 32)}…】`
+            : `这道八级闯关题我有点卡壳，请别直接报答案，拿小例子带我推【${q.q.slice(0, 32)}…】`,
+          previewQuery: '',
+          skipProblemContext: true,
+          returnNav: navBack,
+          prompt: [
+            `教练，我在做八级冲刺【${groupTitle}】的这道题：`,
+            `- 题目：${q.q}`,
+            `- 选项：${q.options.join(' ｜ ')}`,
+            hasPicked
+              ? `- 我刚才选了：「${pickedStr}」（系统提示正确选项是「${rightStr}」），但我还没彻底想通底层是怎么算的。`
+              : `- 我还没选，不想乱蒙，想先把算理搞懂。`,
+            `请别照念解析结论！先拿 1 个 N = 3~4 的极小具体例子（或 3 行数字小表）带我数一遍，再用 \`[ ? ]\` 挖掉公式里的关键数字让我自己填出来！`,
+          ].join('\n'),
+        })
+      }
+
+      const launchAcCodeAudit = (p) => {
+        const label = `${p.pid} [GESP${p.session} 八级] ${p.title}`
+        void launchCoachSession({
+          presetId: 'oi-coach',
+          subMode: 'gesp8-code-audit',
+          title: `暗雷排毒 · ${p.pid} ${p.title}`,
+          displayText: `我刚花 ${p.attempts} 次提交 AC 了【${label}】，请帮我 30 秒扫描代码里的潜在考场暗雷并存秘籍卡`,
+          previewQuery: p.pid,
+          returnNav: { tab: 'gesp8', gesp8SubTab: 'board', label: '↩ 返回八级冲刺棋盘' },
+          prompt: `教练，我刚在信奥李拜天经过 ${p.attempts} 次提交 AC 了八级真题【${label}】！请读取我刚交的 .cpp 源码，开启【刚 AC 真题 30 秒考场暗雷排毒】：先帮我看看代码里有没有侥幸逃过但正式考场容易挂的隐患（比如 double sqrt 浮点精度比较、long long 溢出、边界特判），用 1 个小问题考考我，排完雷带我存一张 3 行通关秘籍卡！`,
+        })
+      }
+
+      const needsPostMortem = Array.isArray(g.needsPostMortem) ? g.needsPostMortem : []
 
       const activePack = GESP8_BLIND_PACKS.find((p) => p.id === st.gesp8PackId) || GESP8_BLIND_PACKS[0]
       const activeTpl = GESP8_TEMPLATE_PACKS.find((p) => p.id === st.gesp8TplId) || GESP8_TEMPLATE_PACKS[0]
@@ -3960,6 +4446,48 @@ window.__ModuleLoader__.load({
               ),
             ),
           ),
+
+          needsPostMortem.length > 0
+            ? h(
+                'div',
+                {
+                  style: {
+                    padding: '11px 15px',
+                    borderRadius: 12,
+                    border: `1px solid ${C.ok}`,
+                    background: C.layer,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: 10,
+                  },
+                },
+                h(
+                  'div',
+                  { style: { fontSize: 13, lineHeight: 1.55, color: C.text } },
+                  h('span', { style: { fontWeight: 800, color: C.ok } }, '🎉 新斩真题防复发抽查：'),
+                  `你刚调试攻克了 ${needsPostMortem.map((p) => `【#${p.pid} ${p.title}（${p.attempts}交AC）】`).join('、')}，尚未存秘籍卡——花 30 秒让教练扫一眼 AC 代码里有没有考场精度/边界暗雷？`,
+                ),
+                h(
+                  'div',
+                  { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } },
+                  ...needsPostMortem.map((p) =>
+                    h(
+                      'button',
+                      {
+                        key: p.pid,
+                        type: 'button',
+                        className: 'oi-btn oi-btn-primary',
+                        disabled: !!st.busy,
+                        onClick: () => launchAcCodeAudit(p),
+                      },
+                      `🩺 30秒排暗雷 · #${p.pid} ${p.title}`,
+                    ),
+                  ),
+                ),
+              )
+            : null,
 
           // Sub-tab switcher
           h(
@@ -4153,6 +4681,42 @@ window.__ModuleLoader__.load({
                       { style: { padding: '10px 14px', borderRadius: 10, background: C.layer, fontSize: 13, color: C.sub } },
                       `${activePack.badge} —— ${activePack.summary}`,
                     ),
+                    activePack.id === 'combo'
+                      ? h(
+                          'div',
+                          {
+                            style: {
+                              padding: '12px 14px',
+                              borderRadius: 10,
+                              border: `1px solid ${C.accent}`,
+                              background: C.layer,
+                              display: 'grid',
+                              gap: 8,
+                            },
+                          },
+                          h('div', { style: { fontWeight: 800, fontSize: 13.5, color: C.accent } }, '🧭 六年级秒懂 · GESP 八级计数 4 把万能钥匙（动笔列式前先对号！）'),
+                          h(
+                            'div',
+                            { className: 'oi-grid-2', style: { gap: 8 } },
+                            ...[
+                              ['🔑 1. 组多位数含 0', '永远先挑最挑剔的「百位/最高位」（不能放 0），再排后面位置，防把 012 误算进来！'],
+                              ['🔑 2. 圆桌转圈排座', '先拿胶水把 1 个人钉在北边当参照物，n 人圆桌秒变 (n-1)! 直线排队；要求相邻先打包成 1 个整体，最后乘包内 2！'],
+                              ['🔑 3. 分相同苹果（每人≥1）', '隔板法：n 个苹果排一排有 n-1 个内部空隙，插 k-1 块板子分成 k 份，直接算 C(n-1, k-1)！'],
+                              ['🔑 4. 二项式 & 至少 1 个', '(ax-b)ⁿ 拆成「选括号 C(n,k) × 数字幂 aᵏ × 符号幂 (-b)ⁿ⁻ᵏ」单独看奇偶防丢负号；见「至少 1 个」必用「总情况 − 全没有」！'],
+                            ].map(([kTitle, kDesc], ki) =>
+                              h(
+                                'div',
+                                {
+                                  key: ki,
+                                  style: { padding: '8px 10px', borderRadius: 8, background: C.base, border: `1px solid ${C.border}`, fontSize: 12.5, lineHeight: 1.55 },
+                                },
+                                h('div', { style: { fontWeight: 800, marginBottom: 2 } }, kTitle),
+                                h('div', { style: { color: C.sub } }, kDesc),
+                              ),
+                            ),
+                          ),
+                        )
+                      : null,
                     h(
                       'div',
                       { style: { display: 'grid', gap: 12 } },
@@ -4213,6 +4777,27 @@ window.__ModuleLoader__.load({
                                 `${isRight ? '✅ 稳准狠！' : '💡 踩坑排雷：'}${q.explain}`,
                               )
                             : null,
+                          h(
+                            'div',
+                            { style: { display: 'flex', justifyContent: 'flex-end' } },
+                            h(
+                              'button',
+                              {
+                                type: 'button',
+                                className: answered && !isRight ? 'oi-btn oi-btn-primary' : 'oi-btn oi-btn-ghost',
+                                style: { fontSize: 12, padding: '5px 11px' },
+                                disabled: !!st.busy,
+                                onClick: () =>
+                                  launchQuizDrill(activePack.title, q, picked, {
+                                    tab: 'gesp8',
+                                    gesp8SubTab: 'objective',
+                                    gesp8PackId: activePack.id,
+                                    label: `↩ 返回八级闯关 · ${activePack.title.replace(/^盲区\s*\S+\s*·\s*/, '')}`,
+                                  }),
+                              },
+                              answered && !isRight ? '💬 这题没透，让教练拿小例子带我推 →' : '💬 没看懂？问教练这道题',
+                            ),
+                          ),
                         )
                       }),
                     ),
@@ -4345,6 +4930,54 @@ window.__ModuleLoader__.load({
                               : '🔒 待限时开启（-- / 100 分）',
                           ),
                         ),
+                        m.hasEarlySolvedConflict
+                          ? h(
+                              'div',
+                              {
+                                style: {
+                                  padding: '10px 14px',
+                                  borderRadius: 10,
+                                  border: `1px solid ${C.warn}`,
+                                  background: C.layer,
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                  alignItems: 'center',
+                                  flexWrap: 'wrap',
+                                  gap: 8,
+                                  fontSize: 12.5,
+                                  lineHeight: 1.6,
+                                },
+                              },
+                              h(
+                                'div',
+                                { style: { color: C.text } },
+                                h('span', { style: { fontWeight: 800, color: C.warn } }, '⚠️ 模考真实度保护：'),
+                                ...[m.t1, m.t2]
+                                  .filter((sl) => sl?.earlySolved)
+                                  .map((sl) =>
+                                    `本卷【#${sl.pid} ${sl.title}】已在日常作业中提前 AC！限时合卷模考时，建议改做同考点未刷真题${sl.substitute ? `【#${sl.substitute.pid} [${sl.substitute.session}] ${sl.substitute.title}】` : ''}替补计分，防熟题估分虚高。`,
+                                  ),
+                              ),
+                              h(
+                                'div',
+                                { style: { display: 'flex', gap: 6, flexWrap: 'wrap' } },
+                                ...[m.t1, m.t2]
+                                  .filter((sl) => sl?.earlySolved && sl?.substitute)
+                                  .map((sl) =>
+                                    h(
+                                      'button',
+                                      {
+                                        key: sl.substitute.pid,
+                                        type: 'button',
+                                        className: 'oi-btn',
+                                        onClick: () => openOjUrl(sl.substitute.url, `${sl.substitute.pid} ${sl.substitute.title}`),
+                                      },
+                                      `🔗 打开替补真题 #${sl.substitute.pid} ${sl.substitute.title}`,
+                                    ),
+                                  ),
+                              ),
+                            )
+                          : null,
                         h(
                           'div',
                           { className: 'oi-grid-3' },
@@ -4499,6 +5132,27 @@ window.__ModuleLoader__.load({
                                 `${isRight ? '✅ 防坑到位！' : '⚠️ 考场救命提醒：'}${q.explain}`,
                               )
                             : null,
+                          h(
+                            'div',
+                            { style: { display: 'flex', justifyContent: 'flex-end' } },
+                            h(
+                              'button',
+                              {
+                                type: 'button',
+                                className: answered && !isRight ? 'oi-btn oi-btn-primary' : 'oi-btn oi-btn-ghost',
+                                style: { fontSize: 12, padding: '5px 11px' },
+                                disabled: !!st.busy,
+                                onClick: () =>
+                                  launchQuizDrill(activeTpl.title, q, picked, {
+                                    tab: 'gesp8',
+                                    gesp8SubTab: 'templates',
+                                    gesp8TplId: activeTpl.id,
+                                    label: `↩ 返回模板排雷 · ${activeTpl.title.replace(/^模板\s*\S+\s*·\s*/, '').slice(0, 10)}`,
+                                  }),
+                              },
+                              answered && !isRight ? '💬 这处细节没懂，让教练带我推 →' : '💬 问教练这处模板细节',
+                            ),
+                          ),
                         )
                       }),
                     ),

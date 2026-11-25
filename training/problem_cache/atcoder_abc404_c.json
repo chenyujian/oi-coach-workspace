@@ -7,5 +7,14 @@
   "attempts": 7,
   "trajectory": "WA→WA→WA→WA→WA→WA→WA",
   "latest_code": "",
-  "note": "AtCoder 提交源码需登录后查看，题面与数据范围已自动拉取缓存。"
+  "note": "AtCoder 提交源码需登录后查看，题面与数据范围已自动拉取缓存。",
+  "title_zh": "判断单环图（C - Cycle Graph?）",
+  "statement_zh": "## 题目大意（300 分）\n给定一个包含 `N` 个顶点（编号 `1 ~ N`）和 `M` 条边的简单无向图（无自环、无重边），第 `i` 条边连接 `Aᵢ` 和 `Bᵢ`。\n请判断这张图是否恰好是一个**包含全部 `N` 个顶点的单环图（Cycle Graph）**——即能否把 `1 ~ N` 排成一圈 `(v₁, v₂, ..., vₙ)`，使得恰好只有相邻顶点之间以及 `vₙ` 与 `v₁` 之间有边，且没有任何多余的边。是则输出 `Yes`，否则输出 `No`。\n\n## 数据范围\n- `3 ≤ N ≤ 2×10⁵`，`0 ≤ M ≤ 2×10⁵`，保证输入为简单无向图。",
+  "vocab": [
+    "simple undirected graph 简单无向图",
+    "vertices 顶点",
+    "edges 边",
+    "cycle graph 环图",
+    "permutation 排列"
+  ]
 }

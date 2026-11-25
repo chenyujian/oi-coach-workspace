@@ -7,5 +7,12 @@
   "attempts": 1,
   "trajectory": "TLE",
   "latest_code": "",
-  "note": "AtCoder 提交源码需登录后查看，题面与数据范围已自动拉取缓存。"
+  "note": "AtCoder 提交源码需登录后查看，题面与数据范围已自动拉取缓存。",
+  "title_zh": "K 阶斐波那契数列（C - K-bonacci）",
+  "statement_zh": "## 题目大意（300 分）\n给定正整数 `N` 和 `K`，定义长度为 `N + 1` 的数列 `A = (A₀, A₁, ..., Aₙ)`：\n- 当 `0 ≤ i < K` 时，`Aᵢ = 1`；\n- 当 `i ≥ K` 时，`Aᵢ = Aᵢ₋ₖ + Aᵢ₋ₖ₊₁ + ... + Aᵢ₋₁`（即前 `K` 项之和）。\n\n请求出 `Aₙ` 对 `10⁹`（10亿）取模后的结果。\n\n## 数据范围\n- `1 ≤ N, K ≤ 10⁶`（100万）",
+  "vocab": [
+    "positive integer 正整数",
+    "sequence 数列",
+    "modulo 取模（求余数）"
+  ]
 }

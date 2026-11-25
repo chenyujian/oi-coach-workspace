@@ -6,6 +6,7 @@
 
 import assert from 'node:assert/strict'
 import { execFile } from 'node:child_process'
+import { existsSync } from 'node:fs'
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
@@ -13,6 +14,7 @@ import { createRequire } from 'node:module'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { promisify } from 'node:util'
 import { EventEmitter } from 'node:events'
+import zlib from 'node:zlib'
 
 const execFileAsync = promisify(execFile)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -741,6 +743,215 @@ await test('Chat history APIs (list, get, delete, path traversal rejection) & PO
   }
 })
 
+await test('AtCoder bilingual preview + C++学习 native zstd session mirror + local study folder security & GESP8 mock conflict check', async () => {
+  // 1. Live REPO_ROOT checks: AtCoder bilingual preview + GESP8 2322 early-solved mock substitute + needsPostMortem
+  const { res: rBi, json: jBi } = makeRes()
+  await routes.get('/dsh-oi-coach/api/problem-preview')(
+    makeReq('GET', '/dsh-oi-coach/api/problem-preview?q=abc483_d'),
+    rBi,
+  )
+  const biBody = jBi()
+  assert.equal(biBody.found, true)
+  assert.ok(biBody.problem.titleZh.includes('故障机器人'), `Missing titleZh on abc483_d: ${biBody.problem.titleZh}`)
+  assert.ok(biBody.problem.statementZh.includes('题目大意') && biBody.problem.statement.includes('Problem Statement'), 'abc483_d must expose both statementZh and English statement')
+  assert.ok(Array.isArray(biBody.problem.vocab) && biBody.problem.vocab.some((v) => v.includes('数轴')), 'abc483_d missing OI vocab')
+  assert.ok(
+    liveOverviewData.unsolvedRecent.some((u) => String(u.title).includes('故障机器人') || String(u.title).includes('异色')),
+    'unsolvedRecent AtCoder titles should be enriched with Chinese bilingual title',
+  )
+  const mock2 = (liveOverviewData.gesp8?.mockSuites || []).find((m) => m.id === 'mock-202606')
+  assert.ok(mock2 && mock2.hasEarlySolvedConflict && mock2.t1?.earlySolved && mock2.t1?.substitute?.pid, 'mock-202606 should detect 2322 early-solved conflict and recommend an unsolved substitute')
+  assert.ok(
+    Array.isArray(liveOverviewData.gesp8?.needsPostMortem) &&
+      liveOverviewData.gesp8.needsPostMortem.some((p) => p.pid === '2322'),
+    'needsPostMortem should flag multi-attempt solved GESP8 problem 2322 without mistake card',
+  )
+
+    // P2-4 regression: #define MAXN 1800 or a[i] near 1800 inside .cpp code must NOT false-trigger GESP8 #1800 preview/lock
+    const { res: rNoFalseLock, json: jNoFalseLock } = makeRes()
+    await routes.get('/dsh-oi-coach/api/problem-preview')(
+      makeReq(
+        'GET',
+        '/dsh-oi-coach/api/problem-preview?q=' +
+          encodeURIComponent('请帮我看这段本地代码：\n```cpp\n#include <iostream>\n#define MAXN 1800\nint a[2005];\nint main(){ a[0]=1; return 1800; }\n```'),
+      ),
+      rNoFalseLock,
+    )
+    assert.equal(jNoFalseLock().found, false, '#define MAXN 1800 / return 1800 in C++ code must NOT false-match GESP8 #1800')
+  const baseTmp = await fs.mkdtemp(path.join(os.tmpdir(), 'oi-study-bridge-'))
+  try {
+    const wsDir = path.join(baseTmp, 'oi-ws')
+    const dshDir = path.join(baseTmp, 'fake-dsh')
+    const cppFolder = path.join(baseTmp, 'C++学习')
+    const investFolder = path.join(baseTmp, '投资研究私密库')
+    await fs.mkdir(wsDir, { recursive: true })
+    await fs.mkdir(cppFolder, { recursive: true })
+    await fs.mkdir(investFolder, { recursive: true })
+    await fs.writeFile(path.join(cppFolder, 'combo_test.cpp'), '#include <iostream>\nint main(){ return 0; }\n', 'utf8')
+    await fs.writeFile(path.join(cppFolder, 'combo_test.exe'), Buffer.from([0x4d, 0x5a, 0x00, 0x01]))
+    await fs.writeFile(path.join(cppFolder, '.env'), 'SECRET=123\n', 'utf8')
+    await fs.writeFile(path.join(investFolder, 'alpha.md'), 'top secret research', 'utf8')
+
+    // Build 3 multi-frame zstd v4 session logs: (a) valid C++学习 session, (b) oi-parent session, (c) unrelated 投资研究 session
+    const writeFakeZstdSession = async (bucket, sessName, events) => {
+      const dir = path.join(dshDir, 'sessions', bucket, sessName)
+      await fs.mkdir(dir, { recursive: true })
+      const frames = events.map((ev) => zlib.zstdCompressSync(Buffer.from(JSON.stringify(ev) + '\n', 'utf8')))
+      await fs.writeFile(path.join(dir, 'session.v4.jsonl.zstd'), Buffer.concat(frames))
+    }
+
+    await writeFakeZstdSession('--cpp-study--', 'session-cpp-001', [
+      { type: 'session', version: 4, id: 'session-cpp-001', createdAt: 1795520000000, cwd: cppFolder, delegationDepth: 0 },
+      { type: 'session/title', seq: 1, time: 1795520001000, data: { title: '圆排列与隔板法疑问' } },
+      {
+        type: 'user/message',
+        seq: 2,
+        time: 1795520002000,
+        data: {
+          content: [
+            { type: 'text', text: '<system-reminder>\ninline reminder block</system-reminder>' },
+            { type: 'text', text: '5个人围圆桌为什么是(4-1)!*2？' },
+          ],
+        },
+      },
+      { type: 'user/message', seq: 3, time: 1795520002001, data: { content: [{ type: 'text', text: '<system-reminder>\ninternal instructions</system-reminder>' }] } },
+      { type: 'assistant/message', seq: 4, time: 1795520005000, data: { message: { role: 'assistant', content: [{ type: 'text', text: '先把甲乙绑成1个双人包，先拿3个单位试一试：[ ? ]' }] } } },
+    ])
+    await writeFakeZstdSession('--oi-ws--', 'session-mac-architect-777', [
+      { type: 'session', version: 4, id: 'session-mac-architect-777', createdAt: 1795520000000, cwd: wsDir, delegationDepth: 0 },
+      { type: 'user/message', seq: 1, time: 1795520002000, data: { content: [{ type: 'text', text: 'Mac家长默认preset架构讨论' }] } },
+      { type: 'assistant/message', seq: 2, time: 1795520005000, data: { message: { role: 'assistant', content: [{ type: 'text', text: '架构回复' }] } } },
+    ])
+    await writeFakeZstdSession('--oi-ws--', 'session-parent-999', [
+      { type: 'session', version: 4, id: 'session-parent-999', createdAt: 1795520000000, cwd: wsDir, agentPreset: 'oi-parent', delegationDepth: 0 },
+      { type: 'user/message', seq: 1, time: 1795520002000, data: { content: [{ type: 'text', text: '家长私密诊断问题' }] } },
+      { type: 'assistant/message', seq: 2, time: 1795520005000, data: { message: { role: 'assistant', content: [{ type: 'text', text: '家长私密回复' }] } } },
+    ])
+    await writeFakeZstdSession('--invest--', 'session-inv-888', [
+      { type: 'session', version: 4, id: 'session-inv-888', createdAt: 1795520000000, cwd: investFolder, delegationDepth: 0 },
+      { type: 'user/message', seq: 1, time: 1795520002000, data: { content: [{ type: 'text', text: '股票持仓分析' }] } },
+      { type: 'assistant/message', seq: 2, time: 1795520005000, data: { message: { role: 'assistant', content: [{ type: 'text', text: '投研内容' }] } } },
+    ])
+
+    const makeMockCtxWithRegistry = ( targetRoutes ) => ({
+      logger: { warn: () => {}, info: () => {} },
+      get(name) {
+        if (name === 'workspaceRegistry') {
+          return {
+            list: () => [
+              { id: 'ws-1', title: 'C++学习', path: cppFolder },
+              { id: 'ws-2', title: '投资研究私密库', path: investFolder },
+            ],
+            create: async (p, t) => ({ id: 'ws-oi', path: p, title: t }),
+          }
+        }
+        return undefined
+      },
+      inject(_deps, fn) {
+        fn({
+          effect: (cb) => cb(),
+          webServer: { register: ({ path: p, handler }) => targetRoutes.set(p, handler) },
+          tools: { register: () => {} },
+        })
+      },
+    })
+
+    // 2a. Verify Mac parent mode (simulateWindows: false on darwin) NEVER auto-binds, leaks candidates, or mirrors native sessions in /api/chats
+    if (process.platform === 'darwin') {
+      const macRoutes = new Map()
+      pluginMod.apply(makeMockCtxWithRegistry(macRoutes), { workspace: wsDir, dshHome: dshDir, simulateWindows: false })
+      const { res: rMacSf, json: jMacSf } = makeRes()
+      await macRoutes.get('/dsh-oi-coach/api/study-folders')(makeReq('GET', '/dsh-oi-coach/api/study-folders'), rMacSf)
+      assert.equal(jMacSf().boundFolders.length, 0, 'Mac parent mode must NOT auto-bind external DSH workspaces')
+      assert.equal(jMacSf().candidates.length, 0, 'Mac parent mode must NOT expose external DSH workspace list')
+      const { res: rMacChats, json: jMacChats } = makeRes()
+      await macRoutes.get('/dsh-oi-coach/api/chats')(makeReq('GET', '/dsh-oi-coach/api/chats'), rMacChats)
+      assert.equal(jMacChats().chats.length, 0, 'P1-1: Mac /api/chats must NEVER scan or mirror native DSH sessions')
+    }
+
+    // 2b. Verify Windows child mode (simulateWindows: true) auto-binds C++学习, ignores 投资研究私密库, mirrors chat & indexes .cpp
+    const winRoutes = new Map()
+    pluginMod.apply(makeMockCtxWithRegistry(winRoutes), { workspace: wsDir, dshHome: dshDir, simulateWindows: true })
+    const { res: rWinSf, json: jWinSf } = makeRes()
+    await winRoutes.get('/dsh-oi-coach/api/study-folders')(makeReq('GET', '/dsh-oi-coach/api/study-folders'), rWinSf)
+    const winSf = jWinSf()
+    assert.equal(winSf.boundFolders.length, 1, `Expected only C++学习 auto-bound, got: ${JSON.stringify(winSf.boundFolders)}`)
+    assert.equal(winSf.boundFolders[0].label, 'C++学习')
+    assert.ok(existsSync(path.join(cppFolder, 'AGENTS.md')), 'Auto-bound C++学习 should receive gentle AGENTS.md guardrail')
+    assert.ok(!existsSync(path.join(investFolder, 'AGENTS.md')), 'Unrelated workspace must NEVER be touched!')
+    assert.equal(winSf.catalog.totalIndexed, 1, 'Catalog must index combo_test.cpp while ignoring .exe and .env')
+    assert.equal(winSf.catalog.recentFiles[0].relPath, 'combo_test.cpp')
+
+    const { res: rChats, json: jChats } = makeRes()
+    await winRoutes.get('/dsh-oi-coach/api/chats')(makeReq('GET', '/dsh-oi-coach/api/chats'), rChats)
+    const mirrored = jChats().chats
+    assert.equal(mirrored.length, 2, `Expected 2 mirrored child chats (C++学习 + wsDir non-parent, excluding oi-parent & 投资研究), got: ${JSON.stringify(mirrored)}`)
+    const cppChat = mirrored.find((c) => c.title.includes('[C++学习]'))
+    assert.ok(cppChat && cppChat.title.includes('圆排列与隔板法疑问') && cppChat.source === 'dsh-native')
+    const savedChatDoc = JSON.parse(await fs.readFile(path.join(wsDir, 'training', 'chat_history', `${cppChat.id}.json`), 'utf8'))
+    assert.equal(savedChatDoc.messages.length, 2, 'Mirrored chat must strip per-part <system-reminder> and keep 1 user + 1 assistant turn')
+    assert.equal(savedChatDoc.messages[0].text, '5个人围圆桌为什么是(4-1)!*2？')
+
+    // P1-3: Symlink pointing to workspace or home must be rejected by POST /api/study-folders
+    const symToWs = path.join(baseTmp, 'symlink_to_ws')
+    await fs.symlink(wsDir, symToWs)
+    const { res: rSym, out: oSym } = makeRes()
+    await winRoutes.get('/dsh-oi-coach/api/study-folders')(
+      makeReq('POST', '/dsh-oi-coach/api/study-folders', { action: 'add', folderPath: symToWs }),
+      rSym,
+    )
+    assert.equal(oSym.status, 400, 'Symlink to workspace must be rejected by realpathSync guard')
+
+    // 2c. Verify /api/local-cpp-file security boundaries (reads .cpp, blocks ../ and .exe, and falls back to synced catalog on Mac)
+    const { res: rCppOk, json: jCppOk } = makeRes()
+    await winRoutes.get('/dsh-oi-coach/api/local-cpp-file')(
+      makeReq('GET', '/dsh-oi-coach/api/local-cpp-file?label=C%2B%2B%E5%AD%A6%E4%B9%A0&rel=combo_test.cpp'),
+      rCppOk,
+    )
+    assert.ok(jCppOk().content.includes('#include <iostream>'))
+
+    const { res: rCppTrav, out: oCppTrav } = makeRes()
+    await winRoutes.get('/dsh-oi-coach/api/local-cpp-file')(
+      makeReq('GET', '/dsh-oi-coach/api/local-cpp-file?rel=../投资研究私密库/alpha.md'),
+      rCppTrav,
+    )
+    assert.equal(oCppTrav.status, 403, 'Path traversal must be blocked with 403')
+
+    const { res: rCppExe, out: oCppExe } = makeRes()
+    await winRoutes.get('/dsh-oi-coach/api/local-cpp-file')(
+      makeReq('GET', '/dsh-oi-coach/api/local-cpp-file?rel=combo_test.exe'),
+      rCppExe,
+    )
+    assert.equal(oCppExe.status, 403, 'Binary .exe must be blocked with 403')
+
+    if (process.platform === 'darwin') {
+      // Simulate Git sync to Mac: .dsh/cache/ is gitignored, only training/local_cpp_catalog.json arrives on Mac
+      await fs.rm(path.join(wsDir, '.dsh', 'cache', 'local_study_folders.json'), { force: true })
+      const macRoutes2 = new Map()
+      pluginMod.apply(makeMockCtxWithRegistry(macRoutes2), { workspace: wsDir, dshHome: dshDir, simulateWindows: false })
+      const { res: rMacFallback, json: jMacFallback } = makeRes()
+      await macRoutes2.get('/dsh-oi-coach/api/local-cpp-file')(
+        makeReq('GET', '/dsh-oi-coach/api/local-cpp-file?label=C%2B%2B%E5%AD%A6%E4%B9%A0&rel=combo_test.cpp'),
+        rMacFallback,
+      )
+      assert.equal(jMacFallback().source, 'synced-catalog', 'Mac parent should read Windows .cpp via synced local_cpp_catalog.json fallback')
+    }
+
+    // P1-2: Unbinding the last study folder on Windows clears local_cpp_catalog.json cleanly
+    const { res: rRemove, json: jRemove } = makeRes()
+    await winRoutes.get('/dsh-oi-coach/api/study-folders')(
+      makeReq('POST', '/dsh-oi-coach/api/study-folders', { action: 'remove', label: 'C++学习', folderPath: cppFolder }),
+      rRemove,
+    )
+    assert.equal(jRemove().boundFolders.length, 0, 'Unbinding C++学习 should leave 0 bound folders')
+    assert.equal(jRemove().catalog.totalIndexed, 0, 'P1-2: Unbinding last folder must clear local_cpp_catalog.json')
+
+    return 'bilingual abc483_d + C++学习 zstd mirror + catalog fallback + Mac privacy & 403 guards OK'
+  } finally {
+    await fs.rm(baseTmp, { recursive: true, force: true })
+  }
+})
+
 await test('cache_problem_context.py discovers merged-row PIDs & skips unchanged single-platform cache in --incremental mode', async () => {
   const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'oi-coach-cache-test-'))
   try {
@@ -945,10 +1156,31 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
           ok: true,
           found: true,
           problem: {
-            title: 'abc485_c',
+            title: 'abc485_c · 异色最近点（C - Different Neighbor）',
+            titleZh: '异色最近点（C - Different Neighbor）',
             platform: 'AtCoder',
             statement: 'Find min $|i - j|$ with $C_j \\neq C_i$ and $\\frac{N(N-1)}{2}$.',
+            statementZh: '## 题目大意\n求每个点到异色最近点的距离。',
+            vocab: ['number line 数轴', 'nearest 最近的'],
             lectureNote: { file: 'courses/notes/2026-11-22-pj11-modeling.md', title: '普及组训练赛 11' },
+          },
+        }),
+      }
+    }
+    if (String(url).includes('/study-folders')) {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          ok: true,
+          isWindows: false,
+          boundFolders: [],
+          candidates: [],
+          catalog: {
+            updatedAt: '2026-11-25T14:00:00Z',
+            totalIndexed: 1,
+            folders: [{ label: 'C++学习', cppCount: 1, docCount: 0 }],
+            recentFiles: [{ folderLabel: 'C++学习', relPath: 'combo.cpp', name: 'combo.cpp', ext: '.cpp', sizeBytes: 512, updatedAt: '2026-11-25T14:00:00Z', snippet: 'int main(){}' }],
           },
         }),
       }
@@ -1041,17 +1273,19 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
   assert.ok(coachActiveText.includes('Test reply'), 'Active chat reply not rendered')
   assert.ok(coachActiveText.includes('看原题'), 'Problem preview button not rendered')
 
-  // Expand problem preview drawer
+  // Expand problem preview drawer -> verify bilingual side-by-side & OI vocab cards
   const pvBtn = findButtons(tree).find((b) => flattenText(b).includes('看原题'))
   pvBtn.props.onClick()
   tree = slots.main()
-  assert.ok(flattenText(tree).includes('收起原题'), 'Problem preview did not expand')
+  const pvExpandedText = flattenText(tree)
+  assert.ok(pvExpandedText.includes('收起原题') && pvExpandedText.includes('中英对照') && pvExpandedText.includes('本题竞赛英语词卡'), 'Bilingual problem preview did not render')
 
-  // 2b. Switch to 🎯 八级冲刺 tab -> verify 4 subtabs (board, objective 24 cards, mock 100pt cabin, 4 templates 12 cards)
+  // 2b. Switch to 🎯 八级冲刺 tab -> verify 4 subtabs, needsPostMortem audit, 4-keys card, inline ask-coach + returnNav, and mock early-solved warning
   findButtons(tree).find((b) => flattenText(b).includes('八级冲刺')).props.onClick()
   tree = slots.main()
   const gespBoardText = flattenText(tree)
   assert.ok(gespBoardText.includes('80+ 分直免 CSP-S 初赛') && gespBoardText.includes('猫和老鼠') && gespBoardText.includes('生成树计数'), 'GESP8 board missing core P0 problems')
+  assert.ok(gespBoardText.includes('30秒排暗雷'), 'GESP8 board missing 30秒排暗雷 post-mortem banner for 2322/1344')
   assert.ok(!gespBoardText.includes('倍增跳步') && !gespBoardText.includes('组合数学 + 逆元'), 'Locked mock cards on GESP8 board leaked algorithm tags!')
   assert.ok(!/\bauto\s+\[[^\]]+\]\s*[:=]/.test(code), 'GESP8 template leaked C++17 structured binding incompatible with GESP C++14!')
   const gespCoachBtn = findButtons(tree).find((b) => flattenText(b).includes('80+ 双保险辅导'))
@@ -1059,7 +1293,7 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
   await gespCoachBtn.props.onClick()
   assert.equal(mockAgyPayloads.at(-1)?.subMode, 'gesp8-coach', 'GESP8 problem card must dispatch subMode=gesp8-coach')
 
-  // Return to 🎯 八级冲刺 -> test Objective 44+ subtab & answer 1 blind-spot question
+  // Return to 🎯 八级冲刺 -> test Objective 44+ subtab, Combinatorics 4 Keys card, inline ask-coach & ↩ returnNav!
   tree = slots.main()
   findButtons(tree).find((b) => flattenText(b).includes('八级冲刺')).props.onClick()
   tree = slots.main()
@@ -1072,10 +1306,27 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
   tree = slots.main()
   assert.ok(flattenText(tree).includes('稳准狠'), 'GESP8 blind-spot instant explanation did not render')
 
-  // Switch to 🏆 100分全真模考舱 & 🛡️ 四大模板排雷卡
+  // Switch to 盲区 ② · 排列组合 -> verify 4 Keys card & wrong answer -> click inline ask-coach -> click ↩ 返回八级闯关
+  findButtons(tree).find((b) => flattenText(b).includes('排列组合、圆排列')).props.onClick()
+  tree = slots.main()
+  assert.ok(flattenText(tree).includes('GESP 八级计数 4 把万能钥匙'), 'Combinatorics pack missing 4 Keys cheat-sheet')
+  findButtons(tree).find((b) => flattenText(b).includes('C. 48 种')).props.onClick()
+  tree = slots.main()
+  const askQuizBtn = findButtons(tree).find((b) => flattenText(b).includes('这题没透，让教练拿小例子带我推'))
+  assert.ok(askQuizBtn, 'Missing inline ask-coach button after wrong GESP8 quiz choice')
+  await askQuizBtn.props.onClick()
+  assert.equal(mockAgyPayloads.at(-1)?.subMode, 'gesp8-quiz-drill', 'Quiz card ask-coach must dispatch subMode=gesp8-quiz-drill')
+  tree = slots.main()
+  const returnBackBtn = findButtons(tree).find((b) => flattenText(b).includes('返回八级闯关'))
+  assert.ok(returnBackBtn, 'CoachRoomTab missing ↩ 返回八级闯关 header button')
+  returnBackBtn.props.onClick()
+  tree = slots.main()
+  assert.ok(flattenText(tree).includes('GESP 八级计数 4 把万能钥匙'), 'Clicking ↩ 返回八级闯关 did not restore exact combinatorics pack')
+
+  // Switch to 🏆 100分全真模考舱 (verify early-solved substitute protection) & 🛡️ 四大模板排雷卡
   findButtons(tree).find((b) => flattenText(b).includes('100分全真模考舱')).props.onClick()
   tree = slots.main()
-  assert.ok(flattenText(tree).includes('全真模考一') && flattenText(tree).includes('全真模考二'), 'GESP8 mock cabin missing 2026.03 / 2026.06 suites')
+  assert.ok(flattenText(tree).includes('全真模考一') && flattenText(tree).includes('全真模考二') && flattenText(tree).includes('模考真实度保护'), 'GESP8 mock cabin missing suites or early-solved warning')
   findButtons(tree).find((b) => flattenText(b).includes('四大模板排雷卡')).props.onClick()
   tree = slots.main()
   assert.ok(flattenText(tree).includes('堆优化 Dijkstra') && flattenText(tree).includes('priority_queue'), 'GESP8 templates subtab missing Dijkstra skeleton')
@@ -1150,10 +1401,13 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
   const lastDigestPayload = mockAgyPayloads.at(-1)
   assert.equal(lastDigestPayload.subMode, 'lecture-digest', 'LectureDigestModal chip must send subMode=lecture-digest')
   assert.ok(lastDigestPayload.previewQuery && lastDigestPayload.previewQuery.length >= 3, 'LectureDigestModal chip must pass previewQuery=pid')
-  // Return to Archive -> 成长 subtab
+  // Return to Archive -> 本地 C++ 资料库 & 成长 subtab
   tree = slots.main()
   findButtons(tree).find((b) => flattenText(b).includes('错题与档案')).props.onClick()
   tree = slots.main()
+  findButtons(tree).find((b) => flattenText(b).includes('本地 C++ 资料库')).props.onClick()
+  tree = slots.main()
+  assert.ok(flattenText(tree).includes('桥接本地「C++学习」工作区') && flattenText(tree).includes('combo.cpp'), 'Local C++ study folder tab did not render synced catalog')
   findButtons(tree).find((b) => flattenText(b).includes('成长')).props.onClick()
   tree = slots.main()
   assert.ok(flattenText(tree).includes('四平台累计独立 AC'))
