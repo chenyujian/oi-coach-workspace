@@ -9,10 +9,10 @@
   ],
   "is_objective": false,
   "statement": "## 题目背景\n\n2026 年 06 月 GESP C++ 八级编程第 1 题\n\n## 题目描述\n\nA 市有 $n$ 座基站需要通过线网互相连接。第 $i$ 座基站位于二维平面上坐标 $(x_i, y_i)$ 处。\n\n第 $i$ 座基站与第 $j$ 座基站之间的距离定义为 $\\sqrt{(x_i - x_j)^2 + (y_i - y_j)^2}$。\n\n如果两座基站之间的距离不超过给定的整数 $l$，那么可以修建连接这两座基站的线路，线路长度为基站间的距离。\n\n如果从一座基站出发，经过一系列线网中的线路可以到达另一座基站，则称这两座基站是互相连接的。\n\n请问使得 $n$ 座基站两两之间都互相连接，需要修建的线路总长度最小是多少？如果不能修建满足条件的线网，则输出 `Impossible`。\n\n## 输入格式\n\n第一行，两个正整数 $n, l$，分别表示基站数量与线路长度上限。\n\n接下来 $n$ 行，每行两个整数 $x_i, y_i$，表示基站的坐标。\n\n## 输出格式\n\n输出一行。如果能修建满足条件的线网，则输出需要修建的最小线路总长度，保留两位小数。否则输出 `Impossible`。\n\n## 样例\n\n```input1\n4 2\n1 0\n-1 -1\n0 0\n1 1\n```\n\n```output1\n3.41\n```\n\n```input2\n4 1\n1 0\n-1 -1\n0 0\n1 1\n```\n\n```output2\nImpossible\n```\n\n## 数据范围\n\n对于 $40\\%$ 的测试点，保证 $1 \\le n \\le 100$。\n\n对于所有测试点，保证 $1 \\le n \\le 500$，$1 \\le l \\le 100$，$-100 \\le x_i, y_i \\le 100$。",
-  "attempts": 0,
-  "best_score": 0,
-  "trajectory": "",
-  "latest_verdict": "",
-  "latest_score": null,
-  "latest_code": ""
+  "attempts": 4,
+  "best_score": 100,
+  "trajectory": "WA→WA→WA→AC",
+  "latest_verdict": "AC",
+  "latest_score": 100,
+  "latest_code": "#include<bits/stdc++.h>\r\n#define int long long\r\nusing namespace std;\r\nint a[555],b[555];\r\nbool vis[555];\r\nstruct node{\r\n\tint x,y;\r\n\tdouble z;\r\n};\r\nvector<node>v;\r\nint f[555];\r\nint find(int x){\r\n\tif(f[x]!=x){\r\n\t\treturn f[x]=find(f[x]);\r\n\t}else{\r\n\t\treturn x;\r\n\t}\r\n}\r\nbool cmp(node x,node y){\r\n\treturn x.z<y.z;\r\n}\r\nsigned main(){\r\n\tint n,l;\r\n\tcin>>n>>l;\r\n\tfor(int i=1;i<=n;i++){\r\n\t\tcin>>a[i]>>b[i];\r\n\t}\r\n\r\n\tfor(int i=1;i<=n;i++){\r\n\t\tfor(int j=i+1;j<=n;j++){\r\n\t\t\tint x=a[i]-a[j];\r\n\t\t\tint y=b[i]-b[j];\r\n\t\t\tx*=x;\r\n\t\t\ty*=y;\r\n\t\t\tdouble g=sqrt(x+y);\r\n\t\t\tif(g<=l){\r\n\t\t\t\tv.push_back({i,j,g});\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n\tsort(v.begin(),v.end(),cmp);\r\n\tdouble ans=0.0;\r\n\tint ff=1,sum=0;\r\n\tfor(int i=1;i<=n;i++){\r\n\t\tf[i]=i;\r\n\t}\r\n\tfor(int i=0;i<v.size();i++){\r\n\t\tint x=v[i].x,y=v[i].y;\r\n\t\tdouble z=v[i].z;\r\n//\t\tcout<<x<<\" \"<<y<<\" \"<<z<<endl;\r\n\t\tint fx=find(x),fy=find(y);\r\n\t\tif(fx!=fy){\r\n\t\t\tf[fx]=fy;\r\n\t\t\tans+=z;\r\n\t\t\tff=0;\r\n\t\t\tsum++;\r\n\t\t}\r\n\t}\r\n\tif(sum!=n-1){\r\n\t\tcout<<\"Impossible\";\r\n\t\treturn 0;\r\n\t}\r\n\tprintf(\"%.2lf\",ans);\r\n\treturn 0;\r\n}\r\n"
 }

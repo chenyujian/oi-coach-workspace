@@ -61,11 +61,17 @@
       {
         "pid": "2667",
         "title": "CF25D Roads not only in Berland",
-        "tags": [],
-        "submissions": 0,
-        "bestScore": null,
-        "bestStatus": null,
-        "verdicts": []
+        "tags": [
+          "并查集",
+          "构造",
+          "Codeforces"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
       }
     ]
   },
@@ -4017,6 +4023,27 @@
       {
         "pid": "830",
         "title": "[USACO1.4] 母亲的牛奶 Mother's Milk",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "tid": "6b069e323a38b395692e97af",
+    "kind": "homework",
+    "title": "1125_1620_1750_陈彦旭",
+    "rule": "homework",
+    "beginAt": "2026-11-24T16:00:00.000Z",
+    "endAt": "2026-12-04T16:00:00.000Z",
+    "startAt": null,
+    "dateSort": "2026-11-24T16:00:00.000Z",
+    "problems": [
+      {
+        "pid": "797",
+        "title": "",
         "tags": [],
         "submissions": 0,
         "bestScore": null,
