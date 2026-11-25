@@ -744,6 +744,15 @@ window.__ModuleLoader__.load({
 
     const navServices = { uiWorkspace: null, layout: null }
 
+    function loadSavedGesp8Quiz() {
+      try {
+        const raw = typeof localStorage !== 'undefined' ? localStorage.getItem('oi_gesp8_quiz_v1') : null
+        return raw ? JSON.parse(raw) || {} : {}
+      } catch {
+        return {}
+      }
+    }
+
     const listeners = new Set()
     let state = {
       loading: true,
@@ -751,6 +760,10 @@ window.__ModuleLoader__.load({
       notice: null,
       busy: null,
       tab: 'coach',
+      gesp8SubTab: 'board',
+      gesp8PackId: 'oop',
+      gesp8TplId: 'dijkstra',
+      gesp8QuizAnswers: loadSavedGesp8Quiz(),
       problemSubTab: 'unsolved',
       platformFilter: 'ALL',
       practiceSubTab: 'lab',
@@ -1296,6 +1309,36 @@ window.__ModuleLoader__.load({
         await loadOverview()
       } catch (err) {
         setState({ busy: null, error: `${label}失败：${err?.message || err}` })
+      }
+    }
+
+    function answerGesp8Quiz(qid, idx) {
+      const next = { ...(state.gesp8QuizAnswers || {}), [qid]: idx }
+      setState({ gesp8QuizAnswers: next })
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('oi_gesp8_quiz_v1', JSON.stringify(next))
+        }
+      } catch {
+        // ignore storage quota
+      }
+    }
+
+    async function openOjUrl(url, label = '题目页') {
+      if (!url) return
+      try {
+        await fetchJson(`${API}/open-oj`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ url }),
+        })
+        setState({ notice: { text: `已在浏览器打开「${label}」，提交后将自动同步点亮进度！` } })
+      } catch {
+        try {
+          window.open?.(url, '_blank', 'noopener,noreferrer')
+        } catch {
+          setState({ error: `请复制链接到浏览器打开：${url}` })
+        }
       }
     }
 
@@ -3316,6 +3359,975 @@ window.__ModuleLoader__.load({
       )
     }
 
+    const GESP8_BLIND_PACKS = [
+      {
+        id: 'oop',
+        title: '盲区 ① · C++ 类、继承与虚函数多态',
+        badge: '稳拿 6~8 分语法送分题',
+        summary: '平时打算法赛只写全局数组和 struct，考八级客观题前必须把 class 权限、构造析构顺序与 virtual 多态这 6 个固定考点一次焊牢！',
+        questions: [
+          {
+            id: 'oop-1',
+            q: '在 C++ 中定义 class Box { int x; }; 与 struct Node { int x; }; 时，如果不写访问修饰符，x 的默认访问权限分别是？',
+            options: ['A. 都是 private', 'B. class 默认 private，struct 默认 public', 'C. class 默认 public，struct 默认 private'],
+            ans: 1,
+            explain: 'C++ 唯一核心区别：class 不写标签默认全是 private（类外不能直接点出来），而 struct 默认全是 public！',
+          },
+          {
+            id: 'oop-2',
+            q: '派生类 Derived 继承自基类 Base。创建一个 Derived 对象并在作用域结束销毁时，构造函数与析构函数的调用顺序是？',
+            options: [
+              'A. 构造：先 Base 后 Derived；析构：先 ~Derived 后 ~Base',
+              'B. 构造：先 Derived 后 Base；析构：先 ~Base 后 ~Derived',
+              'C. 构造和析构都是先 Base 后 Derived',
+            ],
+            ans: 0,
+            explain: '口诀「穿衣先穿里面（先父后子），脱衣先脱外面（先子后父）」：先有地基 Base 才能盖楼 Derived，拆楼时反过来先拆顶楼 ~Derived 再拆地基 ~Base！',
+          },
+          {
+            id: 'oop-3',
+            q: '若 class Son : public Dad，Dad 里有 protected int money; 和 private int secret;，在 Son 的成员函数内部能直接读写哪个变量？',
+            options: ['A. money 和 secret 都能直接读写', 'B. 只能直接读写 protected 的 money，不能直接碰 private 的 secret', 'C. 两个都不能直接读写'],
+            ans: 1,
+            explain: 'protected 叫「传家宝」——外部路人不能碰，但亲儿子（派生类内部）可以直接用；private 是「私房钱」，连亲儿子也不能直接访问！',
+          },
+          {
+            id: 'oop-4',
+            q: '基类 Animal 有 virtual void cry() { cout << 1; }，子类 Cat 重写 void cry() { cout << 2; }。执行 Animal* p = new Cat(); p->cry(); 会输出什么？',
+            options: ['A. 输出 1（看指针类型 Animal*）', 'B. 输出 2（加了 virtual 触发动态多态，看真实对象 Cat）', 'C. 编译报错'],
+            ans: 1,
+            explain: '基类函数加了 virtual 就像装了「自动识别雷达」：哪怕用父类指针指着，运行时也会认出底下其实是只真猫（Cat），输出 2！若没写 virtual 才会输出 1。',
+          },
+          {
+            id: 'oop-5',
+            q: '【高频判断题】在多态继承体系中，关于「虚构造函数」与「虚析构函数」，哪句话是正确的？',
+            options: [
+              'A. 构造函数可以是 virtual，析构函数不能是 virtual',
+              'B. 构造函数绝不能是 virtual，而多态基类的析构函数应该声明为 virtual',
+              'C. 构造函数和析构函数都可以声明为 virtual',
+            ],
+            ans: 1,
+            explain: 'delete 父类指针时，若基类析构不是 virtual，就只会调父类析构而漏掉子类析构造成内存泄漏！反过来，构造时对象还没诞生、虚函数表还没建好，所以构造函数绝不能是 virtual！',
+          },
+          {
+            id: 'oop-6',
+            q: '类中包含纯虚函数 virtual double area() = 0; 时，这个类叫「抽象类」。下面哪个操作是非法（会编译报错）的？',
+            options: ['A. 定义指向该抽象类的指针 Shape* p;', 'B. 直接创建该抽象类的对象 Shape s;', 'C. 子类 Circle 实现 area() 后创建 Circle c;'],
+            ans: 1,
+            explain: '纯虚函数 = 0 说明「图纸还没画完」，不能直接造出实体对象 Shape s；但可以定义指针 Shape* p 指向已经实现好 area() 的子类对象！',
+          },
+        ],
+      },
+      {
+        id: 'combo',
+        title: '盲区 ② · 排列组合、圆排列与杨辉三角',
+        badge: '决胜 10~12 分计数大户',
+        summary: '对标 2025~2026 真题最高频计数题：从 0 编号的杨辉三角、整除三位数、圆桌捆绑法、二项式系数与正难则反概率！',
+        questions: [
+          {
+            id: 'cb-1',
+            q: '【真题原味坑】杨辉三角中，行号和列号均从 0 开始计数（第 0 行只有 1 个数 1），那么第 6 行第 2 个数是多少？',
+            options: ['A. 10', 'B. 15', 'C. 20'],
+            ans: 1,
+            explain: '从 0 开始数时，第 n 行第 m 列直接对应组合数 C(n, m)！所以第 6 行第 2 列就是 C(6, 2) = (6×5) ÷ (2×1) = 15（若误减 1 算成 C(5,1)=5 或 C(6,1)=6 就掉坑啦）！',
+          },
+          {
+            id: 'cb-2',
+            q: '用数字 0、1、2、3 组成「没有重复数字」且「能被 3 整除」的三位数，一共有多少个？',
+            options: ['A. 10 个', 'B. 12 个', 'C. 18 个'],
+            ans: 0,
+            explain: '能被 3 整除看各位数字之和！四个数里选 3 个和是 3 的倍数只有两组：{0,1,2}（和=3）与 {1,2,3}（和=6）。{1,2,3} 随便排有 3×2×1 = 6 个；{0,1,2} 百位不能放 0，百位 2 种×十位 2 种×个位 1 种 = 4 个。合计 6 + 4 = 10 个！',
+          },
+          {
+            id: 'cb-3',
+            q: '5 个人围着圆桌坐一圈（座位不编号，整体旋转后一样算同一种坐法，但区分顺逆时针），要求甲和乙必须相邻，共有几种坐法？',
+            options: ['A. 12 种', 'B. 24 种', 'C. 48 种'],
+            ans: 0,
+            explain: '两步秒杀：① 把甲乙绑成一个「双人包」，和另外 3 人共 4 个单位围圆桌：固定 1 个单位当参照物，剩下 3 个全排列有 (4-1)! = 6 种；② 包内甲左乙右或乙左甲右有 2 种，共 6 × 2 = 12 种！',
+          },
+          {
+            id: 'cb-4',
+            q: '二项式 (2x - 1)⁴ 展开合并同类项后，x² 项的系数是多少？',
+            options: ['A. 6', 'B. -24', 'C. 24'],
+            ans: 2,
+            explain: '4 个括号里选 2 个贡献 2x、剩下 2 个贡献 -1：选括号有 C(4, 2) = 6 种，每个乘积是 (2x)² × (-1)² = 4x² × 1 = 4x²，合起来 6 × 4 = 24！别漏乘 2²！',
+          },
+          {
+            id: 'cb-5',
+            q: '把 7 个完全相同的苹果分给 3 个小朋友，要求每个小朋友至少分到 1 个，共有多少种分法？',
+            options: ['A. 15 种', 'B. 21 种', 'C. 36 种'],
+            ans: 0,
+            explain: '经典「隔板法」：7 个苹果排一排，中间有 7 - 1 = 6 个空隙；往 6 个空隙里插 2 块板子就能分成非空的三份，所以是 C(6, 2) = 6×5÷2 = 15 种！',
+          },
+          {
+            id: 'cb-6',
+            q: '袋中有 3 个红球、2 个白球，从中随机一次摸出 2 个球，「至少摸到 1 个红球」的概率是？',
+            options: ['A. 3/5', 'B. 7/10', 'C. 9/10'],
+            ans: 2,
+            explain: '遇到「至少 1 个」立刻想「正难则反（总概率减一个都没有）」！5 个球摸 2 个共 C(5,2) = 10 种等可能结果，2 个全是白球只有 C(2,2) = 1 种，所以概率是 1 - 1/10 = 9/10！',
+          },
+        ],
+      },
+      {
+        id: 'graph',
+        title: '盲区 ③ · 最短路、生成树、倍增与树遍历坑',
+        badge: '专治判断题概念翻车',
+        summary: '八级判断题最爱设文字陷阱：负权边、最小生成树唯一性、哈夫曼合并果子、先中后序还原二叉树一次排雷！',
+        questions: [
+          {
+            id: 'gr-1',
+            q: '【高频判断】「只要有向图中不存在负权环，使用堆优化 Dijkstra 算法就一定能求出正确的单源最短路径」——这句话对吗？',
+            options: ['A. 正确', 'B. 错误（只要有负权边，Dijkstra 就可能算错，哪怕没有负环！）'],
+            ans: 1,
+            explain: '造个 3 点极小反例：1→2 权 5，1→3 权 6，3→2 权 -3。Dijkstra 先弹出距离 5 的 2 号点锁死，结果绕道 1→3→2 总长其实只要 6 - 3 = 3！有负权边必须用 Bellman-Ford / SPFA。',
+          },
+          {
+            id: 'gr-2',
+            q: '【高频判断】「若连通无向图中存在多条权值相同的边，则该图的最小生成树一定不唯一」——这句话对吗？',
+            options: ['A. 正确', 'B. 错误（就算边权全部相同，只要原图本身就是一棵树，最小生成树依然唯一！）'],
+            ans: 1,
+            explain: '反例一秒证伪：3 个点连成一条线 1—2—3，两条边权都是 5。要让 3 个点连通这两条边全得选，只有唯一这 1 棵生成树！反过来「最小生成树不唯一 → 必有相同权值边」才是对的。',
+          },
+          {
+            id: 'gr-3',
+            q: '4 堆石子数量分别为 1、2、4、5，每次可以选「任意两堆」合并，代价为两堆石子数之和。合为一堆的最小总代价是多少？',
+            options: ['A. 22', 'B. 24', 'C. 27'],
+            ans: 0,
+            explain: '任意两堆可合 = 哈夫曼树贪心（每次挑最小的两堆合）：① 1+2=3（代价3，剩 3,4,5）→ ② 3+4=7（代价7，剩 5,7）→ ③ 5+7=12（代价12）。总代价 3 + 7 + 12 = 22！（注意：若限定只能合相邻两堆才是区间 DP！）',
+          },
+          {
+            id: 'gr-4',
+            q: '某二叉树的先序遍历为 A B D E C F，中序遍历为 D B E A F C，则它的后序遍历序列是？',
+            options: ['A. D E B F C A', 'B. D B E F C A', 'C. D E B C F A'],
+            ans: 0,
+            explain: '先序第一个字母 A 必是整棵树的根（后序最后一个必是 A）；去中序里找 A，左边 D B E 是左子树，右边 F C 是右子树；递归按「左右根」拼出左子树 D E B、右子树 F C，总后序就是 D E B F C A！',
+          },
+          {
+            id: 'gr-5',
+            q: '对于点数 V = 2000、边数 E ≈ 200万 的稠密无向图求最小生成树，对比朴素 Prim 算法 O(V²) 与 Kruskal 算法 O(E log E)，哪个更优？',
+            options: ['A. 朴素 Prim 更优（约 400 万次操作，不需存 200 万条边排序）', 'B. Kruskal 更优'],
+            ans: 0,
+            explain: '口诀「稀疏图用 Kruskal（并查集 + 边排序），稠密图用朴素 Prim O(V²)」：V=2000 时 V² 才 400 万，而 200 万条边排序 E log E 要四千多万次！',
+          },
+          {
+            id: 'gr-6',
+            q: '树上倍增数组 fa[u][k] 记录从节点 u 往上跳 2^k 步到达的祖先。想从 u 往上精确跳 11 步，需要依次使用哪几个 k？',
+            options: ['A. k = 3, 1, 0（因为 11 = 8 + 2 + 1 = 2³ + 2¹ + 2⁰）', 'B. k = 3, 2（8 + 4 = 12）', 'C. 只能一步步跳 11 次'],
+            ans: 0,
+            explain: '任意正整数都能唯一拆成二进制 2 的幂之和：11 = 8 + 2 + 1，所以只需跳 2³、2¹、2⁰ 三步就能走完 11 步，查询复杂度从 O(N) 降为 O(log N)！',
+          },
+        ],
+      },
+      {
+        id: 'geom',
+        title: '盲区 ④ · 初等代数几何与递推复杂度速算',
+        badge: '补齐最后 6 分超纲公式',
+        summary: '八级大纲明确要求的平面几何（距离、海伦公式、圆扇形、叉积）与分治递推式复杂度，记住具体算例就绝不丢分！',
+        questions: [
+          {
+            id: 'gm-1',
+            q: '归并排序把长度为 N 的区间分成两半分别递归，再用线性时间合并，递推式 T(N) = 2T(N/2) + O(N)，它的总时间复杂度是？',
+            options: ['A. O(N)', 'B. O(N log N)', 'C. O(N²)'],
+            ans: 1,
+            explain: '画递归树：每次对半砍一共有 log₂N 层；第 0 层干 N 活，第 1 层 2 个 N/2 合起来还是干 N 活……每层总账都是 N，乘上层数就是 O(N log N)！（若合并只花 O(1)，即 T(N)=2T(N/2)+1，总复杂度才是 O(N)）。',
+          },
+          {
+            id: 'gm-2',
+            q: '已知三角形三边长分别为 3、4、5（半周长 p = (3+4+5)÷2 = 6），用海伦公式 S = √(p(p-a)(p-b)(p-c)) 求面积：',
+            options: ['A. 6', 'B. 10', 'C. 12'],
+            ans: 0,
+            explain: '代入公式：p=6，p-a=3，p-b=2，p-c=1，乘积 6×3×2×1 = 36，开根号 √36 = 6（正好和直角三角形 3×4÷2 = 6 对上！遇到非直角一般三角形全靠海伦公式）！',
+          },
+          {
+            id: 'gm-3',
+            q: '平面直角坐标系中，点 A(-1, 2) 与点 B(3, -1) 之间的欧氏（直线）距离是多少？',
+            options: ['A. 5', 'B. 7', 'C. 25'],
+            ans: 0,
+            explain: '横坐标差 |3 - (-1)| = 4，纵坐标差 |-1 - 2| = 3，勾股定理 √(4² + 3²) = √25 = 5！（写代码给边长排序时，尽量先存距离平方 d² = dx*dx + dy*dy 防浮点误差）。',
+          },
+          {
+            id: 'gm-4',
+            q: '【真题代数巧算】若实数满足 x + y = 9，x - y = 3，则 x × y 的值为？',
+            options: ['A. 15', 'B. 18', 'C. 21'],
+            ans: 1,
+            explain: '两式相加得 2x = 12 → x = 6，代回得 y = 3，所以 x × y = 18！（也可以用完全平方差：(x+y)² - (x-y)² = 4xy → (81 - 9) ÷ 4 = 18）。',
+          },
+          {
+            id: 'gm-5',
+            q: '半径为 6 的圆中，圆心角为 120° 的扇形面积是多少？',
+            options: ['A. 6π', 'B. 12π', 'C. 24π'],
+            ans: 1,
+            explain: '整圆面积 πr² = 36π；120° 占整圈 360° 的 120/360 = 1/3，所以扇形面积 = 36π × 1/3 = 12π！',
+          },
+          {
+            id: 'gm-6',
+            q: '从原点出发的两个二维向量 u = (3, 0) 与 v = (3, 4)，计算二维叉积 u × v = x₁y₂ - y₁x₂ = 3×4 - 0×3 = 12 > 0，几何意义是？',
+            options: ['A. v 在 u 的逆时针方向，且以 u, v 为邻边的平行四边形面积为 12', 'B. u 与 v 互相垂直', 'C. v 在 u 的顺时针方向'],
+            ans: 0,
+            explain: '二维叉积符号判转向（>0 逆时针左拐，<0 顺时针右拐，=0 共线），绝对值正好等于两向量张成的平行四边形面积（除以 2 就是三角形面积 = 6）！',
+          },
+        ],
+      },
+    ]
+
+    const GESP8_TEMPLATE_PACKS = [
+      {
+        id: 'dijkstra',
+        title: '模板 ① · 堆优化 Dijkstra 最短路（C++14 安全版）',
+        badge: 'P0 头号高频（末班车/猫和老鼠/上学）',
+        skeleton: 'typedef pair<long long, int> PLI;\npriority_queue<PLI, vector<PLI>, greater<PLI>> pq;\nfill(dist, dist + n + 1, (long long)1e18);\ndist[s] = 0; pq.push(make_pair(0LL, s));\nwhile (!pq.empty()) {\n  long long d = pq.top().first; int u = pq.top().second; pq.pop();\n  if (d > dist[u]) continue; // 必写防重入队退化！\n  for (auto &e : adj[u]) {\n    int v = e.first; long long w = e.second;\n    if (dist[u] + w < dist[v]) pq.push(make_pair(dist[v] = dist[u] + w, v));\n  }\n}',
+        questions: [
+          {
+            id: 'tpl-dij-1',
+            q: 'C++ STL 的 priority_queue<pair<long long, int>> 如果不传第 3 个模板参数 greater<...>，默认先弹出谁？',
+            options: ['A. 默认是大根堆（先弹出距离最大的点，导致最短路逻辑错乱/超时！）', 'B. 默认就是小根堆'],
+            ans: 0,
+            explain: 'STL priority_queue 默认是大根堆！写 Dijkstra 必须配 vector<PLI>, greater<PLI> 变成小根堆（且考场严禁写 C++17 的 auto [d, u]，用 pq.top().first / second 100% 兼容 C++11/14 零 CE）！',
+          },
+          {
+            id: 'tpl-dij-2',
+            q: '弹出队头拿到 d = pq.top().first 与 u = pq.top().second 后，如果漏写了 if (d > dist[u]) continue;（也没有开 vis[u] 数组），遇到稠密构造图会发生什么？',
+            options: ['A. 答案不受影响，速度也一样快', 'B. 同一个点过期的旧记录会反复扫出边，复杂度退化直接 TLE！'],
+            ans: 1,
+            explain: '每次更新更短距离都会往堆里塞一条新记录，堆里留着的旧大距离弹出来时必须立刻 continue 扔掉，否则白跑无数遍邻接表！',
+          },
+          {
+            id: 'tpl-dij-3',
+            q: '当点数 N = 10⁵、单条边权最大 10⁹ 时，最短路最大值可达 10¹⁴。初始化无穷大 INF 写成 0x3f3f3f3f（约 10⁹）会发生什么？',
+            options: ['A. 正常通过', 'B. 真最短路超过 10⁹ 的点全被误判为不可达或算错，必须用 long long + 1e18！'],
+            ans: 1,
+            explain: '0x3f3f3f3f 只有约 1.06×10⁹，装不下超过 10⁹ 的路径和！开 long long 时 INF 一律设 1e18（或 LLONG_MAX / 4 防加法溢出）！',
+          },
+        ],
+      },
+      {
+        id: 'kruskal',
+        title: '模板 ② · Kruskal 最小生成树 + 并查集',
+        badge: 'P0 二号高频（线网建设/最小生成树）',
+        skeleton: 'int find(int x) { return fa[x] == x ? x : fa[x] = find(fa[x]); }\nsort(edges.begin(), edges.end()); // 按边权从小到大\nlong long ans = 0; int cnt = 0;\nfor (auto &e : edges) {\n  int u = find(e.u), v = find(e.v);\n  if (u != v) { fa[u] = v; ans += e.w; if (++cnt == n - 1) break; }\n}',
+        questions: [
+          {
+            id: 'tpl-mst-1',
+            q: '并查集 find 函数里，写 fa[x] == x ? x : find(fa[x]) 漏掉了「fa[x] =」路径压缩，最坏单次查询复杂度会变成多少？',
+            options: ['A. 依然是 O(log N)', 'B. 退化成一条长链 O(N)，M 次查询变 O(NM) 直接 TLE！'],
+            ans: 1,
+            explain: '加上 fa[x] = find(fa[x]) 只需多敲 6 个字符，就能把整条链直接挂到根节点底下，复杂度瞬间压到近乎常数！且别忘了主函数开头先跑 iota(fa+1, fa+n+1, 1) 初始化！',
+          },
+          {
+            id: 'tpl-mst-2',
+            q: 'N 个点的图跑完 Kruskal 循环后，如何判断原图不连通（不存在生成树，应输出 -1 或 impossible）？',
+            options: ['A. 看 ans 是否等于 0', 'B. 看成功合并选入的边数 cnt 是否严格小于 N - 1'],
+            ans: 1,
+            explain: '边权可能为 0 所以不能看 ans==0！任何 N 个点的连通树必然恰好有 N - 1 条边，cnt < N - 1 是判不连通的唯一铁律（特判 N == 1 时需要 0 条边）！',
+          },
+          {
+            id: 'tpl-mst-3',
+            q: '在平面上有 N = 2000 个坐标点，任意两点间都能拉电线（完全图），存边的数组或 vector 容量大约会有多少条边？',
+            options: ['A. 约 2,000 条', 'B. N×(N-1)/2 ≈ 200 万条（开静态数组只开 2005 会当场越界 RE！）'],
+            ans: 1,
+            explain: '点对数量是平方级！N = 2000 时有近 200 万条边，要么用 vector<Edge> edges; edges.reserve(n*(n-1)/2); 要么数组开到 2000005！',
+          },
+        ],
+      },
+      {
+        id: 'lca',
+        title: '模板 ③ · 树上倍增 LCA（最近公共祖先）',
+        badge: '八级树论基石（割裂/工作沟通/树上距离）',
+        skeleton: 'int lca(int u, int v) {\n  if (dep[u] < dep[v]) swap(u, v);\n  for (int k = 19; k >= 0; k--)\n    if (dep[u] - (1 << k) >= dep[v]) u = fa[u][k];\n  if (u == v) return u; // 必写！\n  for (int k = 19; k >= 0; k--)\n    if (fa[u][k] != fa[v][k]) u = fa[u][k], v = fa[v][k];\n  return fa[u][0];\n}',
+        questions: [
+          {
+            id: 'tpl-lca-1',
+            q: '把较深的 u 往上跳到和 v 同一层后，如果漏写了 if (u == v) return u; 直接往下跑双点齐跳再返回 fa[u][0]，会错在哪种情况？',
+            options: ['A. v 恰好本来就是 u 的祖先时，会多往上返一层变成 v 的父节点！', 'B. 所有情况都会死循环'],
+            ans: 0,
+            explain: '当 v 本身就是 u 的老祖宗时，对齐深度后 u 和 v 已经重合在正确答案上了！如果不立刻 return u，最后 return fa[u][0] 就会冤枉地跳到老祖宗头顶上去！',
+          },
+          {
+            id: 'tpl-lca-2',
+            q: '第二个循环双点齐跳时，条件为什么必须写 fa[u][k] != fa[v][k]（不等才跳），而不能写 ==？',
+            options: ['A. 因为相等时可能跳过头到了 LCA 的更上方祖先，不等才跳能精准停在 LCA 的正下方一层！', 'B. 写 == 也能找到最近的公共祖先'],
+            ans: 0,
+            explain: '根节点也是公共祖先但不是「最近」的！从大步往小步试，只要跳上去还不撞车就放心跳，循环结束时 u 和 v 必定肩并肩站在 LCA 的紧挨下一层，此时 fa[u][0] 就是 LCA！',
+          },
+          {
+            id: 'tpl-lca-3',
+            q: '求树上任意两点 u, v 之间的路径长度（边权和 dist[u] 为根到 u 的距离），公式是什么？',
+            options: ['A. dist[u] + dist[v] - dist[lca(u, v)]', 'B. dist[u] + dist[v] - 2 * dist[lca(u, v)]'],
+            ans: 1,
+            explain: '根到 lca 那一段路在 dist[u] 里算了一次、在 dist[v] 里又算了一次，一共多算了 2 次，所以必须减掉 2 * dist[lca]！',
+          },
+        ],
+      },
+      {
+        id: 'comb',
+        title: '模板 ④ · 快速幂 + 费马小定理逆元求 C(n, m)',
+        badge: '压轴计数必背（堆石子/生成树计数）',
+        skeleton: 'long long qpow(long long a, long long b) {\n  long long res = 1; a %= MOD;\n  for (; b > 0; b >>= 1) {\n    if (b & 1) res = res * a % MOD;\n    a = a * a % MOD;\n  }\n  return res;\n}\nlong long C(int n, int m) {\n  if (m < 0 || m > n) return 0;\n  return fac[n] * invFac[m] % MOD * invFac[n - m] % MOD;\n}',
+        questions: [
+          {
+            id: 'tpl-cb-1',
+            q: '当模数 MOD = 998244353 或 10⁹+7（质数）时，算组合数除以 m! 能不能写 (fac[n] / fac[m]) % MOD？',
+            options: ['A. 不能！取模不能直接做整数除法，必须乘以 fac[m] 的逆元 qpow(fac[m], MOD - 2) % MOD', 'B. 可以直接先除再取模'],
+            ans: 0,
+            explain: 'fac[n] 早就取过模了，直接除根本除不尽还会算错！质数模下由费马小定理，除以 x 等价于乘以 x^(MOD - 2) % MOD！',
+          },
+          {
+            id: 'tpl-cb-2',
+            q: '预处理阶乘数组 fac[0..N] 时，fac[0] 应该设为多少？且如果题目询问 C(3, 5)（m > n），C 函数该返回多少？',
+            options: ['A. fac[0] = 0，C(3, 5) 返回 1', 'B. fac[0] = 1（0 的阶乘为 1），m > n 时返回 0'],
+            ans: 1,
+            explain: '如果误设 fac[0] = 0，后面所有 fac[i] = fac[i-1] * i 乘出来全变 0 了！而从 3 个物品里选 5 个显然有 0 种选法，m < 0 || m > n 必须特判 return 0！',
+          },
+          {
+            id: 'tpl-cb-3',
+            q: '若数组 fac[] 类型写成了 int 而不是 long long，写 fac[n] * invFac[m] % MOD * invFac[n - m] % MOD 怎样防溢出？',
+            options: ['A. 最后结果赋给 long long 就行', 'B. 每次乘法最前面必须加 1LL *（或直接把 fac/invFac 数组定义为 long long）'],
+            ans: 1,
+            explain: '两个 10⁹ 级别的 int 相乘在取模前就已经爆 int 变负数了！最省心的习惯：计数题阶乘与逆元数组一律直接开 long long！',
+          },
+        ],
+      },
+    ]
+
+    function Gesp8SprintTab({ data, st }) {
+      const g = data?.gesp8
+      if (!g) {
+        return h('div', { className: 'oi-scroll', style: { color: C.sub, textAlign: 'center', paddingTop: 60 } }, '正在加载八级冲刺战情室…')
+      }
+      const s = g.summary || {}
+      const ansMap = st.gesp8QuizAnswers || {}
+      const allBlindIds = GESP8_BLIND_PACKS.flatMap((p) => p.questions.map((q) => q.id))
+      const blindDone = allBlindIds.filter((id) => ansMap[id] !== undefined).length
+      const blindCorrect = GESP8_BLIND_PACKS.flatMap((p) => p.questions).filter((q) => ansMap[q.id] === q.ans).length
+      const allTplIds = GESP8_TEMPLATE_PACKS.flatMap((p) => p.questions.map((q) => q.id))
+      const tplDone = allTplIds.filter((id) => ansMap[id] !== undefined).length
+
+      const regularObjs = (g.objectivePapers || []).filter((x) => !x.isMock)
+      const mockSuites = g.mockSuites || []
+      const finishedMocks = mockSuites.filter((m) => m.completedAll3 && m.totalScore !== null)
+      const bestMockScore = finishedMocks.length > 0 ? Math.max(...finishedMocks.map((m) => m.totalScore)) : null
+
+      const launchGesp8Prob = (p) => {
+        const label = `${p.pid} [GESP${p.session} 八级] ${p.title}`
+        void launchCoachSession({
+          presetId: 'oi-coach',
+          subMode: 'gesp8-coach',
+          title: `八级冲刺 · ${p.pid} ${p.title}`,
+          displayText: p.solved ? `口述重温八级真题【${label}】的核心建模与防坑点` : `按 80+ 双保险法攻克八级真题【${label}】`,
+          previewQuery: p.pid,
+          prompt: p.solved
+            ? `教练，这道 GESP 八级真题【${label}】我之前做过了，现在冲刺 12.26 八级 80+ 分做防遗忘抽查：请别直接告诉我做法，考我 1 个关键建模步骤或边界坑点，看我还记不记得！`
+            : `教练，我在冲刺 12月26日 GESP C++ 八级（目标稳拿 80+ 分免 CSP-S 初赛），现在要攻克历年真题【${label}】（洛谷 ${p.luoguPid || '-'}）。请开启【GESP 八级冲刺 80+ 双保险模式】：第 1 轮先拿 N = 3~4 具体小数字/小图带我手算破冰（严禁首轮剧透算法名或给代码），到第 3 步时记得先带我设计 50%~60% 高档子任务保底分，再冲 100% 正解！`,
+        })
+      }
+
+      const launchObjReview = (paper) => {
+        void launchCoachSession({
+          presetId: 'oi-coach',
+          subMode: 'gesp8-obj-review',
+          title: `八级客观复盘 · ${paper.session}`,
+          displayText: `慢放复盘【${paper.title}】的错题（当前最高折算 ${paper.scaledBest ?? '--'}/50 分）`,
+          previewQuery: paper.pid,
+          prompt: `教练，我刚在信奥李拜天交了【${paper.title}】（题号 ${paper.pid}，折算得分 ${paper.scaledBest ?? '?'}/50 分，目标 ≥ 44/50 分）。请开启【GESP 八级客观卷错题慢放清零模式】，千万别一次性列出整套卷答案！如果系统已识别出我答错的题号，请先挑第 1 道错题用六年级具体小数字带我推算；如果没有识别到具体错题号，请先问我想先复盘第几题！`,
+        })
+      }
+
+      const activePack = GESP8_BLIND_PACKS.find((p) => p.id === st.gesp8PackId) || GESP8_BLIND_PACKS[0]
+      const activeTpl = GESP8_TEMPLATE_PACKS.find((p) => p.id === st.gesp8TplId) || GESP8_TEMPLATE_PACKS[0]
+
+      return h(
+        'div',
+        { className: 'oi-scroll' },
+        h(
+          'div',
+          { className: 'oi-container' },
+          // Top 80+ War-Room Banner
+          h(
+            'div',
+            { className: 'oi-grid-3' },
+            h(
+              'div',
+              { className: 'oi-card', style: { display: 'grid', gap: 4, borderColor: C.accent } },
+              h('div', { style: { fontSize: 12.5, color: C.sub, fontWeight: 700 } }, s.examPassed ? '🎯 GESP C++ 八级冲刺复盘' : `🎯 距离 ${s.examDate} 八级认证`),
+              h('div', { style: { fontSize: 28, fontWeight: 800, color: C.accent } }, s.examPassed ? '满级收官' : `${s.daysLeft} 天`),
+              h('div', { style: { fontSize: 12.5, color: C.sub } }, '唯一目标：80+ 分直免 CSP-S 初赛（按 85 分安全垫备考）'),
+            ),
+            h(
+              'div',
+              { className: 'oi-card', style: { display: 'grid', gap: 4 } },
+              h('div', { style: { fontSize: 12.5, color: C.sub, fontWeight: 700 } }, '📝 上半场 · 客观题稳定度（目标 ≥ 44/50）'),
+              h(
+                'div',
+                {
+                  style: {
+                    fontSize: 28,
+                    fontWeight: 800,
+                    color: s.objRecentAvg50 === null ? C.text : s.objRecentAvg50 >= 44 ? C.ok : C.warn,
+                  },
+                },
+                s.objRecentAvg50 !== null ? `${s.objRecentAvg50} / 50 分` : '待首卷摸底',
+              ),
+              h('div', { style: { fontSize: 12.5, color: C.sub } }, `平时真题卷 ${s.objRegularDone}/${s.objRegularTotal} 套 · 扫盲微卡已通 ${blindDone}/24 题（答对 ${blindCorrect}）`),
+            ),
+            h(
+              'div',
+              { className: 'oi-card', style: { display: 'grid', gap: 4 } },
+              h('div', { style: { fontSize: 12.5, color: C.sub, fontWeight: 700 } }, '💻 下半场 · 编程真题与全真模考'),
+              h('div', { style: { fontSize: 28, fontWeight: 800, color: C.ok } }, `${s.progSolved} / ${s.progTotal} 题`),
+              h(
+                'div',
+                { style: { fontSize: 12.5, color: C.sub } },
+                `P0 主力剩余 ${s.p0Remaining} 道 · 全真合卷最高 ${bestMockScore !== null ? `${bestMockScore}/100 分` : '待开启（W3/W4）'}`,
+              ),
+            ),
+          ),
+
+          // Sub-tab switcher
+          h(
+            'div',
+            { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 } },
+            h(
+              'div',
+              { className: 'oi-nav-seg' },
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: `oi-nav-btn ${st.gesp8SubTab === 'board' ? 'oi-nav-btn-active' : ''}`,
+                  onClick: () => setState({ gesp8SubTab: 'board' }),
+                },
+                `🗺️ 编程真题棋盘（${s.progSolved}/${s.progTotal}）`,
+              ),
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: `oi-nav-btn ${st.gesp8SubTab === 'objective' ? 'oi-nav-btn-active' : ''}`,
+                  onClick: () => setState({ gesp8SubTab: 'objective' }),
+                },
+                `📝 客观题 44+ 特训（${blindDone}/24）`,
+              ),
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: `oi-nav-btn ${st.gesp8SubTab === 'mock' ? 'oi-nav-btn-active' : ''}`,
+                  onClick: () => setState({ gesp8SubTab: 'mock' }),
+                },
+                '🏆 100分全真模考舱',
+              ),
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: `oi-nav-btn ${st.gesp8SubTab === 'templates' ? 'oi-nav-btn-active' : ''}`,
+                  onClick: () => setState({ gesp8SubTab: 'templates' }),
+                },
+                `🛡️ 四大模板排雷卡（${tplDone}/12）`,
+              ),
+            ),
+            h(
+              'span',
+              { style: { fontSize: 12.5, color: C.sub } },
+              '算账口诀：客观稳拿 44 + T1 满分 25 + T2 冲满（保底 ≥ 15）= 84~94 分！',
+            ),
+          ),
+
+          // Sub-tab 1: 26 Programming Past Problems Quadrant Board
+          st.gesp8SubTab === 'board'
+            ? h(
+                'div',
+                { style: { display: 'grid', gap: 16 } },
+                ...(g.quadrants || []).map((qd) =>
+                  h(
+                    'div',
+                    { key: qd.id, className: 'oi-card', style: { display: 'grid', gap: 12 } },
+                    h(
+                      'div',
+                      { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 } },
+                      h(
+                        'div',
+                        { style: { display: 'flex', alignItems: 'center', gap: 8 } },
+                        h('span', { style: { fontWeight: 800, fontSize: 15 } }, qd.title),
+                        h('span', { className: 'oi-pill', style: { color: C.accent, borderColor: C.accent } }, qd.badge),
+                      ),
+                      h('span', { style: { fontSize: 12.5, fontWeight: 700, color: qd.solved === qd.total ? C.ok : C.sub } }, `已攻克 ${qd.solved} / ${qd.total} 题`),
+                    ),
+                    h(
+                      'div',
+                      { className: 'oi-grid-2' },
+                      ...qd.items.map((p) => {
+                        const isLockedMock = p.tier === 'mock' && !p.solved && p.attempts === 0
+                        const badgeColor = p.solved ? C.ok : p.tier === 'p0' ? C.warn : isLockedMock ? C.sub : C.accent
+                        const badgeText = p.solved
+                          ? '✓ 已攻克 (25/25)'
+                          : p.tier === 'p0'
+                            ? `🔥 P0 必刷 · ${p.week}`
+                            : isLockedMock
+                              ? `🔒 ${p.week} 封存`
+                              : `P1 机动`
+                        return h(
+                          'div',
+                          {
+                            key: p.pid,
+                            style: {
+                              padding: '12px 14px',
+                              borderRadius: 10,
+                              border: `1px solid ${p.solved ? C.ok : C.border}`,
+                              background: C.layer,
+                              display: 'grid',
+                              gap: 8,
+                            },
+                          },
+                          h(
+                            'div',
+                            { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 } },
+                            h(
+                              'div',
+                              { style: { fontWeight: 700, fontSize: 13.5, lineHeight: 1.4 } },
+                              `[${p.session}] ${p.title}`,
+                              h('span', { style: { fontSize: 12, color: C.sub, fontWeight: 500, marginLeft: 6 } }, `#${p.pid} / ${p.luoguPid}`),
+                            ),
+                            h('span', { className: 'oi-pill', style: { color: badgeColor, borderColor: badgeColor, whiteSpace: 'nowrap' } }, badgeText),
+                          ),
+                          h(
+                            'div',
+                            { style: { fontSize: 12, color: C.sub } },
+                            isLockedMock
+                              ? '🔒 全真模考封存（首交后自动解锁考点标签与深度复盘）'
+                              : `考点：${p.tag}${p.bestScore !== null && !p.solved ? ` · 历史最高 ${p.bestScore} 分（折算 ${p.scaled25}/25 分）` : ''}`,
+                          ),
+                          h(
+                            'div',
+                            { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } },
+                            isLockedMock
+                              ? h(
+                                  'button',
+                                  {
+                                    type: 'button',
+                                    className: 'oi-btn',
+                                    onClick: () => setState({ gesp8SubTab: 'mock' }),
+                                  },
+                                  '🔒 前往全真模考舱开启 →',
+                                )
+                              : h(
+                                  'button',
+                                  {
+                                    type: 'button',
+                                    className: p.solved ? 'oi-btn' : 'oi-btn oi-btn-primary',
+                                    disabled: !!st.busy,
+                                    onClick: () => launchGesp8Prob(p),
+                                  },
+                                  p.solved ? '🗣️ 口述重温防忘' : '🎯 80+ 双保险辅导',
+                                ),
+                            !isLockedMock
+                              ? h(
+                                  'button',
+                                  {
+                                    type: 'button',
+                                    className: 'oi-btn oi-btn-ghost',
+                                    onClick: () => openOjUrl(p.url, `${p.pid} ${p.title}`),
+                                  },
+                                  '🔗 去李拜天交题',
+                                )
+                              : null,
+                          ),
+                        )
+                      }),
+                    ),
+                  ),
+                ),
+              )
+            : st.gesp8SubTab === 'objective'
+              ? h(
+                  'div',
+                  { style: { display: 'grid', gap: 18 } },
+                  // Part A: 4 Blind-spot interactive packs (24 questions)
+                  h(
+                    'div',
+                    { className: 'oi-card', style: { display: 'grid', gap: 14 } },
+                    h(
+                      'div',
+                      { style: { display: 'grid', gap: 4 } },
+                      h('div', { style: { fontWeight: 800, fontSize: 15.5 } }, '⚡ 第一步：六年级四大客观题盲区扫盲闯关（24 题即点即判）'),
+                      h('div', { style: { fontSize: 13, color: C.sub } }, '每天花 8 分钟点完 1 组，把平时刷算法题碰不到的 OOP 多态、圆排列/杨辉三角从 0 编号、图论文字坑与海伦公式彻底清零！'),
+                    ),
+                    h(
+                      'div',
+                      { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } },
+                      ...GESP8_BLIND_PACKS.map((pk) => {
+                        const pkDone = pk.questions.filter((q) => ansMap[q.id] !== undefined).length
+                        return h(
+                          'button',
+                          {
+                            key: pk.id,
+                            type: 'button',
+                            className: `oi-chip ${activePack.id === pk.id ? 'oi-chip-active' : ''}`,
+                            onClick: () => setState({ gesp8PackId: pk.id }),
+                          },
+                          `${pk.title}（${pkDone}/${pk.questions.length}）`,
+                        )
+                      }),
+                    ),
+                    h(
+                      'div',
+                      { style: { padding: '10px 14px', borderRadius: 10, background: C.layer, fontSize: 13, color: C.sub } },
+                      `${activePack.badge} —— ${activePack.summary}`,
+                    ),
+                    h(
+                      'div',
+                      { style: { display: 'grid', gap: 12 } },
+                      ...activePack.questions.map((q, idx) => {
+                        const picked = ansMap[q.id]
+                        const answered = picked !== undefined
+                        const isRight = picked === q.ans
+                        return h(
+                          'div',
+                          {
+                            key: q.id,
+                            style: {
+                              padding: '13px 15px',
+                              borderRadius: 10,
+                              border: `1px solid ${answered ? (isRight ? C.ok : C.warn) : C.border}`,
+                              background: C.base,
+                              display: 'grid',
+                              gap: 10,
+                            },
+                          },
+                          h('div', { style: { fontWeight: 700, fontSize: 13.5, lineHeight: 1.5 } }, `第 ${idx + 1} 关 · ${q.q}`),
+                          h(
+                            'div',
+                            { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } },
+                            ...q.options.map((opt, oIdx) => {
+                              const isChosen = picked === oIdx
+                              const showCorrect = answered && oIdx === q.ans
+                              return h(
+                                'button',
+                                {
+                                  key: oIdx,
+                                  type: 'button',
+                                  className: 'oi-btn',
+                                  style: showCorrect
+                                    ? { borderColor: C.ok, color: C.ok, fontWeight: 700 }
+                                    : isChosen
+                                      ? { borderColor: C.err, color: C.err }
+                                      : {},
+                                  onClick: () => answerGesp8Quiz(q.id, oIdx),
+                                },
+                                opt,
+                              )
+                            }),
+                          ),
+                          answered
+                            ? h(
+                                'div',
+                                {
+                                  style: {
+                                    fontSize: 12.5,
+                                    lineHeight: 1.6,
+                                    padding: '8px 12px',
+                                    borderRadius: 8,
+                                    background: C.layer,
+                                    color: isRight ? C.ok : C.text,
+                                  },
+                                },
+                                `${isRight ? '✅ 稳准狠！' : '💡 踩坑排雷：'}${q.explain}`,
+                              )
+                            : null,
+                        )
+                      }),
+                    ),
+                  ),
+
+                  // Part B: 11 Regular Official Objective Exam Papers on Oilibaitian
+                  h(
+                    'div',
+                    { className: 'oi-card', style: { display: 'grid', gap: 12 } },
+                    h(
+                      'div',
+                      { style: { display: 'grid', gap: 4 } },
+                      h('div', { style: { fontWeight: 800, fontSize: 15.5 } }, '📋 第二步：信奥李拜天 11 套历年八级客观真题卷实战清零台（目标 ≥ 44/50 分）'),
+                      h('div', { style: { fontSize: 13, color: C.sub } }, '点击「去李拜天作答」限时 30 分钟提交 → 系统自动同步折算为 50 分制成绩 → 交卷后点「错题逐题慢放复盘」把每道错题彻底吃透！（另有 2 套最新卷封存在全真模考舱）'),
+                    ),
+                    h(
+                      'div',
+                      { className: 'oi-grid-2' },
+                      ...regularObjs.map((p) => {
+                        const done = p.attempts > 0
+                        return h(
+                          'div',
+                          {
+                            key: p.pid,
+                            style: {
+                              padding: '12px 14px',
+                              borderRadius: 10,
+                              border: `1px solid ${p.meetsTarget ? C.ok : C.border}`,
+                              background: C.layer,
+                              display: 'grid',
+                              gap: 8,
+                            },
+                          },
+                          h(
+                            'div',
+                            { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 } },
+                            h('div', { style: { fontWeight: 700, fontSize: 13.5 } }, `${p.title}（#${p.pid}）`),
+                            h(
+                              'span',
+                              {
+                                className: 'oi-pill',
+                                style: {
+                                  color: p.meetsTarget ? C.ok : done ? C.warn : C.accent,
+                                  borderColor: p.meetsTarget ? C.ok : done ? C.warn : C.accent,
+                                },
+                              },
+                              done
+                                ? `${p.scaledBest}/50 分 ${p.meetsTarget ? '✓ 达标' : '· 待提分'}`
+                                : `推荐 ${p.week}`,
+                            ),
+                          ),
+                          h('div', { style: { fontSize: 12, color: C.sub } }, `核心题眼：${p.focus}`),
+                          h(
+                            'div',
+                            { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } },
+                            h(
+                              'button',
+                              {
+                                type: 'button',
+                                className: done ? 'oi-btn' : 'oi-btn oi-btn-primary',
+                                onClick: () => openOjUrl(p.url, p.title),
+                              },
+                              done ? '🔗 再刷一遍提分' : '🔗 去李拜天独立作答',
+                            ),
+                            h(
+                              'button',
+                              {
+                                type: 'button',
+                                className: done ? 'oi-btn oi-btn-primary' : 'oi-btn oi-btn-ghost',
+                                disabled: !!st.busy,
+                                onClick: () =>
+                                  done
+                                    ? launchObjReview(p)
+                                    : setState({ notice: { text: `请先在信奥李拜天完成交卷（#${p.pid}）并点顶栏同步，交卷后即解锁逐题慢放复盘！` } }),
+                              },
+                              done ? '🩺 错题逐题慢放复盘' : '🔒 交卷后解锁复盘',
+                            ),
+                          ),
+                        )
+                      }),
+                    ),
+                  ),
+                )
+              : st.gesp8SubTab === 'mock'
+                ? h(
+                    'div',
+                    { style: { display: 'grid', gap: 16 } },
+                    h(
+                      'div',
+                      { className: 'oi-card', style: { display: 'grid', gap: 8, borderColor: C.accent } },
+                      h('div', { style: { fontWeight: 800, fontSize: 15.5 } }, '⏱️ 180 分钟全真考场 85+ 时间分配铁律'),
+                      h(
+                        'div',
+                        { style: { fontSize: 13, color: C.sub, lineHeight: 1.7 } },
+                        '① 0~40 分钟：细算做完 25 道客观题（草稿纸列式验算，稳拿 ≥ 44/50 分） → ② 40~95 分钟：拿下编程 T1 满分（25/25 分，必查 long long 与边界） → ③ 95~115 分钟：编程 T2 先写稳 50%~60% 高档子任务保底代码（先兜住 12.5~15 分，此时总分已跨过 80 分！） → ④ 115~170 分钟：全力冲击 T2 100% 正解 → ⑤ 最后 10 分钟：检查头文件、返回值、数组大小，确保全卷零 CE！',
+                      ),
+                    ),
+                    ...mockSuites.map((m) =>
+                      h(
+                        'div',
+                        {
+                          key: m.id,
+                          className: 'oi-card',
+                          style: {
+                            display: 'grid',
+                            gap: 14,
+                            borderColor: m.passed85 ? C.ok : m.passed80 ? C.accent : C.border,
+                          },
+                        },
+                        h(
+                          'div',
+                          { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 } },
+                          h(
+                            'div',
+                            { style: { display: 'grid', gap: 3 } },
+                            h('div', { style: { fontWeight: 800, fontSize: 16 } }, m.title),
+                            h('div', { style: { fontSize: 12.5, color: C.sub } }, `${m.week} · 自动汇总信奥李拜天三项最高分折算为 100 分制标准卷`),
+                          ),
+                          h(
+                            'div',
+                            {
+                              style: {
+                                fontSize: 22,
+                                fontWeight: 800,
+                                color: m.passed85 ? C.ok : m.passed80 ? C.accent : m.started ? C.warn : C.sub,
+                              },
+                            },
+                            m.totalScore !== null
+                              ? `${m.totalScore} / 100 分 ${m.passed85 ? '🏆 稳超安全线' : m.passed80 ? '✅ 跨过 80 免初赛线' : '· 继续补完三项'}`
+                              : '🔒 待限时开启（-- / 100 分）',
+                          ),
+                        ),
+                        h(
+                          'div',
+                          { className: 'oi-grid-3' },
+                          ...[
+                            { role: '上半场 · 客观卷（50分）', item: m.obj, isObj: true },
+                            { role: '下半场 · 编程 T1（25分）', item: m.t1, isObj: false },
+                            { role: '下半场 · 编程 T2（25分）', item: m.t2, isObj: false },
+                          ].map(({ role, item, isObj }) => {
+                            const hasSub = (item?.attempts || 0) > 0
+                            return h(
+                              'div',
+                              {
+                                key: item.pid,
+                                style: {
+                                  padding: '12px 14px',
+                                  borderRadius: 10,
+                                  border: `1px solid ${C.border}`,
+                                  background: C.layer,
+                                  display: 'grid',
+                                  gap: 8,
+                                },
+                              },
+                              h('div', { style: { fontSize: 12, color: C.sub, fontWeight: 700 } }, role),
+                              h('div', { style: { fontWeight: 800, fontSize: 14 } }, `#${item.pid} ${item.title}`),
+                              h(
+                                'div',
+                                { style: { fontSize: 13, fontWeight: 700, color: hasSub ? C.ok : C.sub } },
+                                hasSub ? `当前折算：${item.points} / ${item.maxPoints} 分` : `未交卷（满分 ${item.maxPoints} 分）`,
+                              ),
+                              h(
+                                'div',
+                                { style: { display: 'flex', gap: 6, flexWrap: 'wrap' } },
+                                h(
+                                  'button',
+                                  {
+                                    type: 'button',
+                                    className: hasSub ? 'oi-btn' : 'oi-btn oi-btn-primary',
+                                    onClick: () => openOjUrl(item.url, `${item.pid} ${item.title}`),
+                                  },
+                                  hasSub ? '🔗 查看/重交' : '🔗 开启模考作答',
+                                ),
+                                hasSub
+                                  ? h(
+                                      'button',
+                                      {
+                                        type: 'button',
+                                        className: 'oi-btn oi-btn-primary',
+                                        onClick: () =>
+                                          isObj
+                                            ? launchObjReview({ pid: item.pid, title: item.title, session: m.title.slice(8, 15), scaledBest: item.points })
+                                            : launchGesp8Prob({ pid: item.pid, title: item.title, session: '模考复盘', solved: item.solved, tag: '全真合卷复盘' }),
+                                      },
+                                      '🩺 赛后复盘',
+                                    )
+                                  : null,
+                              ),
+                            )
+                          }),
+                        ),
+                      ),
+                    ),
+                  )
+                : h(
+                    'div',
+                    { className: 'oi-card', style: { display: 'grid', gap: 14 } },
+                    h(
+                      'div',
+                      { style: { display: 'grid', gap: 4 } },
+                      h('div', { style: { fontWeight: 800, fontSize: 15.5 } }, '🛡️ 八级考场四大满分模板「防手生排雷卡」（12 道致命细节自检）'),
+                      h('div', { style: { fontSize: 13, color: C.sub } }, '考场上最痛的不是想不出思路，而是思路全对却因小根堆写反、忘开 long long 或 LCA 漏特判白丢 25 分！考前必通这 12 关：'),
+                    ),
+                    h(
+                      'div',
+                      { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } },
+                      ...GESP8_TEMPLATE_PACKS.map((tp) => {
+                        const tpDone = tp.questions.filter((q) => ansMap[q.id] !== undefined).length
+                        return h(
+                          'button',
+                          {
+                            key: tp.id,
+                            type: 'button',
+                            className: `oi-chip ${activeTpl.id === tp.id ? 'oi-chip-active' : ''}`,
+                            onClick: () => setState({ gesp8TplId: tp.id }),
+                          },
+                          `${tp.title}（${tpDone}/${tp.questions.length}）`,
+                        )
+                      }),
+                    ),
+                    h(
+                      'div',
+                      { style: { display: 'grid', gap: 6 } },
+                      h('div', { style: { fontSize: 12.5, fontWeight: 700, color: C.accent } }, `核心标准骨架速览 · ${activeTpl.badge}`),
+                      h('pre', { className: 'oi-code-block', style: { margin: 0, fontSize: 12.5, lineHeight: 1.55 } }, activeTpl.skeleton),
+                    ),
+                    h(
+                      'div',
+                      { style: { display: 'grid', gap: 12 } },
+                      ...activeTpl.questions.map((q, idx) => {
+                        const picked = ansMap[q.id]
+                        const answered = picked !== undefined
+                        const isRight = picked === q.ans
+                        return h(
+                          'div',
+                          {
+                            key: q.id,
+                            style: {
+                              padding: '13px 15px',
+                              borderRadius: 10,
+                              border: `1px solid ${answered ? (isRight ? C.ok : C.warn) : C.border}`,
+                              background: C.base,
+                              display: 'grid',
+                              gap: 10,
+                            },
+                          },
+                          h('div', { style: { fontWeight: 700, fontSize: 13.5, lineHeight: 1.5 } }, `排雷点 ${idx + 1} · ${q.q}`),
+                          h(
+                            'div',
+                            { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } },
+                            ...q.options.map((opt, oIdx) => {
+                              const isChosen = picked === oIdx
+                              const showCorrect = answered && oIdx === q.ans
+                              return h(
+                                'button',
+                                {
+                                  key: oIdx,
+                                  type: 'button',
+                                  className: 'oi-btn',
+                                  style: showCorrect
+                                    ? { borderColor: C.ok, color: C.ok, fontWeight: 700 }
+                                    : isChosen
+                                      ? { borderColor: C.err, color: C.err }
+                                      : {},
+                                  onClick: () => answerGesp8Quiz(q.id, oIdx),
+                                },
+                                opt,
+                              )
+                            }),
+                          ),
+                          answered
+                            ? h(
+                                'div',
+                                {
+                                  style: {
+                                    fontSize: 12.5,
+                                    lineHeight: 1.6,
+                                    padding: '8px 12px',
+                                    borderRadius: 8,
+                                    background: C.layer,
+                                    color: isRight ? C.ok : C.text,
+                                  },
+                                },
+                                `${isRight ? '✅ 防坑到位！' : '⚠️ 考场救命提醒：'}${q.explain}`,
+                              )
+                            : null,
+                        )
+                      }),
+                    ),
+                  ),
+        ),
+      )
+    }
+
     function OiCoachPage() {
       const st = useStore()
       React.useEffect(() => {
@@ -3363,6 +4375,17 @@ window.__ModuleLoader__.load({
                     },
                   })
                 : null,
+            ),
+            h(
+              'button',
+              {
+                type: 'button',
+                className: `oi-nav-btn ${st.tab === 'gesp8' ? 'oi-nav-btn-active' : ''}`,
+                onClick: () => setState({ tab: 'gesp8' }),
+              },
+              data?.gesp8?.summary && !data.gesp8.summary.examPassed
+                ? `🎯 八级冲刺 · ${data.gesp8.summary.daysLeft}天`
+                : '🎯 八级冲刺',
             ),
             h(
               'button',
@@ -3496,7 +4519,9 @@ window.__ModuleLoader__.load({
           ? h('div', { className: 'oi-scroll', style: { color: C.sub, textAlign: 'center', paddingTop: 60 } }, '正在加载学习台…')
           : st.tab === 'coach'
             ? h(CoachRoomTab, { data, st })
-            : st.tab === 'problems'
+            : st.tab === 'gesp8'
+              ? h(Gesp8SprintTab, { data, st })
+              : st.tab === 'problems'
               ? data
                 ? h(ProblemsTab, { data, st })
                 : null

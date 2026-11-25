@@ -227,10 +227,21 @@ def cache_haoba_problems(pids: list[str]) -> int:
     return ok
 
 
+GESP8_OILI_PROG_PIDS = (
+    "786", "787", "788", "789", "790", "791", "792", "793", "794", "795",
+    "796", "797", "798", "799", "800", "801", "1344", "1345", "1504", "1505",
+    "1800", "1801", "2321", "2322", "2699", "2700",
+)
+GESP8_OILI_OBJ_PIDS = (
+    "1760", "1761", "1677", "1686", "1694", "1702", "1709",
+    "1726", "1717", "1734", "2269", "2632", "2718",
+)
+
+
 def cache_oilibaitian_problems(pids: list[str]) -> int:
     try:
         import fetch_oilibaitian as fo
-        client = fo.create_authenticated_client(delay=0.1)
+        client = fo.create_authenticated_client(delay=0.08)
     except Exception as e:
         print(f"[Oilibaitian] skipped (check OILIBAITIAN_USERNAME/PASSWORD in .env.local): {e}")
         return 0
@@ -247,6 +258,8 @@ def cache_oilibaitian_problems(pids: list[str]) -> int:
             pdata = client.get_json(f"/p/{pid}")
             pdoc = pdata.get("pdoc") or {}
             title = str(pdoc.get("title") or pid)
+            tags = pdoc.get("tag") or []
+            is_obj = "客观题" in title or "客观题" in tags
             content = str(pdoc.get("content") or "")
             if content.startswith("{"):
                 try:
@@ -254,13 +267,15 @@ def cache_oilibaitian_problems(pids: list[str]) -> int:
                     content = cobj.get("zh") or cobj.get("en") or next(iter(cobj.values()), content)
                 except Exception:
                     pass
-            if len(content) > 3600:
-                content = content[:3600] + "\n...(truncated)"
+            max_chars = 15000 if is_obj else 4200
+            if len(content) > max_chars:
+                content = content[:max_chars] + "\n...(truncated)"
 
             precs = sorted(recs_by_pid.get(str(pid), []), key=lambda x: str(x.get("judgeAt") or ""))
             latest_code = ""
             latest_verdict = ""
             latest_score = None
+            wrong_qids: list[int] = []
             traj = "→".join(fo.status_name(x.get("status")) for x in precs[-8:])
             if precs:
                 last = precs[-1]
@@ -272,6 +287,11 @@ def cache_oilibaitian_problems(pids: list[str]) -> int:
                         rdata = client.get_json(f"/record/{rid}")
                         rdoc = rdata.get("rdoc") or {}
                         latest_code = str(rdoc.get("code") or "")[:3500]
+                        if is_obj:
+                            for idx_tc, tc in enumerate(rdoc.get("testCases") or [], 1):
+                                if tc.get("status") != 1:
+                                    qid = tc.get("id") if isinstance(tc.get("id"), int) and tc.get("id") > 0 else idx_tc
+                                    wrong_qids.append(int(qid))
                     except Exception:
                         pass
 
@@ -280,6 +300,8 @@ def cache_oilibaitian_problems(pids: list[str]) -> int:
                 "pid": str(pid),
                 "title": f"{pid} {title}",
                 "url": f"https://www.oilibaitian.cn/p/{pid}",
+                "tags": tags,
+                "is_objective": is_obj,
                 "statement": content,
                 "attempts": len(precs),
                 "best_score": max((x.get("score") or 0 for x in precs), default=0),
@@ -287,6 +309,7 @@ def cache_oilibaitian_problems(pids: list[str]) -> int:
                 "latest_verdict": latest_verdict,
                 "latest_score": latest_score,
                 "latest_code": latest_code,
+                **({"wrong_questions": sorted(set(wrong_qids))} if is_obj and wrong_qids else {}),
             }
             save_cache(f"oilibaitian_{pid}", payload)
             print(f"[Oilibaitian] cached {pid} ({title}) stmt={len(content)} chars code={len(latest_code)} chars")
@@ -407,7 +430,15 @@ def discover_unsolved_from_timeline(limit: int = 30) -> dict[str, list[tuple[str
             if f"oilibaitian:{seed_pid}" not in seen:
                 found["oilibaitian"].append((seed_pid, local_counts.get(("oilibaitian", seed_pid))))
 
-    return {k: v[:limit] for k, v in found.items()}
+    result = {k: v[:limit] for k, v in found.items()}
+    # 在真实工作区（存在 oilibaitian_uid79_profile.json）自动纳管 GESP 八级全套编程与客观真题缓存（不受 limit 截断）
+    if (WORKSPACE / "training" / "sync_logs" / "oilibaitian_uid79_profile.json").exists():
+        existing_oi = {pid for pid, _ in result["oilibaitian"]}
+        for gpid in (*GESP8_OILI_PROG_PIDS, *GESP8_OILI_OBJ_PIDS):
+            if gpid not in existing_oi:
+                existing_oi.add(gpid)
+                result["oilibaitian"].append((gpid, local_counts.get(("oilibaitian", gpid), 0)))
+    return result
 
 
 def filter_uncached(prefix: str, items: list[tuple[str, int | None]], incremental: bool) -> list[str]:

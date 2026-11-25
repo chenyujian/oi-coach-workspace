@@ -63,6 +63,7 @@
 - [x] 四平台全量基线拉取、跨站同题去重时间线（`build_timeline.py`）、未过题题面增量缓存（`cache_problem_context.py`）与 2 小时定时自动抓题总管（`auto_sync_ojs.py` + `fetch_luogu.py` + `launchd`）
 - [x] 6 课交互式「OI 读题与建模训练营」（`courses/math_lab/index.html`）
 - [x] 号家军建模与六年级实战搭桥总纲（`00-ren-teacher-modeling-playbook.md`）+ 全部 20 场普及模拟赛与 ABC 讲义零剧透结构化入库（共 21 份 `courses/notes/*.md`）
-- [x] 原生 `dsh-oi-coach` 四空间插件（全屏教练室 + 讲义数学慢放伴读 + 双端后台无感同步与升级提示 + 一键存秘籍卡 + 破冰基石与号家军 10 法快练 + Windows 实机跑通闭环）
+- [x] 原生 `dsh-oi-coach` 五空间插件（全屏教练室 + `🎯 GESP 八级 80+ 冲刺专区` + 讲义数学慢放伴读 + 双端后台无感同步与升级提示 + 一键存秘籍卡 + 破冰基石与号家军 10 法快练 + Windows 实机跑通闭环）
+- [x] GESP 八级全套 26 道编程真题与 13 套客观真题卷本地预缓存、100 分制黑盒合卷计分与防泄题硬锁
 - [x] 端到端自动化门禁测试（`scripts/test_oi_coach.mjs`）与 `GEMINI.md` 研发质量门禁
 - [ ] **待推进**：持续结合孩子真实对话轨迹做周期诊断，并按需补充“3~7 天无提示盲重做”打卡状态
