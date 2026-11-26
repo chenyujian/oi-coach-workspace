@@ -1,0 +1,71 @@
+{
+  "id": "dsh-15a2ce0161",
+  "title": "[c++学习] 传送器 时间限制：2 秒。内存",
+  "mode": "coach",
+  "source": "dsh-native",
+  "workspaceLabel": "c++学习",
+  "subMode": "",
+  "model": "gpt-6.2-astra",
+  "conversationId": null,
+  "previewQuery": "",
+  "skipProblemContext": false,
+  "createdAt": "2026-11-22T13:23:50.725Z",
+  "updatedAt": "2026-11-22T13:28:21.738Z",
+  "messages": [
+    {
+      "role": "user",
+      "text": "传送器\r\n时间限制：2 秒。内存限制：1024 MiB。分值：100 分。\r\n\r\n题目描述\r\n有 \r\nN\r\nN 座城市，编号为 \r\n1\r\n1 到 \r\nN\r\nN。城市 \r\ni\r\ni 内的传送器会把你送到城市 \r\nA\r\ni\r\nA \r\ni\r\n​\r\n 。\r\n\r\n从城市 \r\n1\r\n1 出发，恰好使用 \r\nK\r\nK 次传送器后，你位于哪座城市？\r\n\r\n输入格式\r\nN K\r\nA_1 A_2 ... A_N\r\n所有输入数值均为整数。\r\n\r\n输出格式\r\n输出一个整数，表示最终所在城市的编号。\r\n\r\n数据范围\r\n2\r\n≤\r\nN\r\n≤\r\n2\r\n×\r\n10\r\n5\r\n2≤N≤2×10 \r\n5\r\n 。\r\n1\r\n≤\r\nK\r\n≤\r\n10\r\n18\r\n1≤K≤10 \r\n18\r\n 。\r\n1\r\n≤\r\nA\r\ni\r\n≤\r\nN\r\n1≤A \r\ni\r\n​\r\n ≤N。\n#include<bits/stdc++.h>\r\n#define int long long\r\nusing namespace std;\r\nint dp[555555][66];\r\nint a[222222];\r\nsigned main(){\r\n\tint n,k;\r\n\tcin>>n>>k;\r\n\tfor(int i=1;i<=n;i++){\r\n\t\tcin>>a[i];\r\n\t}\r\n\tfor(int i=1;i<=n;i++){\r\n\t\tfor(int j=0;j<=30;j++){\r\n\t\t\tdp[i][j]=n+1;\r\n\t\t}\r\n\t}\r\n\tfor(int i=1;i<=n;i++){\r\n\t\tdp[i][0]=a[i];\r\n\t}\r\n\tfor(int j=1;j<=30;j++){\r\n\t\tfor(int i=1;i<=n;i++){\r\n\t\t\tdp[i][j]=dp[dp[i][j-1]][j-1];\r\n\t\t}\r\n\t}\r\n\tint x=1;\r\n\tfor(int i=30;i>=0;i--){\r\n\t\tif((1<<i)<=k){\r\n\t\t\tk-=(1<<i);\r\n\t\t\tx=dp[x][i];\r\n\t\t}\r\n\t}\r\n\tcout<<x<<endl;\r\n\treturn 0;\r\n}\r\n\n这是我这道题的倍增解法，你看看。",
+      "ts": "2026-11-22T13:24:41.098Z"
+    },
+    {
+      "role": "assistant",
+      "text": "你的倍增思路是对的，转移式 `dp[i][j] = dp[dp[i][j-1]][j-1]` 也正确：从城市 `i` 连跳两次 \\(2^{j-1}\\) 步，就等于跳 \\(2^j\\) 步。**问题在于倍增只算到了第 30 位，不够覆盖 \\(K\\le 10^{18}\\)。**\n\n你从大到小枚举、能跳就跳的写法可以保留，只需注意两点：\n\n1. **预处理和查询都要覆盖第 `0` 到 `59` 位**，因为 \\(10^{18}<2^{60}\\)。原代码即使把第 `0` 到 `30` 位全用上，也只能跳 \\(2^{31}-1\\) 步。\n2. **把 `1 << j` 改成 `1LL << j`**。`#define int long long` 不会改变字面量 `1` 的类型；把循环扩到 `59` 后，不能再用普通 `int` 做这个移位。\n\n按你的思路，代码可以写成：\n\n```cpp\n#include <bits/stdc++.h>\nusing namespace std;\n\nconstexpr int LOG = 60;\nint dp[LOG][200001];  // dp[j][i]：从城市 i 跳 2^j 步后的位置\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n\n    int n;\n    long long k;\n    cin >> n >> k;\n\n    for (int i = 1; i <= n; ++i)\n        cin >> dp[0][i];\n\n    for (int j = 1; j < LOG; ++j)\n        for (int i = 1; i <= n; ++i)\n            dp[j][i] = dp[j - 1][dp[j - 1][i]];\n\n    int x = 1;\n    for (int j = LOG - 1; j >= 0; --j) {\n        if ((1LL << j) <= k) {\n            k -= 1LL << j;\n            x = dp[j][x];\n        }\n    }\n\n    cout << x << '\\n';\n}\n```\n\n不需要把 `dp` 初始化为 `n+1`：第 `0` 层由输入填满，之后每层都只读取已经算好的上一层。表里存的是不超过 \\(2\\times10^5\\) 的**城市编号**，所以 `dp` 用 `int` 就够了；需要 64 位的是**步数** `k` 和移位表达式。",
+      "model": "gpt-6.2-astra",
+      "ts": "2026-11-22T13:25:35.895Z"
+    },
+    {
+      "role": "user",
+      "text": "那么以后这种倍增的题目怎么算我的DP要开多大？然后你那个constexp是什么意思？",
+      "ts": "2026-11-22T13:26:03.401Z"
+    },
+    {
+      "role": "assistant",
+      "text": "算倍增数组的大小，记住一句话：**城市数决定要存多少个起点，最大跳跃步数决定要存多少层。**\n\n拿这道题来说，`dp[j][i]` 表示「从城市 `i` 出发，跳 \\(2^j\\) 步后的位置」。两个维度分开看：\n\n- **城市这一维**：编号是 `1` 到 `N`，下标 `0` 不用，所以开 `N + 1`。本题最多开 `200001`。\n- **层数这一维**：看最大步数 `Kmax` 的**二进制有多少位**，就开多少层。因为查询时，就是把 `K` 拆成若干个 \\(2^j\\) 相加。\n\n比如 `Kmax = 8`，它的二进制是 `1000`，有 **4 位**，所以要开 **4 层**：`j = 0, 1, 2, 3`，分别表示跳 `1, 2, 4, 8` 步。这里最容易差一：**最高下标是 `3`，数组长度却是 `4`。**\n\n本题 \\(2^{59}\\le 10^{18}<2^{60}\\)，所以要开 **60 层**，下标是 `0` 到 `59`。按你原来的 `dp[城市][层]` 顺序，就是：\n\n```cpp\nconstexpr int LOG = 60;  // 层数，不是最高下标\nint dp[200001][LOG];\n```\n\n以后遇到别的题，关键是问：**一次查询最多要跳多少步？** 比如在一棵 `N` 个点的树上向上找祖先，有效的跳跃最多 `N - 1` 步，就按 `N - 1` 算层数；而本题的传送器可以绕圈，步数可以远大于 `N`，所以要按 `K` 算。\n\n至于你问的 `constexp`，完整拼写是 **`constexpr`**，末尾还有一个 `r`。在 `constexpr int LOG = 60;` 里，它表示 **`LOG` 是编译时就确定的常量**，可以直接用作数组长度。这个例子写成你可能更熟悉的 `const int LOG = 60;` 也可以。",
+      "model": "gpt-6.2-astra",
+      "ts": "2026-11-22T13:26:19.258Z"
+    },
+    {
+      "role": "user",
+      "text": "那么这两个东西有啥区别吗？",
+      "ts": "2026-11-22T13:26:59.407Z"
+    },
+    {
+      "role": "assistant",
+      "text": "`const` 和 `constexpr` 的区别，可以记成一句话：**`const` 管“能不能改”，`constexpr` 定义变量时还管“编译时能不能确定它的值”。**\n\n比如从键盘读一个数：\n\n```cpp\nint n;\ncin >> n;\n\nconst int a = n;      // 可以：运行时才知道 n，但 a 初始化后不能改\nconstexpr int b = n;  // 编译错误：编译时还不知道 n 是多少\n```\n\n回到你的倍增代码，下面两种写法都可以：\n\n```cpp\nconst int LOG = 60;\n```\n或者：\n```cpp\nconstexpr int LOG = 60;\n```\n\n这里 `60` 是编译时已知的整数，所以**两种写法都能让 `LOG` 用作固定数组的长度**。我用 `constexpr`，只是为了更明确地表达「层数在编译时就定好了」；你用 `const` 也完全没问题。",
+      "model": "gpt-6.2-astra",
+      "ts": "2026-11-22T13:27:09.050Z"
+    },
+    {
+      "role": "user",
+      "text": "好",
+      "ts": "2026-11-22T13:27:31.156Z"
+    },
+    {
+      "role": "assistant",
+      "text": "好。以后写倍增时，先确定**最大步数的二进制有多少位**，再用 `LOG` 表示层数，下标就是 `0` 到 `LOG - 1`。",
+      "model": "gpt-6.2-astra",
+      "ts": "2026-11-22T13:27:34.768Z"
+    },
+    {
+      "role": "user",
+      "text": "有没有求这个东西的函数？就是求这个K max有多少位二进制。就是那种比较快一点的",
+      "ts": "2026-11-22T13:28:12.182Z"
+    },
+    {
+      "role": "assistant",
+      "text": "有，**C++20 的 `std::bit_width`** 就是求一个无符号整数的二进制位数，适合直接算倍增层数：\n\n```cpp\n#include <bit>\n\nconstexpr int LOG = std::bit_width(1000000000000000000ULL);  // 60\n```\n\n末尾的 `ULL` 表示 `unsigned long long`，因为 `std::bit_width` 要求传入**无符号整数**。如果 `k` 是读入的 `long long`，可以这样写：\n\n```cpp\nint layers = std::bit_width(static_cast<unsigned long long>(k));\n```\n\n它返回的就是**层数**，不用再加 `1`：比如 `std::bit_width(8u)` 返回 `4`，因为 `8` 的二进制是 `1000`；传 `0u` 则返回 `0`。\n\n如果比赛只支持 **GNU++17**，可以用 GCC 内置函数，也很快：\n\n```cpp\nint layers = k == 0 ? 0 : 64 - __builtin_clzll(k);\n```\n\n`__builtin_clzll` 数的是 64 位整数开头有多少个 `0`，所以用 `64` 减去它就是有效位数。注意这个函数**不能直接传 `0`**，因此要特判。",
+      "model": "gpt-6.2-astra",
+      "ts": "2026-11-22T13:28:21.738Z"
+    }
+  ]
+}

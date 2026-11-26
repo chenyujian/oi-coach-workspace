@@ -1,0 +1,27 @@
+{
+  "id": "dsh-268931fffb",
+  "title": "[c++学习] 翻译并格式化序列操作题面",
+  "mode": "coach",
+  "source": "dsh-native",
+  "workspaceLabel": "c++学习",
+  "subMode": "",
+  "model": "kimi-k3.1-pro",
+  "conversationId": null,
+  "previewQuery": "",
+  "skipProblemContext": false,
+  "createdAt": "2026-11-20T14:06:24.469Z",
+  "updatedAt": "2026-11-20T14:07:02.274Z",
+  "messages": [
+    {
+      "role": "user",
+      "text": "Problem Statement\r\nYou are given sequences \r\nA=(A \r\n1\r\n\r\n ,A \r\n2\r\n\r\n ,…,A \r\nN\r\n\r\n ) and \r\nB=(B \r\n1\r\n\r\n ,B \r\n2\r\n\r\n ,…,B \r\nN\r\n\r\n ) of length \r\nN consisting of positive integers.\r\n\r\nThe following operation is performed on the sequence \r\nA exactly once.\r\n\r\nChoose one element of \r\nA, take it out, and insert it at any position in the remaining sequence. More formally, perform the following two steps in order.\r\nChoose an integer \r\ni satisfying \r\n1≤i≤N, let the sequence \r\nX=(X \r\n1\r\n\r\n ,X \r\n2\r\n\r\n ,…,X \r\nN−1\r\n\r\n ) of length \r\nN−1 be \r\n(A \r\n1\r\n\r\n ,A \r\n2\r\n\r\n ,…,A \r\ni−1\r\n\r\n ,A \r\ni+1\r\n\r\n ,A \r\ni+2\r\n\r\n ,…,A \r\nN\r\n\r\n ), and let the integer \r\nY be \r\nA \r\ni\r\n\r\n .\r\nChoose an integer \r\nj satisfying \r\n1≤j≤N, and let the sequence \r\n(X \r\n1\r\n\r\n ,X \r\n2\r\n\r\n ,…,X \r\nj−1\r\n\r\n ,Y,X \r\nj\r\n\r\n ,X \r\nj+1\r\n\r\n ,…,X \r\nN−1\r\n\r\n ) of length \r\nN be the new \r\nA.\r\nNote that the element may be inserted at the left end or the right end of the sequence.\r\n\r\nDetermine whether it is possible to make \r\nA equal to \r\nB after the operation.\r\n\r\nConstraints\r\n1≤N≤2×10 \r\n5\r\n \r\n1≤A \r\ni\r\n\r\n ≤N (1≤i≤N)\r\n1≤B \r\ni\r\n\r\n ≤N (1≤i≤N)\r\nAll input values are integers.\r\nInput\r\nThe input is given from Standard Input in the following format:\r\n\r\nN\r\nA \r\n1\r\n\r\n  \r\nA \r\n2\r\n\r\n  \r\n… \r\nA \r\nN\r\n\r\n \r\nB \r\n1\r\n\r\n  \r\nB \r\n2\r\n\r\n  \r\n… \r\nB \r\nN\r\n\r\n \r\nOutput\r\nPrint Yes in one line if it is possible to make \r\nA equal to \r\nB by performing the operation exactly once, and No otherwise.翻译一下，要格式化，且不要给我答案。",
+      "ts": "2026-11-20T14:06:40.157Z"
+    },
+    {
+      "role": "assistant",
+      "text": "## 题目描述\n\n给定两个由正整数组成、长度均为 $N$ 的序列：\n\n$$\nA=(A_1,A_2,\\ldots,A_N),\\qquad B=(B_1,B_2,\\ldots,B_N)\n$$\n\n对序列 $A$ **恰好进行一次**以下操作：\n\n从 $A$ 中选择一个元素，将其取出，然后插入到剩余序列中的任意位置。\n\n更正式地说，依次执行以下两个步骤：\n\n1. 选择一个满足 $1\\le i\\le N$ 的整数 $i$。  \n   从 $A$ 中取出第 $i$ 个元素，令剩余的长度为 $N-1$ 的序列为：\n\n   $$\n   X=(A_1,A_2,\\ldots,A_{i-1},A_{i+1},A_{i+2},\\ldots,A_N)\n   $$\n\n   并令 $Y=A_i$。\n\n2. 选择一个满足 $1\\le j\\le N$ 的整数 $j$，将 $Y$ 插入 $X$，得到新的序列 $A$：\n\n   $$\n   A=(X_1,X_2,\\ldots,X_{j-1},Y,X_j,X_{j+1},\\ldots,X_{N-1})\n   $$\n\n注意，元素可以插入到序列的最左端或最右端。\n\n请判断是否可能在执行上述操作后，使序列 $A$ 与序列 $B$ 完全相等。\n\n## 约束\n\n- $1\\le N\\le 2\\times 10^5$\n- $1\\le A_i\\le N\\ (1\\le i\\le N)$\n- $1\\le B_i\\le N\\ (1\\le i\\le N)$\n- 输入中的所有值均为整数。\n\n## 输入\n\n输入以以下格式从标准输入给出：\n\n```text\nN\nA_1 A_2 … A_N\nB_1 B_2 … B_N\n```\n\n## 输出\n\n如果可以通过**恰好进行一次**操作使 $A$ 等于 $B$，输出：\n\n```text\nYes\n```\n\n否则输出：\n\n```text\nNo\n```",
+      "model": "dsh-native",
+      "ts": "2026-11-20T14:07:02.274Z"
+    }
+  ]
+}

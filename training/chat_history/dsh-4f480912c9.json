@@ -1,0 +1,27 @@
+{
+  "id": "dsh-4f480912c9",
+  "title": "[c++学习] 小红点旁的三个按键是什么",
+  "mode": "coach",
+  "source": "dsh-native",
+  "workspaceLabel": "c++学习",
+  "subMode": "",
+  "model": "gpt-6.2-astra",
+  "conversationId": null,
+  "previewQuery": "",
+  "skipProblemContext": false,
+  "createdAt": "2026-11-21T05:52:20.075Z",
+  "updatedAt": "2026-11-21T06:37:03.676Z",
+  "messages": [
+    {
+      "role": "user",
+      "text": "小红点那3个键是什么键啊？我不知道。",
+      "ts": "2026-11-21T06:36:55.354Z"
+    },
+    {
+      "role": "assistant",
+      "text": "如果你说的是笔记本键盘中间那个**小红点**，它是用来移动鼠标指针的。触摸板上方那三个键，从左到右是：\n\n- **左键**：点一下选中，点两下打开。\n- **中键**：按住它，同时把小红点往上或往下推，就能滚动页面。\n- **右键**：点一下，弹出菜单。\n\n可以先试试：用食指轻推小红点，把指针移到一个图标上，再用拇指按一下左键。",
+      "model": "gpt-6.2-astra",
+      "ts": "2026-11-21T06:37:03.676Z"
+    }
+  ]
+}
