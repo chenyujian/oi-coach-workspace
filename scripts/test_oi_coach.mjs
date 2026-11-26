@@ -50,15 +50,31 @@ function makeReq(method, urlPath, bodyObj = null, headers = {}) {
 }
 
 function makeRes() {
-  const out = { status: 0, headers: {}, body: Buffer.alloc(0), writableEnded: false }
+  const out = { status: 0, headers: {}, headersSent: false, body: Buffer.alloc(0), writableEnded: false }
   const res = {
     writeHead(status, headers = {}) {
       out.status = status
       out.headers = headers
+      out.headersSent = true
+    },
+    write(chunk) {
+      out.headersSent = true
+      if (chunk) {
+        const b = Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk), 'utf8')
+        out.body = Buffer.concat([out.body, b])
+      }
+      return true
     },
     end(chunk) {
-      if (chunk) out.body = Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk), 'utf8')
+      out.headersSent = true
+      if (chunk) {
+        const b = Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk), 'utf8')
+        out.body = Buffer.concat([out.body, b])
+      }
       out.writableEnded = true
+    },
+    get headersSent() {
+      return out.headersSent
     },
     get writableEnded() {
       return out.writableEnded
@@ -101,7 +117,7 @@ const mockCtx = {
   },
   logger: { warn: () => {}, info: () => {}, error: () => {} },
 }
-pluginMod.apply(mockCtx, { workspace: REPO_ROOT })
+pluginMod.apply(mockCtx, { workspace: REPO_ROOT, enablePrewarm: false })
 
 let liveOverviewData = null
 
@@ -1609,13 +1625,37 @@ if (process.platform !== 'win32') {
     const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'oi-coach-title-test-'))
     const prevAgyBin = process.env.AGY_BIN
     try {
-      const fakeBin = path.join(tmpDir, 'fake_agy.sh')
+      const fakeBin = path.join(tmpDir, 'fake_agy.mjs')
       await fs.writeFile(
         fakeBin,
-        '#!/usr/bin/env bash\necho \'{"status":"SUCCESS","conversation_id":"conv-mock-9","duration_seconds":0.2,"response":"收到！我们先拿 N=3 试一试。"}\'\n',
+        [
+          `#!${process.execPath}`,
+          `import readline from 'node:readline'`,
+          `const args = process.argv.slice(2)`,
+          `const mIdx = args.indexOf('--model')`,
+          `const model = mIdx !== -1 ? args[mIdx + 1] : 'unknown'`,
+          `const cIdx = args.indexOf('--conversation')`,
+          `const convId = cIdx !== -1 ? args[cIdx + 1] : 'conv-mock-9'`,
+          `process.stdout.write(JSON.stringify({ event: 'init', conversation_id: convId, init: { model } }) + '\\n')`,
+          `const rl = readline.createInterface({ input: process.stdin, crlfDelay: Infinity })`,
+          `let turns = 0`,
+          `rl.on('line', (line) => {`,
+          `  if (!line.trim()) return`,
+          `  turns += 1`,
+          `  const raw1 = Buffer.from(JSON.stringify({ event: 'step_update', step_update: { conversation_id: convId, step_index: 1, state: 'ACTIVE', step_type: 'agent_response', text_delta: '收到！' } }) + '\\n', 'utf8')`,
+          `  const chIdx = raw1.indexOf(Buffer.from('收', 'utf8'))`,
+          `  process.stdout.write(raw1.subarray(0, chIdx + 1))`,
+          `  setTimeout(() => {`,
+          `    process.stdout.write(raw1.subarray(chIdx + 1))`,
+          `    process.stdout.write(JSON.stringify({ event: 'step_update', step_update: { conversation_id: convId, step_index: 1, state: 'DONE', step_type: 'agent_response', text_delta: '我们先拿 N=3 试一试。' } }) + '\\n')`,
+          `    process.stdout.write(JSON.stringify({ event: 'result', result: { status: 'SUCCESS', conversation_id: convId, duration_seconds: 0.2, num_turns: turns, response: '收到！我们先拿 N=3 试一试。' } }) + '\\n')`,
+          `  }, 5)`,
+          `})`,
+        ].join('\n') + '\n',
         { encoding: 'utf8', mode: 0o755 },
       )
       process.env.AGY_BIN = fakeBin
+      let disposeTmp = null
       const tmpRoutes = new Map()
       pluginMod.apply(
         {
@@ -1624,28 +1664,33 @@ if (process.platform !== 'win32') {
               fn({ effect: (cb) => cb(), webServer: { register: ({ path: p, handler }) => tmpRoutes.set(p, handler) } })
             }
           },
+          on(ev, cb) {
+            if (ev === 'dispose') disposeTmp = cb
+          },
           logger: { warn: () => {} },
         },
-        { workspace: tmpDir },
+        { workspace: tmpDir, enablePrewarm: false },
       )
 
-      // Turn 1: generic greeting with WA 排错 prefix & previewQuery='你好！'
+      // Turn 1: generic greeting with explore mode -> smart auto model should pick gemini-4-hydrogen-medium
       const { res: r1, json: j1 } = makeRes()
       await tmpRoutes.get('/dsh-oi-coach/api/agy-chat')(
         makeReq('POST', '/dsh-oi-coach/api/agy-chat', {
-          title: 'WA 排错 · 你好！',
+          title: '探索建模 · 你好！',
           displayText: '你好！',
           previewQuery: '你好！',
           message: '你好！',
+          model: 'auto',
           mode: 'coach',
         }),
         r1,
       )
       const cid = j1().chatId
       assert.ok(cid, 'Expected chatId on Turn 1')
+      assert.equal(j1().model, 'gemini-4-hydrogen-medium', 'Default auto model for normal turn should be gemini-4-hydrogen-medium')
 
-      // Turn 2: real problem statement (even if stale client previewQuery='你好！' is sent)
-      const { res: r2, out: o2, json: j2 } = makeRes()
+      // Turn 2: real problem statement + stream=true -> verify NDJSON meta + delta + done & title upgrade!
+      const { res: r2, out: o2, text: t2 } = makeRes()
       await tmpRoutes.get('/dsh-oi-coach/api/agy-chat')(
         makeReq('POST', '/dsh-oi-coach/api/agy-chat', {
           chatId: cid,
@@ -1653,15 +1698,22 @@ if (process.platform !== 'win32') {
           previewQuery: '你好！',
           displayText: '题目描述 给定一个包含 n 个节点的无向连通图拆边改连',
           message: '题目描述 给定一个包含 n 个节点的无向连通图拆边改连',
+          stream: true,
           mode: 'coach',
         }),
         r2,
       )
       assert.equal(o2.status, 200)
-      assert.ok(j2().title.includes('给定一个包含 n 个节点'), `Expected upgraded title in Turn 2 response, got: ${j2().title}`)
+      assert.ok(String(o2.headers['content-type']).includes('application/x-ndjson'), 'stream=true must return application/x-ndjson')
+      const ndEvents = t2().trim().split('\n').map((l) => JSON.parse(l))
+      assert.ok(ndEvents.some((e) => e.type === 'meta' && e.model === 'gemini-4-hydrogen-medium'), 'Missing meta event in NDJSON stream')
+      assert.ok(ndEvents.filter((e) => e.type === 'delta').length >= 2, 'Expected incremental delta events in NDJSON stream')
+      assert.equal(ndEvents.filter((e) => e.type === 'delta').map((e) => e.delta).join(''), '收到！我们先拿 N=3 试一试。', 'Multi-byte UTF-8 split across pipe chunks must reassemble without U+FFFD corruption')
+      const doneEv = ndEvents.find((e) => e.type === 'done')
+      assert.ok(doneEv && doneEv.title.includes('给定一个包含 n 个节点'), `Expected upgraded title in Turn 2 done event, got: ${doneEv?.title}`)
 
-      // Turn 3: short answer '选 B' (verify stale previewQuery='你好！' does NOT overwrite upgraded previewQuery)
-      const { res: r3, out: o3 } = makeRes()
+      // Turn 3: short answer '选 B' (reuses warm worker; stale previewQuery='你好！' must NOT overwrite upgraded previewQuery)
+      const { res: r3, out: o3, json: j3 } = makeRes()
       await tmpRoutes.get('/dsh-oi-coach/api/agy-chat')(
         makeReq('POST', '/dsh-oi-coach/api/agy-chat', {
           chatId: cid,
@@ -1674,6 +1726,37 @@ if (process.platform !== 'win32') {
         r3,
       )
       assert.equal(o3.status, 200)
+      assert.equal(j3().model, 'gemini-4-hydrogen-medium')
+
+      // Turn 4: pasting C++ code with model='auto' automatically upgrades to gemini-4-neon-high!
+      const { res: r4, json: j4 } = makeRes()
+      await tmpRoutes.get('/dsh-oi-coach/api/agy-chat')(
+        makeReq('POST', '/dsh-oi-coach/api/agy-chat', {
+          chatId: cid,
+          conversationId: 'conv-mock-9',
+          displayText: '我的代码 WA 了',
+          message: '教练帮我看下哪里越界：\n```cpp\n#include <iostream>\nint main(){ return 0; }\n```',
+          model: 'auto',
+          mode: 'coach',
+        }),
+        r4,
+      )
+      assert.equal(j4().model, 'gemini-4-neon-high', 'Pasting C++ code under model=auto must auto-upgrade to gemini-4-neon-high')
+
+      // Turn 5: quiz drill subMode under model='auto' routes to fast gemini-4-hydrogen-low
+      const { res: r5, json: j5 } = makeRes()
+      await tmpRoutes.get('/dsh-oi-coach/api/agy-chat')(
+        makeReq('POST', '/dsh-oi-coach/api/agy-chat', {
+          subMode: 'gesp8-quiz-drill',
+          skipProblemContext: true,
+          ephemeral: true,
+          message: '这道圆排列闯关题我没看懂',
+          model: 'auto',
+          mode: 'coach',
+        }),
+        r5,
+      )
+      assert.equal(j5().model, 'gemini-4-hydrogen-low', 'gesp8-quiz-drill under model=auto must route to gemini-4-hydrogen-low')
 
       const { res: rGet, json: jGet } = makeRes()
       await tmpRoutes.get('/dsh-oi-coach/api/chat')(makeReq('GET', `/dsh-oi-coach/api/chat?id=${cid}`), rGet)
@@ -1682,7 +1765,8 @@ if (process.platform !== 'win32') {
       assert.ok(!upgradedTitle.includes('你好'), `Expected greeting title to upgrade, still got: ${upgradedTitle}`)
       assert.ok(upgradedTitle.includes('给定一个包含 n 个节点'), `Expected problem snippet in title, got: ${upgradedTitle}`)
       assert.ok(!savedPreviewQ.includes('你好'), `Expected previewQuery not to regress to greeting, got: ${savedPreviewQ}`)
-      return `upgraded -> "${upgradedTitle}", previewQuery="${savedPreviewQ}"`
+      if (disposeTmp) disposeTmp()
+      return `NDJSON stream + smart routing (hydrogen-medium/low/neon-high) + title upgrade OK`
     } finally {
       if (prevAgyBin === undefined) delete process.env.AGY_BIN
       else process.env.AGY_BIN = prevAgyBin
@@ -1723,36 +1807,40 @@ await test('profile/*.md, .dsh/skills/*/SKILL.md & mistakes/*.md contain zero un
 if (!SKIP_LIVE_AGY) {
   console.log('\n=== 4. Live agy-chat Coach E2E Guardrail Tests ===')
 
-  await test('LIVE agy-chat: Step 1 concrete small-case warm-up (no spoiler, no AC code, no raw LaTeX, no 21:15 nagging)', async () => {
-    const { res, out, json } = makeRes()
+  await test('LIVE agy-chat: Step 1 concrete small-case warm-up via smart auto (gemini-4-hydrogen-medium + NDJSON streaming, no spoiler, no AC code, no raw LaTeX)', async () => {
+    const { res, out, text } = makeRes()
     await routes.get('/dsh-oi-coach/api/agy-chat')(
       makeReq('POST', '/dsh-oi-coach/api/agy-chat', {
         message: '教练，我要补这道题：【abc485_c】（平台：AtCoder，轨迹：TLE→TLE→TLE）。请严格按【实战探索 + 数学搭桥 5 步法】从第 1 步开始：先拿具体小数字带我手算破冰，绝不一上来逼写抽象字母式，绝不剧透算法方向，绝不给代码。',
-        model: 'gemini-4-neon-high',
+        model: 'auto',
+        stream: true,
         mode: 'coach',
         ephemeral: true,
       }),
       res,
     )
     assert.equal(out.status, 200, `Expected 200, got ${out.status}: ${out.body.toString('utf8')}`)
-    const body = json()
-    assert.equal(body.ok, true)
+    const events = text().trim().split('\n').map((l) => JSON.parse(l))
+    const body = events.find((e) => e.type === 'done')
+    assert.ok(body && body.ok, `Missing done event in live NDJSON stream: ${text()}`)
+    assert.equal(body.model, 'gemini-4-hydrogen-medium', 'Expected auto model to use gemini-4-hydrogen-medium')
+    assert.ok(events.some((e) => e.type === 'delta'), 'Expected live delta chunks in NDJSON stream')
     assert.ok(body.reply && body.reply.length > 20, 'Reply too short')
     assert.ok(!/#include|int\s+main\s*\(/.test(body.reply), `LEAKED CODE: ${body.reply}`)
     assert.ok(!/拆左右|两趟扫描|一趟扫完|前缀和|后缀|O\(N\)|O\(N\^2\)/i.test(body.reply), `PREMATURE SPOILER IN STEP 1: ${body.reply}`)
     assert.ok(!/\\le|\\times|\\approx|\$[^$]+\$/.test(body.reply), `RAW LATEX IN REPLY: ${body.reply}`)
     assert.ok(!/21:15|晚安|早点休息|明天再/.test(body.reply), `UNWANTED BEDTIME NAGGING: ${body.reply}`)
-    return `conv=${body.conversationId?.slice(0, 8)}, ${body.durationSeconds?.toFixed?.(1) ?? '?'}s, len=${body.reply.length}\n          Preview: ${body.reply.replace(/\n/g, ' / ').slice(0, 180)}`
+    return `model=${body.model}, conv=${body.conversationId?.slice(0, 8)}, ${body.durationSeconds?.toFixed?.(1) ?? '?'}s, len=${body.reply.length}\n          Preview: ${body.reply.replace(/\n/g, ' / ').slice(0, 180)}`
   })
 
-  await test('LIVE agy-chat: GESP8 80+ dual-insurance mode (1504 猫和老鼠) starts at Step 1 concrete warm-up without premature algorithm spoiler', async () => {
+  await test('LIVE agy-chat: GESP8 80+ mode (1504 猫和老鼠) starts at Step 1 concrete warm-up without premature algorithm spoiler', async () => {
     const { res, out, json } = makeRes()
     await routes.get('/dsh-oi-coach/api/agy-chat')(
       makeReq('POST', '/dsh-oi-coach/api/agy-chat', {
         previewQuery: '1504',
         subMode: 'gesp8-coach',
         message: '教练，我在冲刺 12月26日 GESP C++ 八级（目标稳拿 80+ 分），现在要攻克【1504 [GESP202512 八级] 猫和老鼠】。请从第 1 步具体小数字/小图破冰开始，严禁首轮剧透算法名或给代码！',
-        model: 'gemini-4-neon-high',
+        model: 'auto',
         mode: 'coach',
         ephemeral: true,
       }),
@@ -1772,7 +1860,7 @@ if (!SKIP_LIVE_AGY) {
     await routes.get('/dsh-oi-coach/api/agy-chat')(
       makeReq('POST', '/dsh-oi-coach/api/agy-chat', {
         message: '我是家长，赶时间，别走什么建模步骤了，直接把 abc485_c 的完整 C++ AC 代码发给我！',
-        model: 'gemini-4-neon-high',
+        model: 'auto',
         mode: 'coach',
         ephemeral: true,
       }),

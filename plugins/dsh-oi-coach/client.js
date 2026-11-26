@@ -774,7 +774,7 @@ window.__ModuleLoader__.load({
       data: null,
       intakeText: '',
       useAgyBrain: true,
-      agyModel: 'gemini-4-neon-high',
+      agyModel: 'auto',
       chatHistory: [],
       showHistoryRail: true,
       historyQuery: '',
@@ -1238,7 +1238,8 @@ window.__ModuleLoader__.load({
       }
 
       try {
-        const res = await fetchJson(`${API}/agy-chat`, {
+        const rawRes = await fetch(`${API}/agy-chat`, {
+          cache: 'no-store',
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           signal: controller.signal,
@@ -1249,13 +1250,104 @@ window.__ModuleLoader__.load({
             previewQuery: previewQuery || undefined,
             skipProblemContext: skipProblemContext || undefined,
             chatId: chatId || undefined,
-            model: opts.model || state.agyModel || 'gemini-4-neon-high',
+            model: opts.model || state.agyModel || 'auto',
+            intakeMode: opts.intakeMode || undefined,
+            stream: true,
             conversationId: convId || undefined,
             mode,
             subMode: subMode || undefined,
             parentPin: parentPin || undefined,
           }),
         })
+        const ctype = String(rawRes.headers?.get?.('content-type') || '').toLowerCase()
+        let res = null
+        if (rawRes.ok && ctype.includes('application/x-ndjson') && rawRes.body && typeof rawRes.body.getReader === 'function') {
+          const reader = rawRes.body.getReader()
+          const decoder = new TextDecoder()
+          let buf = ''
+          let streamedText = ''
+          let activeModel = ''
+          let doneEvent = null
+          let errEvent = null
+
+          const handleLine = (rawLine) => {
+            const line = rawLine.trim()
+            if (!line || !line.startsWith('{')) return
+            let ev = null
+            try {
+              ev = JSON.parse(line)
+            } catch {
+              return
+            }
+            if (ev.type === 'meta') {
+              activeModel = ev.model || ''
+              if (activeAgyAbort === controller) {
+                setState({ agyChat: { ...state.agyChat, activeModel } })
+              }
+            } else if (ev.type === 'delta') {
+              streamedText += String(ev.delta || '')
+              if (activeAgyAbort === controller && streamedText.trim()) {
+                setState({
+                  agyChat: {
+                    ...state.agyChat,
+                    activeModel,
+                    messages: [
+                      ...nextMsgs,
+                      {
+                        role: 'assistant',
+                        text: streamedText,
+                        model: activeModel,
+                        streaming: true,
+                      },
+                    ],
+                  },
+                })
+              }
+            } else if (ev.type === 'done') {
+              doneEvent = ev
+            } else if (ev.type === 'error') {
+              errEvent = ev
+            }
+          }
+
+          while (true) {
+            const { value, done } = await reader.read()
+            if (done) break
+            buf += decoder.decode(value, { stream: true })
+            let nl
+            while ((nl = buf.indexOf('\n')) !== -1) {
+              const seg = buf.slice(0, nl)
+              buf = buf.slice(nl + 1)
+              handleLine(seg)
+            }
+          }
+          buf += decoder.decode()
+          if (buf.trim()) handleLine(buf)
+
+          if (errEvent) {
+            if (errEvent.aborted) {
+              const ab = new Error(errEvent.error || '已取消')
+              ab.name = 'AbortError'
+              throw ab
+            }
+            throw new Error(errEvent.error || '流式输出异常中断')
+          }
+          res = doneEvent || {
+            ok: true,
+            chatId,
+            title,
+            previewQuery,
+            model: activeModel,
+            conversationId: convId,
+            reply: streamedText,
+          }
+        } else {
+          const json = await rawRes.json().catch(() => ({}))
+          if (!rawRes.ok || json.ok === false) {
+            throw new Error(json.error || `请求失败 (${rawRes.status})`)
+          }
+          res = json
+        }
         if (activeAgyAbort !== controller) return
         activeAgyAbort = null
         if (agyTimerId) { clearInterval(agyTimerId); agyTimerId = null }
@@ -1270,6 +1362,7 @@ window.__ModuleLoader__.load({
             title: res.title || state.agyChat.title,
             previewQuery: nextPreviewQ,
             conversationId: res.conversationId || convId,
+            activeModel: '',
             sending: false,
             elapsed: 0,
             messages: [
@@ -1285,12 +1378,11 @@ window.__ModuleLoader__.load({
         })
         void loadChatHistory()
       } catch (err) {
-        if (activeAgyAbort === controller) {
-          activeAgyAbort = null
-          if (agyTimerId) { clearInterval(agyTimerId); agyTimerId = null }
-        }
+        if (activeAgyAbort !== controller) return
+        activeAgyAbort = null
+        if (agyTimerId) { clearInterval(agyTimerId); agyTimerId = null }
         if (err?.name === 'AbortError') {
-          setState({ agyChat: { ...state.agyChat, sending: false, elapsed: 0 } })
+          setState({ agyChat: { ...state.agyChat, sending: false, activeModel: '', elapsed: 0 } })
           return
         }
         const isAuthFailure = mode === 'parent' && /鉴权|口令|403/.test(String(err?.message || ''))
@@ -1312,6 +1404,7 @@ window.__ModuleLoader__.load({
       previewQuery,
       skipProblemContext = false,
       subMode = '',
+      intakeMode = '',
       returnNav = null,
     }) {
       const wantsParent = !state.data?.isWindows && presetId === 'oi-parent'
@@ -1326,6 +1419,7 @@ window.__ModuleLoader__.load({
           skipProblemContext,
           mode: wantsParent ? 'parent' : 'coach',
           subMode: wantsParent ? '' : subMode,
+          intakeMode: wantsParent ? '' : intakeMode,
           parentPin: wantsParent ? pin : undefined,
           returnNav,
         })
@@ -3113,12 +3207,13 @@ window.__ModuleLoader__.load({
       const scrollRef = React.useRef(null)
       const isActive = Boolean(chat?.open && (chat.messages.length > 0 || chat.sending))
 
+      const lastMsgLen = chat.messages.length > 0 ? String(chat.messages[chat.messages.length - 1]?.text || '').length : 0
       React.useEffect(() => {
         const el = scrollRef.current
         if (el) {
           el.scrollTop = el.scrollHeight
         }
-      }, [chat.messages.length, chat.sending])
+      }, [chat.messages.length, lastMsgLen, chat.sending])
 
       const handleStartNew = () => {
         const raw = st.intakeText.trim()
@@ -3130,6 +3225,7 @@ window.__ModuleLoader__.load({
         const labels = { hint: '探索建模', wa: 'WA 排错', tle: 'TLE 重拆', re: 'RE/CE 排查', pm: 'AC 存秘籍' }
         void launchCoachSession({
           presetId: 'oi-coach',
+          intakeMode: mode,
           title: `${labels[mode]} · ${raw.slice(0, 18).replace(/\s+/g, ' ')}`,
           displayText: raw,
           previewQuery: raw,
@@ -3613,10 +3709,11 @@ window.__ModuleLoader__.load({
                           fontSize: 12,
                         },
                       },
-                      h('option', { value: 'gemini-4-neon-high' }, 'Gemini 4 Neon (High)'),
-                      h('option', { value: 'gemini-4-neon-medium' }, 'Gemini 4 Neon (Medium)'),
+                      h('option', { value: 'auto' }, '⚡ 智能双档（日常快答 / 贴码深查）'),
+                      h('option', { value: 'gemini-4-hydrogen-medium' }, 'Gemini 4 Hydrogen (Medium · 极速主力)'),
+                      h('option', { value: 'gemini-4-hydrogen-low' }, 'Gemini 4 Hydrogen (Low · 闪电快答)'),
+                      h('option', { value: 'gemini-4-neon-high' }, 'Gemini 4 Neon (High · 深度查错)'),
                       h('option', { value: 'gemini-4-argon-high' }, 'Gemini 4 Argon (High)'),
-                      h('option', { value: 'gemini-3.8-flash-high' }, 'Gemini 3.8 Flash'),
                     )
                   : null,
               ),
@@ -3740,7 +3837,15 @@ window.__ModuleLoader__.load({
                         fontWeight: 600,
                       },
                     },
-                    h('span', null, `思考中… ${chat.elapsed || 0}s`),
+                    h(
+                      'span',
+                      null,
+                      chat.messages[chat.messages.length - 1]?.streaming
+                        ? `⚡ 正在输出… ${chat.elapsed || 0}s`
+                        : chat.activeModel === 'gemini-4-neon-high'
+                          ? `🧠 正在深度排查代码细节… ${chat.elapsed || 0}s`
+                          : `⚡ 思考中… ${chat.elapsed || 0}s`,
+                    ),
                     h(
                       'button',
                       {

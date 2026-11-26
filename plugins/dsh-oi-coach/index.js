@@ -8,7 +8,7 @@
  * 4. 向物理只读的 `oi-coach` 暴露唯一受控写工具 `save_mistake_card`（仅允许在 mistakes/ 新建错题卡）。
  */
 
-import { execFile } from 'node:child_process'
+import { execFile, spawn } from 'node:child_process'
 import { createHash, randomUUID } from 'node:crypto'
 import { existsSync, realpathSync, statSync } from 'node:fs'
 import fs from 'node:fs/promises'
@@ -22,16 +22,45 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const DEFAULT_WORKSPACE = path.resolve(__dirname, '..', '..')
 const execFileAsync = promisify(execFile)
 
-const DEFAULT_AGY_MODEL = 'gemini-4-neon-high'
+const DEFAULT_AGY_MODEL = 'auto'
+const FAST_COACH_AGY_MODEL = 'gemini-4-hydrogen-medium'
+const QUICK_DRILL_AGY_MODEL = 'gemini-4-hydrogen-low'
+const DEEP_BUG_AGY_MODEL = 'gemini-4-neon-high'
+const PARENT_DEFAULT_AGY_MODEL = 'gemini-4-hydrogen-high'
 const ALLOWED_AGY_MODELS = new Set([
+  'auto',
+  'gemini-4-hydrogen-medium',
+  'gemini-4-hydrogen-low',
+  'gemini-4-hydrogen-high',
   'gemini-4-neon-high',
   'gemini-4-neon-medium',
   'gemini-4-neon-xhigh',
   'gemini-4-argon-high',
   'gemini-4-argon-medium',
-  'gemini-4-hydrogen-high',
   'gemini-3.8-flash-high',
 ])
+
+function resolveEffectiveAgyModel({ reqModel, mode = 'coach', subMode = '', intakeMode = '', userMsg = '' }) {
+  const cleanReq = String(reqModel || '').trim()
+  if (cleanReq && cleanReq !== 'auto' && ALLOWED_AGY_MODELS.has(cleanReq)) {
+    return cleanReq
+  }
+  if (mode === 'parent') {
+    return PARENT_DEFAULT_AGY_MODEL
+  }
+  const msg = String(userMsg || '')
+  const isCodeOrBug =
+    subMode === 'gesp8-code-audit' ||
+    /^(?:wa|tle|re)$/i.test(String(intakeMode || '').trim()) ||
+    /#include\s*<|\bint\s+main\s*\(|```(?:cpp|c\+\+)/i.test(msg)
+  if (isCodeOrBug) {
+    return DEEP_BUG_AGY_MODEL
+  }
+  if (subMode === 'gesp8-quiz-drill') {
+    return QUICK_DRILL_AGY_MODEL
+  }
+  return FAST_COACH_AGY_MODEL
+}
 
 async function resolveAgyBinary() {
   const envBin = String(process.env.AGY_BIN || '').trim()
@@ -2129,10 +2158,426 @@ export function apply(ctx, config) {
     heartbeatSyncTimer.unref?.()
   }
 
+  let prewarmedChildWorker = null
+  let prewarmTimer = null
+  let prewarmInFlight = false
+  const warmConvWorkers = new Map()
+  const inFlightConvWorkers = new Map()
+  const enablePrewarm = config?.enablePrewarm !== false
+
+  function setProcHandlesRef(proc, ref) {
+    if (!proc) return
+    for (const h of [proc, proc.stdin, proc.stdout, proc.stderr]) {
+      try {
+        if (ref) h?.ref?.()
+        else h?.unref?.()
+      } catch {
+        // ignore closed stdio handle
+      }
+    }
+  }
+
+  function evictOldIdleWorkers(maxKeep = 3) {
+    const now = Date.now()
+    if (prewarmedChildWorker) {
+      if (!prewarmedChildWorker.alive || (!prewarmedChildWorker.busy && now - prewarmedChildWorker.lastUsedAt > 10 * 60_000)) {
+        prewarmedChildWorker.kill()
+        prewarmedChildWorker = null
+      }
+    }
+    for (const [cid, w] of warmConvWorkers.entries()) {
+      if (!w.alive || (!w.busy && now - w.lastUsedAt > 10 * 60_000)) {
+        w.kill()
+        warmConvWorkers.delete(cid)
+      }
+    }
+    if (warmConvWorkers.size <= maxKeep) return
+    const idleSorted = [...warmConvWorkers.entries()]
+      .filter(([, w]) => !w.busy)
+      .sort((a, b) => a[1].lastUsedAt - b[1].lastUsedAt)
+    while (warmConvWorkers.size > maxKeep && idleSorted.length > 0) {
+      const [oldCid, oldW] = idleSorted.shift()
+      oldW.kill()
+      warmConvWorkers.delete(oldCid)
+    }
+  }
+
+  const workerSweepTimer = setInterval(() => evictOldIdleWorkers(3), 120_000)
+  workerSweepTimer.unref?.()
+
+  function destroyAllWarmWorkers() {
+    clearInterval(workerSweepTimer)
+    if (prewarmTimer) {
+      clearTimeout(prewarmTimer)
+      prewarmTimer = null
+    }
+    if (prewarmedChildWorker) {
+      prewarmedChildWorker.kill()
+      prewarmedChildWorker = null
+    }
+    for (const w of inFlightConvWorkers.values()) {
+      w.kill()
+    }
+    inFlightConvWorkers.clear()
+    for (const w of warmConvWorkers.values()) {
+      w.kill()
+    }
+    warmConvWorkers.clear()
+  }
+
+  process.once('exit', destroyAllWarmWorkers)
+
+  function spawnWarmAgyWorker({ bin, model, cwd, env, resumeConvId = '' }) {
+    return new Promise((resolve, reject) => {
+      const cliArgs = [
+        '--input-format',
+        'stream-json',
+        '--output-format',
+        'stream-json',
+        '--model',
+        model,
+        '--disable-slash-commands',
+      ]
+      if (resumeConvId) cliArgs.push('--conversation', resumeConvId)
+
+      const isWinBat = process.platform === 'win32' && /\.(cmd|bat)$/i.test(bin)
+      const proc = isWinBat
+        ? spawn('cmd.exe', ['/d', '/s', '/c', bin, ...cliArgs], {
+            cwd,
+            env,
+            windowsHide: true,
+            stdio: ['pipe', 'pipe', 'pipe'],
+          })
+        : spawn(bin, cliArgs, {
+            cwd,
+            env,
+            windowsHide: true,
+            stdio: ['pipe', 'pipe', 'pipe'],
+          })
+
+      // 防止子进程提前退出时 stdin EPIPE/EOF 未捕获导致宿主进程崩溃，并用 StringDecoder 防多字节中文跨管道包乱码
+      proc.stdin?.on?.('error', () => {})
+      proc.stdout?.setEncoding?.('utf8')
+      proc.stderr?.setEncoding?.('utf8')
+
+      let initialized = false
+      let stdoutBuf = ''
+      let lastStderr = ''
+      let currentTurn = null
+      let resolveExit = null
+      const exitPromise = new Promise((r) => {
+        resolveExit = r
+      })
+
+      const worker = {
+        proc,
+        model,
+        cwd,
+        conversationId: resumeConvId || '',
+        alive: true,
+        busy: false,
+        lastUsedAt: Date.now(),
+        exitPromise,
+        kill() {
+          const wasAlive = worker.alive
+          worker.alive = false
+          worker.busy = false
+          try {
+            proc.stdin?.end?.()
+          } catch {
+            // ignore
+          }
+          if (wasAlive && isWinBat && proc.pid) {
+            try {
+              execFile('taskkill', ['/PID', String(proc.pid), '/T', '/F'], { windowsHide: true }, () => {})
+            } catch {
+              // ignore
+            }
+          }
+          try {
+            proc.kill()
+          } catch {
+            // ignore
+          }
+        },
+        runTurn(promptStr, { signal, timeoutMs = 95_000, onDelta } = {}) {
+          if (!worker.alive || worker.busy) {
+            return Promise.reject(new Error('Warm agy worker unavailable'))
+          }
+          worker.busy = true
+          worker.lastUsedAt = Date.now()
+          setProcHandlesRef(proc, true)
+          const turnStartMs = Date.now()
+
+          return new Promise((resTurn, rejTurn) => {
+            let deltaAcc = ''
+            let done = false
+
+            const finish = (err, val) => {
+              if (done) return
+              done = true
+              clearTimeout(timer)
+              if (signal) signal.removeEventListener?.('abort', onAbort)
+              currentTurn = null
+              worker.busy = false
+              worker.lastUsedAt = Date.now()
+              if (worker.alive) setProcHandlesRef(proc, false)
+              if (err) rejTurn(err)
+              else resTurn(val)
+            }
+
+            const onAbort = () => {
+              worker.kill()
+              if (worker.conversationId) warmConvWorkers.delete(worker.conversationId)
+              const abortErr = new Error('已取消本次思考')
+              abortErr.name = 'AbortError'
+              finish(abortErr)
+            }
+
+            if (signal?.aborted) {
+              onAbort()
+              return
+            }
+            signal?.addEventListener?.('abort', onAbort, { once: true })
+
+            const timer = setTimeout(() => {
+              worker.kill()
+              if (worker.conversationId) warmConvWorkers.delete(worker.conversationId)
+              finish(new Error(`Antigravity 响应超时（>${Math.round(timeoutMs / 1000)}s），请重试。`))
+            }, timeoutMs)
+
+            currentTurn = {
+              onEvent(ev) {
+                if (ev.event === 'step_update') {
+                  const su = ev.step_update || {}
+                  if (su.conversation_id && !worker.conversationId) {
+                    worker.conversationId = su.conversation_id
+                  }
+                  if (su.step_type === 'agent_response' && typeof su.text_delta === 'string' && su.text_delta.length > 0) {
+                    deltaAcc += su.text_delta
+                    try {
+                      onDelta?.(su.text_delta, deltaAcc)
+                    } catch {
+                      // ignore UI callback error
+                    }
+                  }
+                } else if (ev.event === 'result') {
+                  const r = ev.result || {}
+                  if (r.conversation_id) worker.conversationId = r.conversation_id
+                  const finalText = String(r.response || deltaAcc || '').trim()
+                  if (r.status === 'ERROR' && !finalText) {
+                    worker.kill()
+                    if (worker.conversationId) warmConvWorkers.delete(worker.conversationId)
+                    finish(new Error(String(r.error || lastStderr || 'Antigravity 执行出错')))
+                    return
+                  }
+                  const durationSeconds = Math.max(0.1, Math.round(((Date.now() - turnStartMs) / 1000) * 10) / 10)
+                  finish(null, {
+                    status: r.status || 'SUCCESS',
+                    response: finalText,
+                    conversationId: worker.conversationId || null,
+                    durationSeconds,
+                    numTurns: r.num_turns ?? 1,
+                  })
+                }
+              },
+              onExit() {
+                finish(new Error(lastStderr.trim() || 'Antigravity 会话进程意外结束'))
+              },
+            }
+
+            try {
+              proc.stdin.write(JSON.stringify({ event: 'user', message: { content: promptStr } }) + '\n')
+            } catch (writeErr) {
+              worker.kill()
+              finish(writeErr)
+            }
+          })
+        },
+      }
+
+      const bootTimer = setTimeout(() => {
+        if (!initialized) {
+          worker.kill()
+          reject(new Error(lastStderr.trim() || 'Antigravity 进程启动超时'))
+        }
+      }, 25_000)
+      bootTimer.unref?.()
+
+      proc.stdout.on('data', (chunk) => {
+        stdoutBuf += typeof chunk === 'string' ? chunk : chunk.toString('utf8')
+        let nl
+        while ((nl = stdoutBuf.indexOf('\n')) !== -1) {
+          const line = stdoutBuf.slice(0, nl).trim()
+          stdoutBuf = stdoutBuf.slice(nl + 1)
+          if (!line || !line.startsWith('{')) continue
+          let ev = null
+          try {
+            ev = JSON.parse(line)
+          } catch {
+            continue
+          }
+          if (!initialized && ev.event === 'init') {
+            initialized = true
+            clearTimeout(bootTimer)
+            if (ev.conversation_id) worker.conversationId = ev.conversation_id
+            setProcHandlesRef(proc, false)
+            resolve(worker)
+            continue
+          }
+          if (currentTurn) {
+            currentTurn.onEvent(ev)
+          }
+        }
+      })
+
+      proc.stderr.on('data', (chunk) => {
+        const s = typeof chunk === 'string' ? chunk : chunk.toString('utf8')
+        lastStderr = (lastStderr + s).slice(-2000)
+      })
+
+      proc.on('error', (err) => {
+        worker.alive = false
+        clearTimeout(bootTimer)
+        if (prewarmedChildWorker === worker) prewarmedChildWorker = null
+        resolveExit?.()
+        if (!initialized) reject(err)
+        else if (currentTurn) currentTurn.onExit()
+      })
+
+      proc.on('close', () => {
+        worker.alive = false
+        clearTimeout(bootTimer)
+        if (prewarmedChildWorker === worker) prewarmedChildWorker = null
+        if (worker.conversationId && warmConvWorkers.get(worker.conversationId) === worker) {
+          warmConvWorkers.delete(worker.conversationId)
+        }
+        if (worker.conversationId && inFlightConvWorkers.get(worker.conversationId) === worker) {
+          inFlightConvWorkers.delete(worker.conversationId)
+        }
+        resolveExit?.()
+        if (!initialized) {
+          reject(new Error(lastStderr.trim() || 'Antigravity 进程启动失败'))
+        } else if (currentTurn) {
+          currentTurn.onExit()
+        }
+      })
+    })
+  }
+
+  function schedulePrewarmChildWorker(delayMs = 1200) {
+    if (!enablePrewarm || prewarmInFlight) return
+    if (prewarmedChildWorker?.alive && !prewarmedChildWorker.busy) return
+    if (prewarmTimer) clearTimeout(prewarmTimer)
+    prewarmTimer = setTimeout(async () => {
+      prewarmTimer = null
+      if (prewarmInFlight || (prewarmedChildWorker?.alive && !prewarmedChildWorker.busy)) return
+      prewarmInFlight = true
+      try {
+        const [bin, cwd, env] = await Promise.all([
+          resolveAgyBinary(),
+          ensureChildIsolatedCwd(),
+          buildAgyEnv(),
+        ])
+        const w = await spawnWarmAgyWorker({
+          bin,
+          model: FAST_COACH_AGY_MODEL,
+          cwd,
+          env,
+          resumeConvId: '',
+        })
+        if (!prewarmedChildWorker || !prewarmedChildWorker.alive) {
+          prewarmedChildWorker = w
+        } else {
+          w.kill()
+        }
+      } catch {
+        // 静默忽略预热失败，正式请求时会自动按需启动
+      } finally {
+        prewarmInFlight = false
+      }
+    }, delayMs)
+    prewarmTimer.unref?.()
+  }
+
+  async function waitWorkerExit(w, maxMs = 1200) {
+    if (!w?.exitPromise) return
+    let timer = null
+    try {
+      await Promise.race([
+        w.exitPromise,
+        new Promise((r) => {
+          timer = setTimeout(r, maxMs)
+        }),
+      ])
+    } finally {
+      if (timer) clearTimeout(timer)
+    }
+  }
+
+  async function executeAgyStreamTurn({ bin, model, cwd, env, convId = '', promptStr, signal, timeoutMs = 95_000, onDelta }) {
+    evictOldIdleWorkers(3)
+    if (convId && inFlightConvWorkers.has(convId)) {
+      const prevRunning = inFlightConvWorkers.get(convId)
+      inFlightConvWorkers.delete(convId)
+      prevRunning.kill()
+      await waitWorkerExit(prevRunning, 1500)
+    }
+
+    let worker = null
+    if (convId && warmConvWorkers.has(convId)) {
+      const existing = warmConvWorkers.get(convId)
+      warmConvWorkers.delete(convId)
+      if (existing.alive && !existing.busy && existing.model === model && existing.cwd === cwd) {
+        worker = existing
+      } else {
+        existing.kill()
+        await waitWorkerExit(existing, 1000)
+      }
+    } else if (
+      !convId &&
+      prewarmedChildWorker &&
+      prewarmedChildWorker.alive &&
+      !prewarmedChildWorker.busy &&
+      prewarmedChildWorker.model === model &&
+      prewarmedChildWorker.cwd === cwd
+    ) {
+      worker = prewarmedChildWorker
+      prewarmedChildWorker = null
+    }
+
+    if (!worker) {
+      worker = await spawnWarmAgyWorker({ bin, model, cwd, env, resumeConvId: convId })
+    }
+
+    if (!convId && model === FAST_COACH_AGY_MODEL) {
+      schedulePrewarmChildWorker(600)
+    }
+
+    const trackedCid = convId || worker.conversationId || ''
+    if (trackedCid) inFlightConvWorkers.set(trackedCid, worker)
+    try {
+      const result = await worker.runTurn(promptStr, { signal, timeoutMs, onDelta })
+      if (worker.alive && result.conversationId) {
+        warmConvWorkers.set(result.conversationId, worker)
+        evictOldIdleWorkers(3)
+      }
+      return result
+    } finally {
+      if (trackedCid && inFlightConvWorkers.get(trackedCid) === worker) {
+        inFlightConvWorkers.delete(trackedCid)
+      }
+      if (worker.conversationId && inFlightConvWorkers.get(worker.conversationId) === worker) {
+        inFlightConvWorkers.delete(worker.conversationId)
+      }
+    }
+  }
+
   ctx.on?.('dispose', () => {
     if (startupSyncTimer) clearTimeout(startupSyncTimer)
     if (debounceSyncTimer) clearTimeout(debounceSyncTimer)
     if (heartbeatSyncTimer) clearInterval(heartbeatSyncTimer)
+    destroyAllWarmWorkers()
   })
 
   async function handleSyncStatus(_req, res) {
@@ -2250,7 +2695,12 @@ export function apply(ctx, config) {
     data.latestHomework = hwInfo.latestHomework
     data.quizProgress = quizProg || null
     data.localCppCatalog = localCatalog || null
-    if (includeAgy) data.agy = agyStatus
+    if (includeAgy) {
+      data.agy = agyStatus
+      if (agyStatus?.ready) {
+        schedulePrewarmChildWorker(800)
+      }
+    }
     return data
   }
 
@@ -2911,7 +3361,8 @@ export function apply(ctx, config) {
         return sendJson(res, { ok: false, error: '消息不能为空' }, 400)
       }
       const reqModel = String(body?.model || DEFAULT_AGY_MODEL).trim()
-      const chosenModel = ALLOWED_AGY_MODELS.has(reqModel) ? reqModel : DEFAULT_AGY_MODEL
+      const intakeMode = String(body?.intakeMode || '').trim()
+      const wantStream = Boolean(body?.stream)
       const convId = String(body?.conversationId || '').trim()
       const reqChatId = sanitizeChatId(body?.chatId)
       const chatTitle = String(body?.title || '').trim()
@@ -2946,6 +3397,13 @@ export function apply(ctx, config) {
         return sendJson(res, { ok: false, error: '家长模式鉴权未通过，请确认在 Mac 家长端输入正确口令。' }, 403)
       }
       const mode = isParentAllowed ? 'parent' : 'coach'
+      const chosenModel = resolveEffectiveAgyModel({
+        reqModel,
+        mode,
+        subMode,
+        intakeMode,
+        userMsg,
+      })
 
       const isGenericGreetingTitle = (rawTitle) => {
         const core = String(rawTitle || '')
@@ -3111,74 +3569,12 @@ export function apply(ctx, config) {
       const finalPrompt = await buildFinalPrompt(hasPriorMessagesWithoutConv)
 
       const bin = await resolveAgyBinary()
-      const makeCliArgs = (promptStr, useConvId) => {
-        const args = [
-          '-p',
-          promptStr,
-          '--model',
-          chosenModel,
-          '--disable-slash-commands',
-          '--output-format',
-          'json',
-          '--print-timeout',
-          '90s',
-        ]
-        if (useConvId) args.push('--conversation', useConvId)
-        return args
-      }
-
       const ac = new AbortController()
       const onClose = () => {
         if (!res.writableEnded) ac.abort()
       }
-      req.on('close', onClose)
-
-      const agyEnv = await buildAgyEnv()
-      let stdout = ''
-      let stderr = ''
-      try {
-        try {
-          const out = await execAgy(bin, makeCliArgs(finalPrompt, convId), {
-            cwd: runCwd,
-            env: agyEnv,
-            signal: ac.signal,
-            timeout: 100_000,
-            maxBuffer: 4 * 1024 * 1024,
-          })
-          stdout = out.stdout
-          stderr = out.stderr
-        } catch (firstErr) {
-          const errMsg = String(firstErr?.stderr || firstErr?.message || '')
-          if (convId && !ac.signal.aborted && /conversation|not found|does not exist|no such/i.test(errMsg)) {
-            // 跨设备同步续聊时本机无旧 agy conversationId：自动降级为携带最近历史摘要开启新会话
-            const fallbackPrompt = await buildFinalPrompt(true)
-            const out2 = await execAgy(bin, makeCliArgs(fallbackPrompt, ''), {
-              cwd: runCwd,
-              env: agyEnv,
-              signal: ac.signal,
-              timeout: 100_000,
-              maxBuffer: 4 * 1024 * 1024,
-            })
-            stdout = out2.stdout
-            stderr = out2.stderr
-          } else {
-            throw firstErr
-          }
-        }
-      } finally {
-        req.off?.('close', onClose)
-      }
-
-      const trimmed = String(stdout || '').trim()
-      let parsed = null
-      try {
-        parsed = JSON.parse(trimmed)
-      } catch {
-        const lastLine = trimmed.split('\n').reverse().find((l) => l.trim().startsWith('{'))
-        if (lastLine) {
-          try { parsed = JSON.parse(lastLine) } catch { /* ignore */ }
-        }
-      }
+      res.on?.('close', onClose)
+      req.on?.('aborted', onClose)
 
       const persistTurn = async (replyText, nextConvId, durationSeconds) => {
         if (skipSaveHistory) return { id: reqChatId || null, title: chatTitle || '', previewQuery: persistedPreviewQuery }
@@ -3241,62 +3637,122 @@ export function apply(ctx, config) {
         }
       }
 
-      if (parsed && typeof parsed === 'object') {
-        const replyText = String(parsed.response || '').trim()
-        if (!replyText) {
-          return sendJson(
-            res,
-            {
-              ok: false,
-              error: `Antigravity 返回空内容（status=${parsed.status || 'unknown'}，turns=${parsed.num_turns ?? '?'}），请重试或切换模型。`,
-            },
-            502,
-          )
-        }
-        const nextConvId = parsed.conversation_id || convId || null
-        const savedMeta = await persistTurn(replyText, nextConvId, parsed.duration_seconds ?? null)
-        return sendJson(
-          res,
-          {
-            ok: true,
-            chatId: savedMeta.id,
-            title: savedMeta.title,
-            previewQuery: savedMeta.previewQuery,
+      const agyEnv = await buildAgyEnv()
+      if (wantStream) {
+        res.writeHead(200, {
+          'content-type': 'application/x-ndjson; charset=utf-8',
+          'cache-control': 'no-cache, no-transform',
+          'x-accel-buffering': 'no',
+        })
+        res.write(JSON.stringify({ type: 'meta', model: chosenModel }) + '\n')
+      }
+
+      let emittedDelta = false
+      const onStreamDelta = wantStream
+        ? (delta) => {
+            emittedDelta = true
+            if (!res.writableEnded) {
+              res.write(JSON.stringify({ type: 'delta', delta }) + '\n')
+            }
+          }
+        : undefined
+
+      let turnOut = null
+      try {
+        try {
+          turnOut = await executeAgyStreamTurn({
+            bin,
             model: chosenModel,
-            conversationId: nextConvId,
-            durationSeconds: parsed.duration_seconds ?? null,
-            reply: replyText,
-          },
-          200,
-        )
+            cwd: runCwd,
+            env: agyEnv,
+            convId,
+            promptStr: finalPrompt,
+            signal: ac.signal,
+            timeoutMs: 95_000,
+            onDelta: onStreamDelta,
+          })
+        } catch (firstErr) {
+          const errMsg = String(firstErr?.stderr || firstErr?.message || '')
+          if (convId && !emittedDelta && !ac.signal.aborted && /conversation|not found|does not exist|no such/i.test(errMsg)) {
+            // 跨设备同步续聊时本机无旧 agy conversationId：自动降级为携带最近历史摘要开启新会话
+            const fallbackPrompt = await buildFinalPrompt(true)
+            turnOut = await executeAgyStreamTurn({
+              bin,
+              model: chosenModel,
+              cwd: runCwd,
+              env: agyEnv,
+              convId: '',
+              promptStr: fallbackPrompt,
+              signal: ac.signal,
+              timeoutMs: 95_000,
+              onDelta: onStreamDelta,
+            })
+          } else {
+            throw firstErr
+          }
+        }
+      } finally {
+        res.off?.('close', onClose)
+        req.off?.('aborted', onClose)
       }
-      const fallbackText = trimmed || String(stderr || '').trim()
-      if (!fallbackText) {
-        return sendJson(res, { ok: false, error: 'Antigravity 未返回有效输出，请检查 agy CLI 登录状态。' }, 502)
+
+      const replyText = String(turnOut?.response || '').trim()
+      if (!replyText) {
+        const emptyErr = `Antigravity 返回空内容（status=${turnOut?.status || 'unknown'}），请重试或切换模型。`
+        if (wantStream) {
+          if (!res.writableEnded) {
+            res.write(JSON.stringify({ type: 'error', error: emptyErr }) + '\n')
+            res.end()
+          }
+          return
+        }
+        return sendJson(res, { ok: false, error: emptyErr }, 502)
       }
-      const savedMeta = await persistTurn(fallbackText, convId || null, null)
-      return sendJson(
-        res,
-        {
-          ok: true,
-          chatId: savedMeta.id,
-          title: savedMeta.title,
-          previewQuery: savedMeta.previewQuery,
-          model: chosenModel,
-          conversationId: convId || null,
-          reply: fallbackText,
-        },
-        200,
-      )
+
+      const nextConvId = turnOut?.conversationId || convId || null
+      const durationSeconds = turnOut?.durationSeconds ?? null
+      const savedMeta = await persistTurn(replyText, nextConvId, durationSeconds)
+      const doneBody = {
+        ok: true,
+        chatId: savedMeta.id,
+        title: savedMeta.title,
+        previewQuery: savedMeta.previewQuery,
+        model: chosenModel,
+        conversationId: nextConvId,
+        durationSeconds,
+        reply: replyText,
+      }
+      if (wantStream) {
+        if (!res.writableEnded) {
+          res.write(JSON.stringify({ type: 'done', ...doneBody }) + '\n')
+          res.end()
+        }
+        return
+      }
+      return sendJson(res, doneBody, 200)
     } catch (err) {
       if (err?.name === 'AbortError' || err?.code === 'ABORT_ERR' || res.writableEnded) {
-        if (!res.writableEnded) return sendJson(res, { ok: false, aborted: true, error: '已取消本次思考' }, 499)
+        if (!res.writableEnded) {
+          if (res.headersSent) {
+            res.write(JSON.stringify({ type: 'error', aborted: true, error: '已取消本次思考' }) + '\n')
+            res.end()
+          } else {
+            return sendJson(res, { ok: false, aborted: true, error: '已取消本次思考' }, 499)
+          }
+        }
         return
       }
       const rawErr = String(err?.stderr || err?.message || err)
       const hint = /not recognized as a known model|i\/o timeout|deadline exceeded/i.test(rawErr)
         ? '（提示：通常是桌面端未能通过系统代理连上 Google 拉取模型列表；已自动读取系统代理，如仍失败请确认本机代理软件正在运行并重启 DeepSeek Harness。）'
         : ''
+      if (res.headersSent) {
+        if (!res.writableEnded) {
+          res.write(JSON.stringify({ type: 'error', error: `${rawErr.trim()}${hint}` }) + '\n')
+          res.end()
+        }
+        return
+      }
       return sendJson(res, { ok: false, error: `${rawErr.trim()}${hint}` }, 500)
     }
   }
@@ -3858,12 +4314,16 @@ export function apply(ctx, config) {
                 return JSON.stringify({ ok: false, error: 'prompt 不能为空' })
               }
               const reqModel = String(args?.model || DEFAULT_AGY_MODEL).trim()
-              const chosenModel = ALLOWED_AGY_MODELS.has(reqModel) ? reqModel : DEFAULT_AGY_MODEL
               const convId = String(args?.conversation_id || '').trim()
 
               // 判断调用方角色：非 macOS 家长机或非 oi-parent 会话一律强制隔离 cwd + 注入禁给 AC 代码与反套话护栏
               const callerPreset = safeGetService(ctx, 'agentPresets')?.presetForSession?.(exec?.agent?.session)
               const isChildCoach = process.platform !== 'darwin' || callerPreset !== 'oi-parent'
+              const chosenModel = resolveEffectiveAgyModel({
+                reqModel,
+                mode: isChildCoach ? 'coach' : 'parent',
+                userMsg: rawPrompt,
+              })
               if (isChildCoach) {
                 const lockHit = await checkGesp8UnattemptedLock([rawPrompt])
                 if (lockHit) {
