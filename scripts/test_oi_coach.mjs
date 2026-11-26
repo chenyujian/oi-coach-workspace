@@ -214,9 +214,23 @@ await test('GET /api/overview returns real 4-platform stats, courseNotes & agy r
   assert.equal(d.gesp8.objectivePapers.length, 13)
   assert.equal(d.gesp8.mockSuites.length, 2)
   assert.equal(d.gesp8.quadrants.length, 4)
+  assert.ok(
+    Array.isArray(d.gesp8.recommendedNext) &&
+      d.gesp8.recommendedNext.length >= 2 &&
+      d.gesp8.recommendedNext[0].archetype === 'A',
+    'recommendedNext should prioritize A-archetype GESP8 problems first',
+  )
+  // Verify teacher's latest Oilibaitian homework (1125_1620_1750_陈彦旭: #1344 AC + #790/#793/#797 pending)
+  assert.ok(d.latestHomework && d.latestHomework.title.includes('1125'), `Missing latestHomework: ${JSON.stringify(d.latestHomework)}`)
+  assert.equal(d.latestHomework.total, 4)
+  assert.ok(d.latestHomework.solvedCount >= 1, 'Expected #1344 cross-joined as solved in latestHomework')
+  const hw1344 = d.latestHomework.problems.find((p) => p.pid === '1344')
+  assert.equal(hw1344?.solved, true, '#1344 must be recognized as solved via oilibaitian_uid79_records.json')
+  const pendPids = d.latestHomework.pendingProblems.map((p) => p.pid)
+  assert.ok(pendPids.includes('790') && pendPids.includes('793') && pendPids.includes('797'), `Expected 790/793/797 pending: ${JSON.stringify(pendPids)}`)
   assert.equal(d.agy.ready, true, `Expected agy.ready=true, got ${JSON.stringify(d.agy)}`)
   liveOverviewData = d
-  return `${d.totals.submissions} subs, ${d.totals.uniqueAc} AC, gesp8=${d.gesp8.summary.progSolved}/${d.gesp8.summary.progTotal}, ${d.courseNotes.length} notes`
+  return `${d.totals.submissions} subs, ${d.totals.uniqueAc} AC, hw=${d.latestHomework.solvedCount}/${d.latestHomework.total}, gesp8=${d.gesp8.summary.progSolved}/${d.gesp8.summary.progTotal}`
 })
 
 await test('GET /api/doc reads allowed docs (POSIX + Windows backslash) & blocks traversal', async () => {
@@ -348,6 +362,8 @@ await test('POST /api/open-oj enforces POST (405) & strict URL whitelist, and GE
     'https://evil.example.com/p/2718',
     'https://www.oilibaitian.cn/p/2718;calc',
     'https://www.oilibaitian.cn/p/../../etc/passwd',
+    'https://www.oilibaitian.cn/homework/../../etc/passwd',
+    'https://www.oilibaitian.cn/homework/6b069e323a38b395692e97af;calc',
     'javascript:alert(1)',
     'file:///etc/passwd',
   ]) {
@@ -386,6 +402,8 @@ await test('GET /dsh-oi-coach/math-lab serves valid HTML & embedded JS has zero 
   assert.equal(out.status, 200)
   const html = text()
   assert.ok(html.includes('<!DOCTYPE html>'))
+  assert.ok(html.includes('鸡兔同笼字母版'), 'Math Lab Lesson 2 Level 3 should use intuitive 鸡兔同笼字母版 framing')
+  assert.ok(!html.includes('二元含参消元'), 'Math Lab still contains intimidating 二元含参消元 jargon!')
   const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map((m) => m[1])
   assert.ok(scripts.length > 0, 'No <script> found in math-lab HTML')
   for (let i = 0; i < scripts.length; i++) {
@@ -737,7 +755,39 @@ await test('Chat history APIs (list, get, delete, path traversal rejection) & PO
     assert.equal(qzSaved.gesp8Answers['oop-1'], 1, 'Latest answer should be updated to 1')
     assert.equal(qzSaved.firstAttempts['oop-1'].correct, false, 'First-attempt miss must be preserved for parent diagnosis')
 
-    return 'history CRUD + quiz_progress + .env.local PIN parse + parent isolation 403/200 OK'
+    // Verify teacher homework exemption: if teacher assigns a mock programming problem (e.g. 1800) in oilibaitian_uid79_activities.json, preview unlocks it while objective paper 2269 remains locked
+    await fs.mkdir(path.join(tmpDir, 'training', 'sync_logs'), { recursive: true })
+    await fs.mkdir(path.join(tmpDir, 'training', 'problem_cache'), { recursive: true })
+    await fs.writeFile(
+      path.join(tmpDir, 'training', 'problem_cache', 'oilibaitian_1800.json'),
+      JSON.stringify({ platform: '信奥李拜天', pid: '1800', title: '1800 [GESP202603 八级] 消息查找', statement: '消息查找原题面内容', attempts: 0 }),
+      'utf8',
+    )
+    await fs.writeFile(
+      path.join(tmpDir, 'training', 'problem_cache', 'oilibaitian_2269.json'),
+      JSON.stringify({ platform: '信奥李拜天', pid: '2269', title: '2269 [GESP202603 八级] 客观题', is_objective: true, statement: '客观卷原题内容', attempts: 0 }),
+      'utf8',
+    )
+    await fs.writeFile(
+      path.join(tmpDir, 'training', 'sync_logs', 'oilibaitian_uid79_activities.json'),
+      JSON.stringify([{ tid: 'abcdef0123456789abcdef01', kind: 'homework', title: '1202_作业', beginAt: '2026-12-02T10:00:00Z', problems: [{ pid: '1800', title: '消息查找' }, { pid: '2269', title: '客观题' }] }]),
+      'utf8',
+    )
+    const { res: rHwEx, json: jHwEx } = makeRes()
+    await tmpRoutes.get('/dsh-oi-coach/api/problem-preview')(makeReq('GET', '/dsh-oi-coach/api/problem-preview?q=1800'), rHwEx)
+    assert.equal(jHwEx().problem.statement, '消息查找原题面内容', 'Teacher-assigned homework programming problem must bypass mock lock')
+    const { res: rObjStillLock, json: jObjStillLock } = makeRes()
+    await tmpRoutes.get('/dsh-oi-coach/api/problem-preview')(makeReq('GET', '/dsh-oi-coach/api/problem-preview?q=2269'), rObjStillLock)
+    assert.ok(jObjStillLock().problem.statement.includes('尚未在信奥李拜天提交第一遍'), 'Unsubmitted objective paper must remain locked even if listed in activity')
+    const { res: rHwOv, json: jHwOv } = makeRes()
+    await tmpRoutes.get('/dsh-oi-coach/api/overview')(makeReq('GET', '/dsh-oi-coach/api/overview'), rHwOv)
+    const hwObjItem = jHwOv().data.latestHomework.problems.find((p) => p.pid === '2269')
+    assert.equal(hwObjItem?.isObjective, true, 'Objective paper in latestHomework must be flagged isObjective=true so UI opens OJ instead of hitting lock')
+    const mock2Check = jHwOv().data.gesp8.mockSuites.find((m) => m.id === 'mock-202606')
+    assert.equal(mock2Check?.t1?.archetype, 'A', 'mockSuites.t1 (#2322) must preserve A archetype')
+    assert.equal(mock2Check?.t2?.archetype, 'C', 'mockSuites.t2 (#2321) must preserve C archetype')
+
+    return 'history CRUD + quiz_progress + homework mock-lock exemption + .env.local PIN parse + parent isolation 403/200 OK'
   } finally {
     await fs.rm(tmpDir, { recursive: true, force: true })
   }
@@ -1262,12 +1312,34 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
   tree = slots.main()
   assert.ok(flattenText(tree).includes('通关秘籍卡已保存'), 'SaveCardModal confirmation missing')
 
-  // 2. Start new chat via + 新题 -> click a quick problem -> enters active full-height Coach room
+  // 2. Start new chat via + 新题 -> verify Teacher's Oilibaitian Homework (1125) is prioritized at top of Coach Home!
   findButtons(tree).find((b) => flattenText(b).includes('+ 新题')).props.onClick()
   tree = slots.main()
-  const quickBtn = findButtons(tree).find((b) => flattenText(b).includes(liveOverviewData.unsolvedRecent[0].title))
-  assert.ok(quickBtn, 'Quick problem button missing on coach home')
-  await quickBtn.props.onClick()
+  const homePriorityText = flattenText(tree)
+  assert.ok(
+    homePriorityText.includes('优先完成李拜天老师本期作业') &&
+      homePriorityText.includes('1125_1620_1750') &&
+      homePriorityText.includes('#1344 最短距离') &&
+      homePriorityText.includes('公倍数问题') &&
+      homePriorityText.includes('空间跳跃') &&
+      homePriorityText.includes('排队'),
+    'Coach Home did not prioritize teacher homework 1125_1620_1750 with #1344 solved & #790/#793/#797 pending!',
+  )
+  const hwBtn = findButtons(tree).find((b) => flattenText(b).includes('公倍数问题'))
+  assert.ok(hwBtn, 'Pending homework button for #790 公倍数问题 missing on coach home')
+  hwBtn.props.onClick()
+  await new Promise((r) => setTimeout(r, 10))
+  assert.equal(mockAgyPayloads.at(-1)?.subMode, 'gesp8-coach', 'Homework GESP8 card must launch subMode=gesp8-coach')
+  assert.ok(mockAgyPayloads.at(-1)?.message.includes('B型'), 'Homework #790 card must use B-archetype subtask-upgrade prompt')
+
+  // Also verify bilingual AtCoder preview drawer via intakeText -> 开始辅导 -> 看原题
+  findButtons(slots.main()).find((b) => flattenText(b).includes('← 新题')).props.onClick()
+  tree = slots.main()
+  const intakeBox = findByType(tree, 'textarea')[0]
+  intakeBox.props.onChange({ target: { value: 'abc483_d' } })
+  tree = slots.main()
+  findButtons(tree).find((b) => flattenText(b).includes('开始辅导')).props.onClick()
+  await new Promise((r) => setTimeout(r, 10))
   tree = slots.main()
   const coachActiveText = flattenText(tree)
   assert.ok(coachActiveText.includes('Test reply'), 'Active chat reply not rendered')
@@ -1280,18 +1352,24 @@ await test('client.js renders all 4 rooms, sub-tabs, rich math, preview drawer &
   const pvExpandedText = flattenText(tree)
   assert.ok(pvExpandedText.includes('收起原题') && pvExpandedText.includes('中英对照') && pvExpandedText.includes('本题竞赛英语词卡'), 'Bilingual problem preview did not render')
 
-  // 2b. Switch to 🎯 八级冲刺 tab -> verify 4 subtabs, needsPostMortem audit, 4-keys card, inline ask-coach + returnNav, and mock early-solved warning
+  // 2b. Switch to 🎯 八级冲刺 tab -> verify 4 subtabs, A/B/C archetype pills, needsPostMortem audit, 4-keys card, inline ask-coach + returnNav, and mock early-solved warning
   findButtons(tree).find((b) => flattenText(b).includes('八级冲刺')).props.onClick()
   tree = slots.main()
   const gespBoardText = flattenText(tree)
   assert.ok(gespBoardText.includes('80+ 分直免 CSP-S 初赛') && gespBoardText.includes('猫和老鼠') && gespBoardText.includes('生成树计数'), 'GESP8 board missing core P0 problems')
+  assert.ok(
+    gespBoardText.includes('A型·套模板直通') && gespBoardText.includes('B型·子任务原位升级') && gespBoardText.includes('C型·画小图找规律'),
+    'GESP8 board missing A/B/C archetype badges',
+  )
   assert.ok(gespBoardText.includes('30秒排暗雷'), 'GESP8 board missing 30秒排暗雷 post-mortem banner for 2322/1344')
   assert.ok(!gespBoardText.includes('倍增跳步') && !gespBoardText.includes('组合数学 + 逆元'), 'Locked mock cards on GESP8 board leaked algorithm tags!')
   assert.ok(!/\bauto\s+\[[^\]]+\]\s*[:=]/.test(code), 'GESP8 template leaked C++17 structured binding incompatible with GESP C++14!')
-  const gespCoachBtn = findButtons(tree).find((b) => flattenText(b).includes('80+ 双保险辅导'))
-  assert.ok(gespCoachBtn, 'Missing 80+ 双保险辅导 button on GESP8 board')
-  await gespCoachBtn.props.onClick()
+  const gespCoachBtn = findButtons(tree).find((b) => flattenText(b).includes('80+ 套模板辅导'))
+  assert.ok(gespCoachBtn, 'Missing ⚡ 80+ 套模板辅导 button on GESP8 board')
+  gespCoachBtn.props.onClick()
+  await new Promise((r) => setTimeout(r, 10))
   assert.equal(mockAgyPayloads.at(-1)?.subMode, 'gesp8-coach', 'GESP8 problem card must dispatch subMode=gesp8-coach')
+  assert.ok(mockAgyPayloads.at(-1)?.message.includes('A型'), 'A-archetype GESP8 button must send template-direct prompt')
 
   // Return to 🎯 八级冲刺 -> test Objective 44+ subtab, Combinatorics 4 Keys card, inline ask-coach & ↩ returnNav!
   tree = slots.main()

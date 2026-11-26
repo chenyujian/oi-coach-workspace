@@ -680,7 +680,7 @@
       const STAGE_LESSONS = {
         1: [
           { id: 'l1', num: '第 1 关 · 第 1 课', title: '剥故事起字母：多字母展开与合并', desc: '真实 OI 题剥故事 · 拆三项括号与合并同类项 · 数学 = vs C++ ==' },
-          { id: 'l2', num: '第 1 关 · 第 2 课', title: '升级解方程：双边 x、负项与全字母倒推', desc: '双边 x 氢气球 · 全字母倒推公式 · 二元含参消元与无解边界' },
+          { id: 'l2', num: '第 1 关 · 第 2 课', title: '升级解方程：双边 x、负项与鸡兔同笼字母版', desc: '双边 x 氢气球 · 全字母倒推公式 · 鸡兔同笼假设法（O(1) 省掉循环）' },
           { id: 'l3', num: '第 1 关 · 第 3 课', title: '不等式翻号 & 完整 5 步贪心证明', desc: '数轴翻号接取负反转 · 小数→盒子→手拆→划相同块→冒泡桥与 cmp' },
         ],
         2: [
@@ -811,14 +811,14 @@
         },
         {
           id: 'two-var-param',
-          title: '关卡 3（二元含参消元）：a + b = n 且 2a + 5b = S，反求 b',
-          story: '你会解数字版二元方程组，但 OI 题里给的是字母 n 和 S！用加减消元法，把 a 彻底消掉，直接推导出 b 的通用公式！',
+          title: '关卡 3（鸡兔同笼字母版 · 把循环变 1 行代码）：a + b = n 且 2a + 5b = S，求 b',
+          story: '别被两个式子吓到——它其实就是小学最熟的【鸡兔同笼假设法】换成字母 n 和 S！假设 n 张全是 2 分卡（总分 2n），看看差多少分，3 步推出 O(1) 公式，当 n = 10⁹ 时直接省掉超时循环！',
           type: 'system',
           init: { stage: 0, eq1: 'a + b = n', eq2: '2a + 5b = S' },
           ops: [
-            { id: 'sysMul2', label: '① 一式两边同乘 2（对齐 2a）' },
-            { id: 'sysSub', label: '② 二式减去新的一式（消掉 2a）' },
-            { id: 'sysDiv3', label: '③ 两边同除以 3（得到 b）' },
+            { id: 'sysMul2', label: '① 假设全拿 2 分卡：一式同乘 2（得 2a + 2b = 2n）' },
+            { id: 'sysSub', label: '② 算总分差额：二式减新的一式（消掉 2a 剩 3b = S - 2n）' },
+            { id: 'sysDiv3', label: '③ 每换 1 张 5 分卡多 3 分：同除以 3（得 b）' },
           ],
         },
       ];
@@ -952,39 +952,39 @@
         } else if (lv.type === 'system') {
           if (opId === 'sysMul2') {
             if (cur.stage !== 0) {
-              state.l2Feedback = '已经对齐 2a 啦，下一步用二式减去新的一式！';
+              state.l2Feedback = '已经算出假设全拿 2 分卡的总分 2n 啦，下一步用真实总分 S 减去 2n！';
               state.l2FeedbackType = 'fb-warn';
               render();
               return;
             }
             state.l2History.push(snap);
             cur.stage = 1;
-            state.l2Steps.push({ eq: '2a + 2b = 2n', reason: '一式两边同乘 2（对齐 2a）' });
-            state.l2Feedback = '很好！现在两个式子里都有 2a，相减就能把 a 彻底消灭！';
+            state.l2Steps.push({ eq: '2a + 2b = 2n', reason: '假设 n 张全是 2 分卡（一式×2）' });
+            state.l2Feedback = '第一步就懂了吧！假设 n 张全是 2 分卡，总分就是 2n（对应 2a + 2b = 2n）！';
             state.l2FeedbackType = 'fb-info';
           } else if (opId === 'sysSub') {
             if (cur.stage !== 1) {
-              state.l2Feedback = cur.stage === 0 ? '先别急着减！一式里是 1 个 a，二式里是 2 个 a，直接减消不掉 a。先对齐 2a！' : '已经消掉 a 啦，下一步同除以 3！';
+              state.l2Feedback = cur.stage === 0 ? '先做第 ① 步：假设 n 张全是 2 分卡（一式乘 2 对齐 2a），再算差多少分！' : '已经算出差额 3b = S - 2n 啦，下一步除以 3！';
               state.l2FeedbackType = 'fb-warn';
               render();
               return;
             }
             state.l2History.push(snap);
             cur.stage = 2;
-            state.l2Steps.push({ eq: '3b = S - 2n', reason: '(2a+5b) - (2a+2b) = S - 2n' });
-            state.l2Feedback = '干净利落！2a - 2a = 0，5b - 2b = 3b，a 彻底消失了！';
+            state.l2Steps.push({ eq: '3b = S - 2n', reason: '真实总分 S 减去全 2 分总分 2n' });
+            state.l2Feedback = '干净利落！每把 1 张 2 分卡换成 5 分卡就多 3 分，b 张一共多出 3b = S - 2n 分！';
             state.l2FeedbackType = 'fb-info';
           } else if (opId === 'sysDiv3') {
             if (cur.stage !== 2) {
-              state.l2Feedback = '还没消成 3b = S - 2n 呢，先按顺序消掉 a！';
+              state.l2Feedback = '还没算出差额 3b = S - 2n 呢，先按 ①→② 算出总分差额！';
               state.l2FeedbackType = 'fb-warn';
               render();
               return;
             }
             state.l2History.push(snap);
             cur.stage = 3;
-            state.l2Steps.push({ eq: 'b = (S - 2n) / 3', reason: '两边同除以 3' });
-            state.l2Feedback = '🎉 漂亮！写成 C++ 就是 (S - 2*n) / 3（还能顺手检查 (S - 2*n) % 3 == 0 判无解！）';
+            state.l2Steps.push({ eq: 'b = (S - 2n) / 3', reason: '多出的分 ÷ 每张差价 3' });
+            state.l2Feedback = '🎉 秒懂！就算题目给 n = 10⁹（写循环必超时），你也能 1 行代码 (S - 2*n) / 3 瞬间算完！';
             state.l2FeedbackType = 'fb-ok';
           }
         }
@@ -1067,7 +1067,7 @@
             rubric: '家长听懂要点：能说出“为了抵消左边的 -c，天平两边必须同时 +c，所以右边出现 +c”。',
           },
           {
-            q: '2. 已知二元关系 a + b = n 且 2a + 5b = S（a, b 为非负整数）。写成 OI 代码判定“有没有合法非负整数解”时，除了 (S - 2n) % 3 == 0，还必须检查什么？',
+            q: '2. 【鸡兔同笼字母版 · O(1) 省循环】2 分卡 a 张、5 分卡 b 张，共 n 张且总分 S（即 a + b = n 且 2a + 5b = S）。推出 b = (S - 2n) / 3 后，C++ 判“有合法非负整数解”除了 (S - 2n) % 3 == 0，还必须检查什么？',
             options: [
               'A. 只要检查总分 S 大于总张数 n（即 S > n），算出的解就一定合法',
               'B. 检查 S - 2n ≥ 0 且算出的 b ≤ n（保证 a ≥ 0 且 b ≥ 0）',
@@ -1370,8 +1370,8 @@
           `,
         },
         l2: {
-          title: '第 1 关 · 第 2 课手写闯关单：双边方程、全字母倒推与含参消元',
-          goal: '亲手推导出含字母参数的通用解公式，写出隐藏的整数/非负边界条件，并代回验毒。',
+          title: '第 1 关 · 第 2 课手写闯关单：双边方程、全字母倒推与鸡兔同笼字母版',
+          goal: '亲手用天平规则与鸡兔同笼假设法推出含字母的 O(1) 公式，写出隐藏的非负整数边界条件，并代回验毒。',
           tasksHtml: `
             <div class="ws-task">
               <h4>题 1 · 复杂等式逐步推导（右注每步操作，第 1 题须代回验毒）</h4>
@@ -1381,11 +1381,11 @@
               </div>
             </div>
             <div class="ws-task">
-              <h4>题 2 · 二元含参消元（OI 常见：不给具体数，只给字母 n 和 S）</h4>
-              <p>有 A、B 两种卡共 <strong>n</strong> 张，A 卡每张 3 分，B 卡每张 7 分，总分恰好为 <strong>S</strong> 分。请<strong>自己设 A、B 卡数量为字母</strong>，用消元法推出 B 卡张数的通用公式，并写出“有合法非负整数解”需要满足的 2 个判断条件：</p>
+              <h4>题 2 · 鸡兔同笼字母版（OI 常见：n 高达 10⁹ 不能写循环，直接推 O(1) 公式！）</h4>
+              <p>有 A、B 两种卡共 <strong>n</strong> 张，A 卡每张 3 分，B 卡每张 7 分，总分恰好为 <strong>S</strong> 分。提示：假设 <strong>n</strong> 张全拿 3 分卡得 <code>3n</code> 分，每换 1 张 7 分卡多 4 分！请列式推出 B 卡张数公式，并写出“有合法非负整数解”的 2 个 C++ 判断条件：</p>
               <div class="write-box" style="min-height:82px;">
-                ① 列出两个方程：_______________________ 和 _______________________<br/>
-                ② 消元过程：_______________________________________________________<br/>
+                ① 列出两个等式：_______________________ 和 _______________________<br/>
+                ② 假设全拿 3 分卡相减过程：__________________________________________<br/>
                 ③ B 卡公式 = ___________________ ｜ C++ 判合法解条件：_____________________
               </div>
             </div>
@@ -1926,8 +1926,8 @@
         return `
           <section class="card no-print">
             <span class="section-badge badge-blue">第 1 步 · 进阶方程推导台</span>
-            <h2>第 2 课：升级解方程——双边 x、负项气球、全字母倒推与含参消元</h2>
-            <p class="lead">普通一元、二元数字方程你已经会了！在 OI 里真正拉分的是：<strong>两边都有未知数、带负项、题目根本不给具体数字只给字母 <code>L, d, k, n, S</code>，怎么用同样的天平规则推导出通用公式？</strong></p>
+            <h2>第 2 课：升级解方程——双边 x、负项气球、全字母倒推与鸡兔同笼字母版</h2>
+            <p class="lead">普通数字方程你早就会了！这一课只练 OI 代码里真能帮你不超时的两招：<strong>① 题目不给具体数字只给字母 <code>L, d, k</code> 时怎么倒推公式；② 当 <code>n = 10⁹</code> 写循环必超时的时候，怎么用小学【鸡兔同笼假设法】把两个字母式子压成 1 行 <code>O(1)</code> 代码！</strong></p>
 
             <div class="lab-box">
               <div class="lab-title">
@@ -1974,7 +1974,7 @@
             </div>
 
             <div class="callout callout-purple">
-              <strong>💡 为什么复杂题不要硬靠心算倒推？</strong> 一步两步的题心算确实快；一旦题目绕三圈，或者干脆不给具体数字只给字母 <code>n, S, L, k</code>，<strong>顺着故事顺序设字母列等式</strong>，再用天平/消元变形，大脑完全不用倒着绕弯，直接导出能写进 C++ 的公式！
+              <strong>💡 为什么 OI 里要练“字母版鸡兔同笼”？</strong> 当题目只考 <code>n ≤ 1000</code> 时你写个 <code>for</code> 循环枚举就能过；一旦数据范围飙到 <code>n ≤ 10⁹</code> 或 <code>10¹⁸</code>（比如数轴跳步往左 <code>a</code> 步、往右 <code>b</code> 步共走 <code>n</code> 步停在终点 <code>S</code>），顺着故事假设全往一边走，1 行公式直接秒杀，再也不怕 TLE！
             </div>
           </section>
           ${renderQuizSection('l2')}

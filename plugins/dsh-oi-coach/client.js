@@ -1037,7 +1037,7 @@ window.__ModuleLoader__.load({
     }
 
     function inferCardDraftFromChat(chat, pv) {
-      const title = String(pv?.title || chat?.title || '').replace(/^(讲义慢放|任氏建模|代数建模|讲义变式|八级冲刺|八级闯关|暗雷排毒|本地代码|八级客观复盘|建模|排错|复盘|旧题重斩|变形手算|建模快练)\s*·\s*/i, '').trim() || '未命名题目'
+      const title = String(pv?.title || chat?.title || '').replace(/^(探索建模|课堂作业|讲义慢放|任氏建模|代数建模|讲义变式|八级冲刺|八级闯关|暗雷排毒|本地代码|八级客观复盘|建模|排错|复盘|旧题重斩|变形手算|建模快练)\s*·\s*/i, '').trim() || '未命名题目'
       const combined = `${pv?.platform || ''} ${title}`.toLowerCase()
       let platform = 'oj'
       if (/atcoder|abc\d+|arc\d+|agc\d+/.test(combined)) platform = 'atcoder'
@@ -3044,6 +3044,70 @@ window.__ModuleLoader__.load({
       )
     }
 
+    function startGesp8ProbSession(p, returnNav = null) {
+      const canon = CLIENT_GESP8_PROG.find((x) => x.pid === String(p?.pid || ''))
+      const sessVal = p.session && p.session !== '模考复盘' ? p.session : canon?.session || p.session || ''
+      const sessionStr = sessVal ? `[GESP${sessVal} 八级] ` : ''
+      const titleVal = p.title || canon?.title || ''
+      const luoguVal = p.luoguPid || canon?.luoguPid || '-'
+      const label = `${p.pid} ${sessionStr}${titleVal}`
+      const arch = p.archetype || canon?.archetype || 'B'
+      const unsolvedDisplay =
+        arch === 'A'
+          ? `按【⚡ A型·套模板直通】攻克【${label}】`
+          : arch === 'C'
+            ? `按【🔍 C型·画小图找规律】攻克【${label}】`
+            : `按【🪜 B型·子任务原位升级】攻克【${label}】`
+      const unsolvedPrompt =
+        arch === 'A'
+          ? `教练，我在完成李拜天老师作业并冲刺 12月26日 GESP C++ 八级（目标 80+ 分免初赛），现在做历年真题【${label}】（洛谷 ${luoguVal}，属于 A型·标准模板微变形）。第 1 轮请先拿 N = 3~4 小图带我看穿建图或起点机关（严禁首轮剧透算法名或给代码）；看穿机关后别让我绕弯多写废暴力，直接引导我套熟模板一枪冲满分！`
+          : arch === 'C'
+            ? `教练，我在完成李拜天老师作业并冲刺 12月26日 GESP C++ 八级（目标 80+ 分免初赛），现在做历年真题【${label}】（洛谷 ${luoguVal}，属于 C型·小图找规律计数）。请别让我先写全删重来的暴搜代码！第 1 轮先给 N = 3~4 极小图带我在演草纸数清合法方案（严禁首轮直接给结论或代码），再用 [ ? ] 挖空带我填出计数规律！`
+            : `教练，我在完成李拜天老师作业并冲刺 12月26日 GESP C++ 八级（目标 80+ 分免初赛），现在做历年真题【${label}】（洛谷 ${luoguVal}，属于 B型·子任务阶梯原位升级）。第 1 轮先拿 N = 3~4 具体小数字带我手算破冰（严禁首轮剧透算法名或给代码）；摸清题意后先带我花几分钟写稳 40%~60% 子任务简短代码保底拿稳 15 分，再指着慢循环原位换零件升级 100% 满分！`
+      void launchCoachSession({
+        presetId: 'oi-coach',
+        subMode: 'gesp8-coach',
+        title: `八级冲刺 · ${p.pid} ${titleVal}`,
+        displayText: p.solved ? `口述重温八级真题【${label}】的核心建模与防坑点` : unsolvedDisplay,
+        previewQuery: p.pid,
+        ...(returnNav ? { returnNav } : {}),
+        prompt: p.solved
+          ? `教练，这道 GESP 八级真题【${label}】我之前做过了，现在冲刺 12.26 八级 80+ 分做防遗忘抽查：请别直接告诉我做法，考我 1 个关键建模步骤或边界坑点，看我还记不记得！`
+          : unsolvedPrompt,
+      })
+    }
+
+    function launchHomeworkItem(p) {
+      if (p.isObjective) {
+        if (!p.attempts) {
+          openOjUrl(p.url, `${p.pid} ${p.displayTitle || p.title}`)
+          return
+        }
+        const scaled = p.scaledBest ?? (p.bestScore !== null && p.bestScore !== undefined ? Math.round(Number(p.bestScore) * 5) / 10 : '--')
+        void launchCoachSession({
+          presetId: 'oi-coach',
+          subMode: 'gesp8-obj-review',
+          title: `八级客观复盘 · ${p.session || p.pid}`,
+          displayText: `慢放复盘作业客观卷【${p.displayTitle || p.title}】（当前最高折算 ${scaled}/50 分）`,
+          previewQuery: p.pid,
+          prompt: `教练，我刚在信奥李拜天交了老师布置的【${p.displayTitle || p.title}】（题号 ${p.pid}，折算得分 ${scaled}/50 分，目标 ≥ 44/50 分）。请开启【GESP 八级客观卷错题慢放清零模式】，千万别一次性列出整套卷答案！如果系统已识别出我答错的题号，请先挑第 1 道错题用六年级具体小数字带我推算；如果没有识别到具体错题号，请先问我想先复盘第几题！`,
+        })
+        return
+      }
+      if (p.isGesp8) {
+        startGesp8ProbSession(p, null)
+        return
+      }
+      const label = `#${p.pid} ${p.displayTitle || p.title}`
+      void launchCoachSession({
+        presetId: 'oi-coach',
+        title: `课堂作业 · ${p.pid} ${p.title}`,
+        displayText: `攻克李拜天老师作业【${label}】`,
+        previewQuery: p.pid,
+        prompt: buildQuickPrompt('hint', `信奥李拜天作业 ${label}`),
+      })
+    }
+
     function CoachRoomTab({ data, st }) {
       const chat = st.agyChat
       const scrollRef = React.useRef(null)
@@ -3087,6 +3151,19 @@ window.__ModuleLoader__.load({
       let mainArea
       if (!isActive) {
         const quickProblems = (data?.unsolvedRecent || []).slice(0, 3)
+        const hw = data?.latestHomework || null
+        const hwPending = Array.isArray(hw?.pendingProblems) ? hw.pendingProblems : []
+        const hwSolvedNames = (Array.isArray(hw?.problems) ? hw.problems : [])
+          .filter((x) => x.solved)
+          .map((x) => `#${x.pid} ${x.title}`)
+        const g = data?.gesp8 || buildClientFallbackGesp8(st.fallbackSolvedPids)
+        const examPassed = Boolean(g?.summary?.examPassed)
+        const recGespProbs = (Array.isArray(g?.recommendedNext) ? g.recommendedNext : []).slice(0, 3)
+        const ansMap = st.gesp8QuizAnswers || {}
+        const allBlindIds = GESP8_BLIND_PACKS.flatMap((pk) => pk.questions.map((q) => q.id))
+        const blindDone = allBlindIds.filter((id) => ansMap[id] !== undefined).length
+        const nextBlindPack =
+          GESP8_BLIND_PACKS.find((pk) => pk.questions.some((q) => ansMap[q.id] === undefined)) || GESP8_BLIND_PACKS[0]
         const modes = [
           { id: 'hint', label: '🧮 探索建模' },
           { id: 'wa', label: '🩺 WA 排错' },
@@ -3115,7 +3192,7 @@ window.__ModuleLoader__.load({
                   width: '100%',
                   maxWidth: 740,
                   display: 'grid',
-                  gap: 24,
+                  gap: 20,
                   justifyItems: 'center',
                   paddingBottom: 24,
                 },
@@ -3124,14 +3201,14 @@ window.__ModuleLoader__.load({
                 'div',
                 { style: { textAlign: 'center', display: 'grid', gap: 8 } },
                 h('div', { style: { fontSize: 26, fontWeight: 800, letterSpacing: '-0.02em' } }, '今天想攻克哪道题？'),
-                h('div', { style: { fontSize: 14, color: C.sub } }, '备好演草本，贴上题号、题面或卡住的代码，先拿小数字手算破冰，再一步步翻译成数学式'),
+                h('div', { style: { fontSize: 14, color: C.sub } }, '备好演草本，优先清零老师本期作业，再稳扎稳打冲刺 12.26 八级 80+ 免初赛线'),
               ),
               h(
                 'div',
                 { className: 'oi-composer' },
                 h('textarea', {
                   className: 'oi-textarea',
-                  placeholder: '输入题号（如 abc485_c）、粘贴题面，或贴一段报错/超时的代码…（Ctrl/Cmd + Enter 发送）',
+                  placeholder: '输入题号（如 790、797、abc485_c）、粘贴题面，或贴一段报错/超时的代码…（Ctrl/Cmd + Enter 发送）',
                   value: st.intakeText,
                   onChange: (e) => setState({ intakeText: e.target.value }),
                   onKeyDown: (e) => {
@@ -3173,53 +3250,249 @@ window.__ModuleLoader__.load({
                   ),
                 ),
               ),
-              quickProblems.length > 0
+              hwPending.length > 0
                 ? h(
                     'div',
                     { style: { width: '100%', display: 'grid', gap: 10 } },
                     h(
                       'div',
-                      { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 4px' } },
-                      h('span', { style: { fontSize: 13, color: C.sub, fontWeight: 600 } }, '接着补近期卡住的题'),
+                      { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, padding: '0 4px' } },
                       h(
-                        'button',
-                        {
-                          type: 'button',
-                          className: 'oi-btn oi-btn-ghost',
-                          style: { fontSize: 12.5 },
-                          onClick: () => setState({ tab: 'problems' }),
-                        },
-                        `查看全部 ${(data?.unsolvedRecent || []).length} 道待补题 →`,
+                        'span',
+                        { style: { fontSize: 13.5, color: C.text, fontWeight: 700 } },
+                        `📋 优先完成李拜天老师本期作业 · ${hw.title}（已过 ${hw.solvedCount}/${hw.total} 题）`,
                       ),
-                    ),
-                    h(
-                      'div',
-                      { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 10 } },
-                      ...quickProblems.map((p, idx) =>
+                      h(
+                        'div',
+                        { style: { display: 'flex', gap: 6, flexWrap: 'wrap' } },
+                        hw.url
+                          ? h(
+                              'button',
+                              {
+                                type: 'button',
+                                className: 'oi-btn oi-btn-ghost',
+                                style: { fontSize: 12 },
+                                onClick: () => openOjUrl(hw.url, hw.title),
+                              },
+                              '🔗 打开李拜天作业单',
+                            )
+                          : null,
                         h(
                           'button',
                           {
-                            key: `quick-${p.platform}-${p.title}-${idx}`,
+                            type: 'button',
+                            className: 'oi-btn oi-btn-ghost',
+                            style: { fontSize: 12 },
+                            onClick: () => setState({ tab: 'gesp8', gesp8SubTab: 'board' }),
+                          },
+                          '🎯 八级冲刺总览 →',
+                        ),
+                      ),
+                    ),
+                    hwSolvedNames.length > 0
+                      ? h(
+                          'div',
+                          { style: { fontSize: 12, color: C.ok, padding: '0 4px', fontWeight: 600 } },
+                          `✓ 本期已攻克：${hwSolvedNames.join('、')}`,
+                        )
+                      : null,
+                    h(
+                      'div',
+                      { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(215px, 1fr))', gap: 10 } },
+                      ...hwPending.map((p) =>
+                        h(
+                          'button',
+                          {
+                            key: `hw-pend-${p.pid}`,
                             type: 'button',
                             className: 'oi-card',
                             disabled: !!st.busy,
-                            onClick: () => launchProblemAction(p, 'model'),
+                            onClick: () => launchHomeworkItem(p),
                             style: {
                               textAlign: 'left',
                               cursor: 'pointer',
                               padding: '13px 15px',
                               display: 'grid',
-                              gap: 5,
+                              gap: 6,
                               color: C.text,
+                              borderColor: C.accent,
                             },
                           },
-                          h('div', { style: { fontWeight: 700, fontSize: 13.5, lineHeight: 1.35 } }, p.title),
-                          h('div', { style: { fontSize: 12, color: C.sub } }, `${p.platform} · ${p.trajectory}`),
+                          h(
+                            'div',
+                            { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6 } },
+                            h('span', { className: 'oi-pill', style: { fontSize: 11, color: C.accent, borderColor: C.accent } }, p.archBadge || '📋 课堂作业'),
+                            h('span', { style: { fontSize: 11.5, color: C.sub } }, `#${p.pid}${p.luoguPid ? ` / ${p.luoguPid}` : ''}`),
+                          ),
+                          h('div', { style: { fontWeight: 700, fontSize: 13.5, lineHeight: 1.35 } }, p.displayTitle || p.title),
+                          h(
+                            'div',
+                            { style: { fontSize: 12, color: C.sub } },
+                            p.isObjective
+                              ? `${p.tag} · ${p.attempts > 0 ? `已交 ${p.attempts} 次（点此慢放清零错题）` : '🔗 点此去李拜天交首遍卷 →'}`
+                              : `${p.tag} · ${p.attempts > 0 ? `已试 ${p.attempts} 次（最高 ${p.bestScore ?? 0} 分）` : '点此手算破冰'}`,
+                          ),
                         ),
                       ),
                     ),
+                    !examPassed
+                      ? h(
+                          'div',
+                          {
+                            style: {
+                              padding: '9px 12px',
+                              borderRadius: 10,
+                              border: `1px solid ${C.border}`,
+                              background: C.layer,
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              flexWrap: 'wrap',
+                              gap: 8,
+                              fontSize: 12.5,
+                              color: C.sub,
+                            },
+                          },
+                          h('span', null, `⚡ 45 分钟不累配方：先点 1 组 8 分钟客观题微卡热身（已通 ${blindDone}/24），再做上面 1 道老师作业题就收工！`),
+                          h(
+                            'div',
+                            { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } },
+                            h(
+                              'button',
+                              {
+                                type: 'button',
+                                className: 'oi-btn',
+                                style: { fontSize: 12, padding: '4px 10px' },
+                                onClick: () => setState({ tab: 'gesp8', gesp8SubTab: 'objective', gesp8PackId: nextBlindPack.id }),
+                              },
+                              '📝 8分钟客观题热身 →',
+                            ),
+                            (data?.unsolvedRecent || []).length > 0
+                              ? h(
+                                  'button',
+                                  {
+                                    type: 'button',
+                                    className: 'oi-btn oi-btn-ghost',
+                                    style: { fontSize: 12, padding: '4px 8px' },
+                                    onClick: () => setState({ tab: 'problems' }),
+                                  },
+                                  `其他平台待补（${(data?.unsolvedRecent || []).length}）→`,
+                                )
+                              : null,
+                          ),
+                        )
+                      : null,
                   )
-                : null,
+                : !examPassed && recGespProbs.length > 0
+                  ? h(
+                      'div',
+                      { style: { width: '100%', display: 'grid', gap: 10 } },
+                      hw?.allDone
+                        ? h(
+                            'div',
+                            { style: { fontSize: 12.5, color: C.ok, fontWeight: 700, padding: '0 4px' } },
+                            `🎉 李拜天老师本期作业（${hw.title}，${hw.total}/${hw.total} 题）已全部清零！`,
+                          )
+                        : null,
+                      h(
+                        'div',
+                        { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 4px' } },
+                        h('span', { style: { fontSize: 13.5, color: C.text, fontWeight: 700 } }, '🎯 12.26 八级 80+ 今日轻装推荐（⚡ A型套模板优先）'),
+                        h(
+                          'div',
+                          { style: { display: 'flex', gap: 6 } },
+                          h(
+                            'button',
+                            {
+                              type: 'button',
+                              className: 'oi-btn oi-btn-ghost',
+                              style: { fontSize: 12 },
+                              onClick: () => setState({ tab: 'gesp8', gesp8SubTab: 'objective', gesp8PackId: nextBlindPack.id }),
+                            },
+                            `📝 客观微卡（${blindDone}/24）→`,
+                          ),
+                          (data?.unsolvedRecent || []).length > 0
+                            ? h(
+                                'button',
+                                {
+                                  type: 'button',
+                                  className: 'oi-btn oi-btn-ghost',
+                                  style: { fontSize: 12 },
+                                  onClick: () => setState({ tab: 'problems' }),
+                                },
+                                `其他待补（${(data?.unsolvedRecent || []).length}）→`,
+                              )
+                            : null,
+                        ),
+                      ),
+                      h(
+                        'div',
+                        { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(215px, 1fr))', gap: 10 } },
+                        ...recGespProbs.map((p) =>
+                          h(
+                            'button',
+                            {
+                              key: `rec-g8-${p.pid}`,
+                              type: 'button',
+                              className: 'oi-card',
+                              disabled: !!st.busy,
+                              onClick: () => startGesp8ProbSession(p, null),
+                              style: { textAlign: 'left', cursor: 'pointer', padding: '13px 15px', display: 'grid', gap: 6, color: C.text },
+                            },
+                            h('span', { className: 'oi-pill', style: { fontSize: 11, color: C.accent, borderColor: C.accent, justifySelf: 'start' } }, p.archBadge),
+                            h('div', { style: { fontWeight: 700, fontSize: 13.5 } }, `[${p.session}] ${p.title} #${p.pid}`),
+                            h('div', { style: { fontSize: 12, color: C.sub } }, `考点：${p.tag}`),
+                          ),
+                        ),
+                      ),
+                    )
+                  : quickProblems.length > 0
+                    ? h(
+                        'div',
+                        { style: { width: '100%', display: 'grid', gap: 10 } },
+                        h(
+                          'div',
+                          { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 4px' } },
+                          h('span', { style: { fontSize: 13, color: C.sub, fontWeight: 600 } }, '接着补近期卡住的题'),
+                          h(
+                            'button',
+                            {
+                              type: 'button',
+                              className: 'oi-btn oi-btn-ghost',
+                              style: { fontSize: 12.5 },
+                              onClick: () => setState({ tab: 'problems' }),
+                            },
+                            `查看全部 ${(data?.unsolvedRecent || []).length} 道待补题 →`,
+                          ),
+                        ),
+                        h(
+                          'div',
+                          { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 10 } },
+                          ...quickProblems.map((p, idx) =>
+                            h(
+                              'button',
+                              {
+                                key: `quick-${p.platform}-${p.title}-${idx}`,
+                                type: 'button',
+                                className: 'oi-card',
+                                disabled: !!st.busy,
+                                onClick: () => launchProblemAction(p, 'model'),
+                                style: {
+                                  textAlign: 'left',
+                                  cursor: 'pointer',
+                                  padding: '13px 15px',
+                                  display: 'grid',
+                                  gap: 5,
+                                  color: C.text,
+                                },
+                              },
+                              h('div', { style: { fontWeight: 700, fontSize: 13.5, lineHeight: 1.35 } }, p.title),
+                              h('div', { style: { fontSize: 12, color: C.sub } }, `${p.platform} · ${p.trajectory}`),
+                            ),
+                          ),
+                        ),
+                      )
+                    : null,
             ),
           ),
         )
@@ -4133,33 +4406,39 @@ window.__ModuleLoader__.load({
       },
     ]
 
+    const CLIENT_ARCHETYPE_META = {
+      A: { badge: '⚡ A型·套模板直通', order: 1 },
+      B: { badge: '🪜 B型·子任务原位升级', order: 2 },
+      C: { badge: '🔍 C型·画小图找规律', order: 3 },
+    }
+
     const CLIENT_GESP8_PROG = [
-      { pid: '787', luoguPid: 'P10288', session: '样题', title: '小杨的旅游', quadrant: 'shortest_path', tier: 'baseline', week: '已过', tag: '最短路 + LCA' },
-      { pid: '1504', luoguPid: 'P14923', session: '2025.12', title: '猫和老鼠', quadrant: 'shortest_path', tier: 'p0', week: 'W1', tag: '最短路建模' },
-      { pid: '798', luoguPid: 'P11966', session: '2025.03', title: '上学', quadrant: 'shortest_path', tier: 'p0', week: 'W1', tag: '单源最短路' },
-      { pid: '2700', luoguPid: 'P17462', session: '2026.09', title: '末班车', quadrant: 'shortest_path', tier: 'p0', week: 'W1', tag: '逆向时序最短路' },
-      { pid: '1801', luoguPid: 'P15805', session: '2026.03', title: '子图最短路', quadrant: 'shortest_path', tier: 'mock', mockId: 'mock-202603', week: 'W3模考', tag: '枚举 + 最短路' },
-      { pid: '1345', luoguPid: 'P14080', session: '2025.09', title: '最小生成树', quadrant: 'mst_dsu', tier: 'p0', week: 'W2', tag: 'MST + 树上倍增' },
-      { pid: '2699', luoguPid: 'P17461', session: '2026.09', title: '生成树计数', quadrant: 'mst_dsu', tier: 'p0', week: 'W2', tag: '连通块 + 乘法原理' },
-      { pid: '797', luoguPid: 'P11380', session: '2024.12', title: '排队', quadrant: 'mst_dsu', tier: 'p0', week: 'W2', tag: '并查集 + 组合计数' },
-      { pid: '2322', luoguPid: 'P17016', session: '2026.06', title: '线网建设', quadrant: 'mst_dsu', tier: 'mock', mockId: 'mock-202606', week: 'W4模考', tag: '几何距离 + Kruskal' },
-      { pid: '788', luoguPid: 'P10112', session: '2023.12', title: '奖品分配', quadrant: 'combo_math', tier: 'baseline', week: '已过', tag: '组合数学' },
-      { pid: '794', luoguPid: 'P11250', session: '2024.09', title: '手套配对', quadrant: 'combo_math', tier: 'baseline', week: '已过', tag: '组合计数' },
-      { pid: '1344', luoguPid: 'P14079', session: '2025.09', title: '最短距离', quadrant: 'combo_math', tier: 'p0', week: 'W3', tag: 'GCD 数论转化' },
-      { pid: '801', luoguPid: 'P13020', session: '2025.06', title: '遍历计数', quadrant: 'combo_math', tier: 'p0', week: 'W3', tag: '图的遍历 + 计数' },
-      { pid: '790', luoguPid: 'P10263', session: '2024.03', title: '公倍数问题', quadrant: 'combo_math', tier: 'p0', week: 'W3', tag: '倍数枚举 + 计数' },
-      { pid: '2321', luoguPid: 'P17017', session: '2026.06', title: '堆石子', quadrant: 'combo_math', tier: 'mock', mockId: 'mock-202606', week: 'W4模考', tag: '组合数学 + 逆元' },
-      { pid: '789', luoguPid: 'P10113', session: '2023.12', title: '大量的工作沟通', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', tag: '树上 LCA' },
-      { pid: '791', luoguPid: 'P10264', session: '2024.03', title: '接竹竿', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', tag: '栈与序列递推' },
-      { pid: '795', luoguPid: 'P11251', session: '2024.09', title: '美丽路径', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', tag: '树形 DP / 直径' },
-      { pid: '799', luoguPid: 'P11967', session: '2025.03', title: '割裂', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', tag: 'LCA + 树上差分' },
-      { pid: '800', luoguPid: 'P13019', session: '2025.06', title: '树上旅行', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', tag: '树与遍历模拟' },
-      { pid: '1505', luoguPid: 'P14924', session: '2025.12', title: '宝石项链', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', tag: '贪心 + 双指针' },
-      { pid: '792', luoguPid: 'P10725', session: '2024.06', title: '最远点对', quadrant: 'doubling_tree_dp', tier: 'p0', week: 'W4', tag: '树形 DP + 直径' },
-      { pid: '796', luoguPid: 'P11379', session: '2024.12', title: '树上移动', quadrant: 'doubling_tree_dp', tier: 'p0', week: 'W4', tag: 'DFS 树性质' },
-      { pid: '1800', luoguPid: 'P15804', session: '2026.03', title: '消息查找', quadrant: 'doubling_tree_dp', tier: 'mock', mockId: 'mock-202603', week: 'W3模考', tag: '倍增跳步' },
-      { pid: '786', luoguPid: 'P10289', session: '样题', title: '区间', quadrant: 'doubling_tree_dp', tier: 'p1', week: '机动', tag: '二分 + 哈希' },
-      { pid: '793', luoguPid: 'P10726', session: '2024.06', title: '空间跳跃', quadrant: 'doubling_tree_dp', tier: 'p1', week: '机动', tag: '线性 DP' },
+      { pid: '787', luoguPid: 'P10288', session: '样题', title: '小杨的旅游', quadrant: 'shortest_path', tier: 'baseline', week: '已过', archetype: 'A', tag: '最短路 + LCA' },
+      { pid: '1504', luoguPid: 'P14923', session: '2025.12', title: '猫和老鼠', quadrant: 'shortest_path', tier: 'p0', week: 'W1', archetype: 'A', tag: '最短路建模' },
+      { pid: '798', luoguPid: 'P11966', session: '2025.03', title: '上学', quadrant: 'shortest_path', tier: 'p0', week: 'W1', archetype: 'A', tag: '单源最短路' },
+      { pid: '2700', luoguPid: 'P17462', session: '2026.09', title: '末班车', quadrant: 'shortest_path', tier: 'p0', week: 'W1', archetype: 'A', tag: '逆向时序最短路' },
+      { pid: '1801', luoguPid: 'P15805', session: '2026.03', title: '子图最短路', quadrant: 'shortest_path', tier: 'mock', mockId: 'mock-202603', week: 'W3模考', archetype: 'B', tag: '枚举 + 最短路' },
+      { pid: '1345', luoguPid: 'P14080', session: '2025.09', title: '最小生成树', quadrant: 'mst_dsu', tier: 'p0', week: 'W2', archetype: 'B', tag: 'MST + 树上倍增' },
+      { pid: '2699', luoguPid: 'P17461', session: '2026.09', title: '生成树计数', quadrant: 'mst_dsu', tier: 'p0', week: 'W2', archetype: 'C', tag: '连通块 + 乘法原理' },
+      { pid: '797', luoguPid: 'P11380', session: '2024.12', title: '排队', quadrant: 'mst_dsu', tier: 'p0', week: 'W2', archetype: 'C', tag: '并查集 + 组合计数' },
+      { pid: '2322', luoguPid: 'P17016', session: '2026.06', title: '线网建设', quadrant: 'mst_dsu', tier: 'mock', mockId: 'mock-202606', week: 'W4模考', archetype: 'A', tag: '几何距离 + Kruskal' },
+      { pid: '788', luoguPid: 'P10112', session: '2023.12', title: '奖品分配', quadrant: 'combo_math', tier: 'baseline', week: '已过', archetype: 'C', tag: '组合数学' },
+      { pid: '794', luoguPid: 'P11250', session: '2024.09', title: '手套配对', quadrant: 'combo_math', tier: 'baseline', week: '已过', archetype: 'C', tag: '组合计数' },
+      { pid: '1344', luoguPid: 'P14079', session: '2025.09', title: '最短距离', quadrant: 'combo_math', tier: 'p0', week: 'W3', archetype: 'C', tag: 'GCD 数论转化' },
+      { pid: '801', luoguPid: 'P13020', session: '2025.06', title: '遍历计数', quadrant: 'combo_math', tier: 'p0', week: 'W3', archetype: 'C', tag: '图的遍历 + 计数' },
+      { pid: '790', luoguPid: 'P10263', session: '2024.03', title: '公倍数问题', quadrant: 'combo_math', tier: 'p0', week: 'W3', archetype: 'B', tag: '倍数枚举 + 计数' },
+      { pid: '2321', luoguPid: 'P17017', session: '2026.06', title: '堆石子', quadrant: 'combo_math', tier: 'mock', mockId: 'mock-202606', week: 'W4模考', archetype: 'C', tag: '组合数学 + 逆元' },
+      { pid: '789', luoguPid: 'P10113', session: '2023.12', title: '大量的工作沟通', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', archetype: 'A', tag: '树上 LCA' },
+      { pid: '791', luoguPid: 'P10264', session: '2024.03', title: '接竹竿', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', archetype: 'B', tag: '栈与序列递推' },
+      { pid: '795', luoguPid: 'P11251', session: '2024.09', title: '美丽路径', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', archetype: 'B', tag: '树形 DP / 直径' },
+      { pid: '799', luoguPid: 'P11967', session: '2025.03', title: '割裂', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', archetype: 'A', tag: 'LCA + 树上差分' },
+      { pid: '800', luoguPid: 'P13019', session: '2025.06', title: '树上旅行', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', archetype: 'A', tag: '树与遍历模拟' },
+      { pid: '1505', luoguPid: 'P14924', session: '2025.12', title: '宝石项链', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', archetype: 'A', tag: '贪心 + 双指针' },
+      { pid: '792', luoguPid: 'P10725', session: '2024.06', title: '最远点对', quadrant: 'doubling_tree_dp', tier: 'p0', week: 'W4', archetype: 'B', tag: '树形 DP + 直径' },
+      { pid: '796', luoguPid: 'P11379', session: '2024.12', title: '树上移动', quadrant: 'doubling_tree_dp', tier: 'p0', week: 'W4', archetype: 'B', tag: 'DFS 树性质' },
+      { pid: '1800', luoguPid: 'P15804', session: '2026.03', title: '消息查找', quadrant: 'doubling_tree_dp', tier: 'mock', mockId: 'mock-202603', week: 'W3模考', archetype: 'B', tag: '倍增跳步' },
+      { pid: '786', luoguPid: 'P10289', session: '样题', title: '区间', quadrant: 'doubling_tree_dp', tier: 'p1', week: '机动', archetype: 'B', tag: '二分 + 哈希' },
+      { pid: '793', luoguPid: 'P10726', session: '2024.06', title: '空间跳跃', quadrant: 'doubling_tree_dp', tier: 'p1', week: '机动', archetype: 'B', tag: '线性 DP' },
     ]
 
     const CLIENT_GESP8_OBJS = [
@@ -4183,8 +4462,12 @@ window.__ModuleLoader__.load({
       const progByPid = new Map()
       const problems = CLIENT_GESP8_PROG.map((item) => {
         const solved = item.tier === 'baseline' || solvedSet.has(item.pid)
+        const am = CLIENT_ARCHETYPE_META[item.archetype] || CLIENT_ARCHETYPE_META.B
         const enriched = {
           ...item,
+          archBadge: am.badge,
+          archOrder: am.order,
+          assignedByTeacher: false,
           url: `https://www.oilibaitian.cn/p/${item.pid}`,
           attempts: solved ? 1 : 0,
           bestScore: solved ? 100 : null,
@@ -4232,6 +4515,9 @@ window.__ModuleLoader__.load({
           obj: { pid: m.objPid, title: obj?.title || '', url: obj?.url || '', attempts: 0, points: null, maxPoints: 50 },
           t1: {
             pid: m.t1Pid,
+            luoguPid: t1?.luoguPid || '',
+            session: t1?.session || '',
+            archetype: t1?.archetype || 'B',
             title: t1?.title || '',
             url: t1?.url || '',
             attempts: t1?.attempts || 0,
@@ -4243,6 +4529,9 @@ window.__ModuleLoader__.load({
           },
           t2: {
             pid: m.t2Pid,
+            luoguPid: t2?.luoguPid || '',
+            session: t2?.session || '',
+            archetype: t2?.archetype || 'B',
             title: t2?.title || '',
             url: t2?.url || '',
             attempts: t2?.attempts || 0,
@@ -4296,6 +4585,10 @@ window.__ModuleLoader__.load({
         }),
         objectivePapers,
         mockSuites,
+        recommendedNext: problems
+          .filter((p) => !p.solved && p.tier !== 'mock')
+          .sort((a, b) => (a.archOrder || 2) - (b.archOrder || 2) || (a.tier === 'p0' ? -1 : 1))
+          .slice(0, 4),
       }
     }
 
@@ -4315,17 +4608,7 @@ window.__ModuleLoader__.load({
       const bestMockScore = finishedMocks.length > 0 ? Math.max(...finishedMocks.map((m) => m.totalScore)) : null
 
       const launchGesp8Prob = (p) => {
-        const label = `${p.pid} [GESP${p.session} 八级] ${p.title}`
-        void launchCoachSession({
-          presetId: 'oi-coach',
-          subMode: 'gesp8-coach',
-          title: `八级冲刺 · ${p.pid} ${p.title}`,
-          displayText: p.solved ? `口述重温八级真题【${label}】的核心建模与防坑点` : `按 80+ 双保险法攻克八级真题【${label}】`,
-          previewQuery: p.pid,
-          prompt: p.solved
-            ? `教练，这道 GESP 八级真题【${label}】我之前做过了，现在冲刺 12.26 八级 80+ 分做防遗忘抽查：请别直接告诉我做法，考我 1 个关键建模步骤或边界坑点，看我还记不记得！`
-            : `教练，我在冲刺 12月26日 GESP C++ 八级（目标稳拿 80+ 分免 CSP-S 初赛），现在要攻克历年真题【${label}】（洛谷 ${p.luoguPid || '-'}）。请开启【GESP 八级冲刺 80+ 双保险模式】：第 1 轮先拿 N = 3~4 具体小数字/小图带我手算破冰（严禁首轮剧透算法名或给代码），到第 3 步时记得先带我设计 50%~60% 高档子任务保底分，再冲 100% 正解！`,
-        })
+        startGesp8ProbSession(p, { tab: 'gesp8', gesp8SubTab: 'board', label: '↩ 返回八级冲刺棋盘' })
       }
 
       const launchObjReview = (paper) => {
@@ -4564,7 +4847,7 @@ window.__ModuleLoader__.load({
                       'div',
                       { className: 'oi-grid-2' },
                       ...qd.items.map((p) => {
-                        const isLockedMock = p.tier === 'mock' && !p.solved && p.attempts === 0
+                        const isLockedMock = p.tier === 'mock' && !p.solved && p.attempts === 0 && !p.assignedByTeacher
                         const badgeColor = p.solved ? C.ok : p.tier === 'p0' ? C.warn : isLockedMock ? C.sub : C.accent
                         const badgeText = p.solved
                           ? '✓ 已攻克 (25/25)'
@@ -4572,7 +4855,18 @@ window.__ModuleLoader__.load({
                             ? `🔥 P0 必刷 · ${p.week}`
                             : isLockedMock
                               ? `🔒 ${p.week} 封存`
-                              : `P1 机动`
+                              : p.assignedByTeacher
+                                ? '📋 老师作业'
+                                : p.tier === 'mock'
+                                  ? `🔓 ${p.week}`
+                                  : `P1 机动`
+                        const coachBtnText = p.solved
+                          ? '🗣️ 口述重温防忘'
+                          : p.archetype === 'A'
+                            ? '⚡ 80+ 套模板辅导'
+                            : p.archetype === 'C'
+                              ? '🔍 80+ 找规律辅导'
+                              : '🪜 80+ 阶梯辅导'
                         return h(
                           'div',
                           {
@@ -4599,10 +4893,17 @@ window.__ModuleLoader__.load({
                           ),
                           h(
                             'div',
-                            { style: { fontSize: 12, color: C.sub } },
-                            isLockedMock
-                              ? '🔒 全真模考封存（首交后自动解锁考点标签与深度复盘）'
-                              : `考点：${p.tag}${p.bestScore !== null && !p.solved ? ` · 历史最高 ${p.bestScore} 分（折算 ${p.scaled25}/25 分）` : ''}`,
+                            { style: { fontSize: 12, color: C.sub, display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' } },
+                            !isLockedMock && p.archBadge
+                              ? h('span', { className: 'oi-pill', style: { fontSize: 11, padding: '1px 7px', color: C.accent, borderColor: C.accent } }, p.archBadge)
+                              : null,
+                            h(
+                              'span',
+                              null,
+                              isLockedMock
+                                ? '🔒 全真模考封存（首交后自动解锁考点标签与深度复盘）'
+                                : `考点：${p.tag}${p.bestScore !== null && !p.solved ? ` · 历史最高 ${p.bestScore} 分（折算 ${p.scaled25}/25 分）` : ''}`,
+                            ),
                           ),
                           h(
                             'div',
@@ -4625,7 +4926,7 @@ window.__ModuleLoader__.load({
                                     disabled: !!st.busy,
                                     onClick: () => launchGesp8Prob(p),
                                   },
-                                  p.solved ? '🗣️ 口述重温防忘' : '🎯 80+ 双保险辅导',
+                                  coachBtnText,
                                 ),
                             !isLockedMock
                               ? h(
@@ -5028,7 +5329,15 @@ window.__ModuleLoader__.load({
                                         onClick: () =>
                                           isObj
                                             ? launchObjReview({ pid: item.pid, title: item.title, session: m.title.slice(8, 15), scaledBest: item.points })
-                                            : launchGesp8Prob({ pid: item.pid, title: item.title, session: '模考复盘', solved: item.solved, tag: '全真合卷复盘' }),
+                                            : launchGesp8Prob({
+                                                pid: item.pid,
+                                                luoguPid: item.luoguPid,
+                                                session: item.session || '模考复盘',
+                                                archetype: item.archetype,
+                                                title: item.title,
+                                                solved: item.solved,
+                                                tag: '全真合卷复盘',
+                                              }),
                                       },
                                       '🩺 赛后复盘',
                                     )

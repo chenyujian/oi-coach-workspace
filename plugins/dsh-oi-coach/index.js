@@ -763,37 +763,58 @@ async function verifyParentAccess(workspace, suppliedPin) {
 
 const GESP8_EXAM_DATE = '2026-12-26'
 
+const GESP8_ARCHETYPE_META = {
+  A: {
+    code: 'A',
+    badge: '⚡ A型·套模板直通',
+    order: 1,
+    guide: '本题属于【A 型 · 标准模板微变形】：第 1 步拿小图帮孩子看穿唯一的建图/起点机关后，**绝不绕弯让他多写一遍废暴力、也不推繁琐公式**，直接鼓励他端出最熟的标准模板一枪写满分，收尾重点盯 `long long`、重边与无解特判！',
+  },
+  B: {
+    code: 'B',
+    badge: '🪜 B型·子任务原位升级',
+    order: 2,
+    guide: '本题属于【B 型 · 子任务阶梯原位升级】：第 1 步小例子摸清题意后，引导**先花 8 分钟写稳题面 40%~60% 子任务的简短代码跑通样例（练熟考场稳兜 15 分保底分）**，再指着他刚写的那行慢循环，原位替换零件升级为 100% 满分！',
+  },
+  C: {
+    code: 'C',
+    badge: '🔍 C型·画小图找规律',
+    order: 3,
+    guide: '本题属于【C 型 · 小图找规律计数】：暴搜代码与正解完全不同物种，**平时绝不让他先写全删重来的暴搜代码**！直接在演草纸画 N = 3~4 极小图数清合法方案，用 `[ ? ]` 挖空填出乘法/组合数规律后 20 行直接敲完（仅顺带提一句：考场万一卡住可写 n≤8 全排列兜底拿 5~10 分）。',
+  },
+}
+
 const GESP8_PROG_CATALOG = [
   // ① 最短路与分层/逆向建图
-  { pid: '787', luoguPid: 'P10288', session: '样题', title: '小杨的旅游', quadrant: 'shortest_path', tier: 'baseline', week: '已过', tag: '最短路 + LCA' },
-  { pid: '1504', luoguPid: 'P14923', session: '2025.12', title: '猫和老鼠', quadrant: 'shortest_path', tier: 'p0', week: 'W1', tag: '最短路建模' },
-  { pid: '798', luoguPid: 'P11966', session: '2025.03', title: '上学', quadrant: 'shortest_path', tier: 'p0', week: 'W1', tag: '单源最短路' },
-  { pid: '2700', luoguPid: 'P17462', session: '2026.09', title: '末班车', quadrant: 'shortest_path', tier: 'p0', week: 'W1', tag: '逆向时序最短路' },
-  { pid: '1801', luoguPid: 'P15805', session: '2026.03', title: '子图最短路', quadrant: 'shortest_path', tier: 'mock', mockId: 'mock-202603', week: 'W3模考', tag: '枚举 + 最短路' },
+  { pid: '787', luoguPid: 'P10288', session: '样题', title: '小杨的旅游', quadrant: 'shortest_path', tier: 'baseline', week: '已过', archetype: 'A', tag: '最短路 + LCA' },
+  { pid: '1504', luoguPid: 'P14923', session: '2025.12', title: '猫和老鼠', quadrant: 'shortest_path', tier: 'p0', week: 'W1', archetype: 'A', tag: '最短路建模' },
+  { pid: '798', luoguPid: 'P11966', session: '2025.03', title: '上学', quadrant: 'shortest_path', tier: 'p0', week: 'W1', archetype: 'A', tag: '单源最短路' },
+  { pid: '2700', luoguPid: 'P17462', session: '2026.09', title: '末班车', quadrant: 'shortest_path', tier: 'p0', week: 'W1', archetype: 'A', tag: '逆向时序最短路' },
+  { pid: '1801', luoguPid: 'P15805', session: '2026.03', title: '子图最短路', quadrant: 'shortest_path', tier: 'mock', mockId: 'mock-202603', week: 'W3模考', archetype: 'B', tag: '枚举 + 最短路' },
   // ② 最小生成树与连通计数
-  { pid: '1345', luoguPid: 'P14080', session: '2025.09', title: '最小生成树', quadrant: 'mst_dsu', tier: 'p0', week: 'W2', tag: 'MST + 树上倍增' },
-  { pid: '2699', luoguPid: 'P17461', session: '2026.09', title: '生成树计数', quadrant: 'mst_dsu', tier: 'p0', week: 'W2', tag: '连通块 + 乘法原理' },
-  { pid: '797', luoguPid: 'P11380', session: '2024.12', title: '排队', quadrant: 'mst_dsu', tier: 'p0', week: 'W2', tag: '并查集 + 组合计数' },
-  { pid: '2322', luoguPid: 'P17016', session: '2026.06', title: '线网建设', quadrant: 'mst_dsu', tier: 'mock', mockId: 'mock-202606', week: 'W4模考', tag: '几何距离 + Kruskal' },
+  { pid: '1345', luoguPid: 'P14080', session: '2025.09', title: '最小生成树', quadrant: 'mst_dsu', tier: 'p0', week: 'W2', archetype: 'B', tag: 'MST + 树上倍增' },
+  { pid: '2699', luoguPid: 'P17461', session: '2026.09', title: '生成树计数', quadrant: 'mst_dsu', tier: 'p0', week: 'W2', archetype: 'C', tag: '连通块 + 乘法原理' },
+  { pid: '797', luoguPid: 'P11380', session: '2024.12', title: '排队', quadrant: 'mst_dsu', tier: 'p0', week: 'W2', archetype: 'C', tag: '并查集 + 组合计数' },
+  { pid: '2322', luoguPid: 'P17016', session: '2026.06', title: '线网建设', quadrant: 'mst_dsu', tier: 'mock', mockId: 'mock-202606', week: 'W4模考', archetype: 'A', tag: '几何距离 + Kruskal' },
   // ③ 组合计数、逆元与数论
-  { pid: '788', luoguPid: 'P10112', session: '2023.12', title: '奖品分配', quadrant: 'combo_math', tier: 'baseline', week: '已过', tag: '组合数学' },
-  { pid: '794', luoguPid: 'P11250', session: '2024.09', title: '手套配对', quadrant: 'combo_math', tier: 'baseline', week: '已过', tag: '组合计数' },
-  { pid: '1344', luoguPid: 'P14079', session: '2025.09', title: '最短距离', quadrant: 'combo_math', tier: 'p0', week: 'W3', tag: 'GCD 数论转化' },
-  { pid: '801', luoguPid: 'P13020', session: '2025.06', title: '遍历计数', quadrant: 'combo_math', tier: 'p0', week: 'W3', tag: '图的遍历 + 计数' },
-  { pid: '790', luoguPid: 'P10263', session: '2024.03', title: '公倍数问题', quadrant: 'combo_math', tier: 'p0', week: 'W3', tag: '倍数枚举 + 计数' },
-  { pid: '2321', luoguPid: 'P17017', session: '2026.06', title: '堆石子', quadrant: 'combo_math', tier: 'mock', mockId: 'mock-202606', week: 'W4模考', tag: '组合数学 + 逆元' },
+  { pid: '788', luoguPid: 'P10112', session: '2023.12', title: '奖品分配', quadrant: 'combo_math', tier: 'baseline', week: '已过', archetype: 'C', tag: '组合数学' },
+  { pid: '794', luoguPid: 'P11250', session: '2024.09', title: '手套配对', quadrant: 'combo_math', tier: 'baseline', week: '已过', archetype: 'C', tag: '组合计数' },
+  { pid: '1344', luoguPid: 'P14079', session: '2025.09', title: '最短距离', quadrant: 'combo_math', tier: 'p0', week: 'W3', archetype: 'C', tag: 'GCD 数论转化' },
+  { pid: '801', luoguPid: 'P13020', session: '2025.06', title: '遍历计数', quadrant: 'combo_math', tier: 'p0', week: 'W3', archetype: 'C', tag: '图的遍历 + 计数' },
+  { pid: '790', luoguPid: 'P10263', session: '2024.03', title: '公倍数问题', quadrant: 'combo_math', tier: 'p0', week: 'W3', archetype: 'B', tag: '倍数枚举 + 计数' },
+  { pid: '2321', luoguPid: 'P17017', session: '2026.06', title: '堆石子', quadrant: 'combo_math', tier: 'mock', mockId: 'mock-202606', week: 'W4模考', archetype: 'C', tag: '组合数学 + 逆元' },
   // ④ 倍增、树论与序列 DP
-  { pid: '789', luoguPid: 'P10113', session: '2023.12', title: '大量的工作沟通', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', tag: '树上 LCA' },
-  { pid: '791', luoguPid: 'P10264', session: '2024.03', title: '接竹竿', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', tag: '栈与序列递推' },
-  { pid: '795', luoguPid: 'P11251', session: '2024.09', title: '美丽路径', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', tag: '树形 DP / 直径' },
-  { pid: '799', luoguPid: 'P11967', session: '2025.03', title: '割裂', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', tag: 'LCA + 树上差分' },
-  { pid: '800', luoguPid: 'P13019', session: '2025.06', title: '树上旅行', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', tag: '树与遍历模拟' },
-  { pid: '1505', luoguPid: 'P14924', session: '2025.12', title: '宝石项链', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', tag: '贪心 + 双指针' },
-  { pid: '792', luoguPid: 'P10725', session: '2024.06', title: '最远点对', quadrant: 'doubling_tree_dp', tier: 'p0', week: 'W4', tag: '树形 DP + 直径' },
-  { pid: '796', luoguPid: 'P11379', session: '2024.12', title: '树上移动', quadrant: 'doubling_tree_dp', tier: 'p0', week: 'W4', tag: 'DFS 树性质' },
-  { pid: '1800', luoguPid: 'P15804', session: '2026.03', title: '消息查找', quadrant: 'doubling_tree_dp', tier: 'mock', mockId: 'mock-202603', week: 'W3模考', tag: '倍增跳步' },
-  { pid: '786', luoguPid: 'P10289', session: '样题', title: '区间', quadrant: 'doubling_tree_dp', tier: 'p1', week: '机动', tag: '二分 + 哈希' },
-  { pid: '793', luoguPid: 'P10726', session: '2024.06', title: '空间跳跃', quadrant: 'doubling_tree_dp', tier: 'p1', week: '机动', tag: '线性 DP' },
+  { pid: '789', luoguPid: 'P10113', session: '2023.12', title: '大量的工作沟通', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', archetype: 'A', tag: '树上 LCA' },
+  { pid: '791', luoguPid: 'P10264', session: '2024.03', title: '接竹竿', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', archetype: 'B', tag: '栈与序列递推' },
+  { pid: '795', luoguPid: 'P11251', session: '2024.09', title: '美丽路径', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', archetype: 'B', tag: '树形 DP / 直径' },
+  { pid: '799', luoguPid: 'P11967', session: '2025.03', title: '割裂', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', archetype: 'A', tag: 'LCA + 树上差分' },
+  { pid: '800', luoguPid: 'P13019', session: '2025.06', title: '树上旅行', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', archetype: 'A', tag: '树与遍历模拟' },
+  { pid: '1505', luoguPid: 'P14924', session: '2025.12', title: '宝石项链', quadrant: 'doubling_tree_dp', tier: 'baseline', week: '已过', archetype: 'A', tag: '贪心 + 双指针' },
+  { pid: '792', luoguPid: 'P10725', session: '2024.06', title: '最远点对', quadrant: 'doubling_tree_dp', tier: 'p0', week: 'W4', archetype: 'B', tag: '树形 DP + 直径' },
+  { pid: '796', luoguPid: 'P11379', session: '2024.12', title: '树上移动', quadrant: 'doubling_tree_dp', tier: 'p0', week: 'W4', archetype: 'B', tag: 'DFS 树性质' },
+  { pid: '1800', luoguPid: 'P15804', session: '2026.03', title: '消息查找', quadrant: 'doubling_tree_dp', tier: 'mock', mockId: 'mock-202603', week: 'W3模考', archetype: 'B', tag: '倍增跳步' },
+  { pid: '786', luoguPid: 'P10289', session: '样题', title: '区间', quadrant: 'doubling_tree_dp', tier: 'p1', week: '机动', archetype: 'B', tag: '二分 + 哈希' },
+  { pid: '793', luoguPid: 'P10726', session: '2024.06', title: '空间跳跃', quadrant: 'doubling_tree_dp', tier: 'p1', week: '机动', archetype: 'B', tag: '线性 DP' },
 ]
 
 const GESP8_OBJ_CATALOG = [
@@ -836,7 +857,7 @@ const GESP8_MOCK_PID_SET = new Set([
   ...GESP8_MOCK_DEFS.flatMap((m) => [m.objPid, m.t1Pid, m.t2Pid]),
 ])
 
-function buildGesp8SprintStats(oiRecords, solvedList, mistakeCards = []) {
+function buildGesp8SprintStats(oiRecords, solvedList, mistakeCards = [], assignedPidSet = new Set()) {
   const recsByPid = new Map()
   for (const r of Array.isArray(oiRecords) ? oiRecords : []) {
     const pid = String(r?.pid || '')
@@ -865,8 +886,13 @@ function buildGesp8SprintStats(oiRecords, solvedList, mistakeCards = []) {
         : null
     const latestJudgeAt =
       recs.length > 0 ? recs.map((r) => String(r?.judgeAt || '')).sort().at(-1) || null : null
+    const archMeta = GESP8_ARCHETYPE_META[item.archetype] || GESP8_ARCHETYPE_META.B
+    const assignedByTeacher = assignedPidSet instanceof Set ? assignedPidSet.has(item.pid) : false
     const enriched = {
       ...item,
+      archBadge: archMeta.badge,
+      archOrder: archMeta.order,
+      assignedByTeacher,
       url: `https://www.oilibaitian.cn/p/${item.pid}`,
       attempts: recs.length || (lgSolved ? 1 : 0),
       bestScore,
@@ -946,6 +972,9 @@ function buildGesp8SprintStats(oiRecords, solvedList, mistakeCards = []) {
       obj: { pid: m.objPid, title: obj?.title || '', url: obj?.url || '', attempts: obj?.attempts || 0, points: objPts, maxPoints: 50 },
       t1: {
         pid: m.t1Pid,
+        luoguPid: t1?.luoguPid || '',
+        session: t1?.session || '',
+        archetype: t1?.archetype || 'B',
         title: t1?.title || '',
         url: t1?.url || '',
         attempts: t1?.attempts || 0,
@@ -957,6 +986,9 @@ function buildGesp8SprintStats(oiRecords, solvedList, mistakeCards = []) {
       },
       t2: {
         pid: m.t2Pid,
+        luoguPid: t2?.luoguPid || '',
+        session: t2?.session || '',
+        archetype: t2?.archetype || 'B',
         title: t2?.title || '',
         url: t2?.url || '',
         attempts: t2?.attempts || 0,
@@ -1030,6 +1062,11 @@ function buildGesp8SprintStats(oiRecords, solvedList, mistakeCards = []) {
     }
   })
 
+  const recommendedNext = problems
+    .filter((p) => !p.solved && p.tier !== 'mock')
+    .sort((a, b) => (a.archOrder || 2) - (b.archOrder || 2) || (a.tier === 'p0' ? -1 : 1))
+    .slice(0, 4)
+
   return {
     summary: {
       examDate: GESP8_EXAM_DATE,
@@ -1052,6 +1089,119 @@ function buildGesp8SprintStats(oiRecords, solvedList, mistakeCards = []) {
     objectivePapers,
     mockSuites,
     needsPostMortem,
+    recommendedNext,
+  }
+}
+
+async function buildLatestOiliHomework(workspace, oiActivities, oiRecords, gesp8Data) {
+  const acts = (Array.isArray(oiActivities) ? oiActivities : [])
+    .filter((a) => a && (a.kind === 'homework' || a.rule === 'homework') && Array.isArray(a.problems) && a.problems.length > 0)
+    .sort((a, b) => String(b.beginAt || b.dateSort || '').localeCompare(String(a.beginAt || a.dateSort || '')))
+  const assignedPidSet = new Set()
+  for (const a of acts) {
+    for (const p of a.problems || []) {
+      if (p?.pid) assignedPidSet.add(String(p.pid))
+    }
+  }
+  if (acts.length === 0) return { latestHomework: null, assignedPidSet }
+
+  const recsByPid = new Map()
+  for (const r of Array.isArray(oiRecords) ? oiRecords : []) {
+    const pid = String(r?.pid || '')
+    if (!pid) continue
+    if (!recsByPid.has(pid)) recsByPid.set(pid, [])
+    recsByPid.get(pid).push(r)
+  }
+  const gespByPid = new Map()
+  for (const qd of gesp8Data?.quadrants || []) {
+    for (const it of qd.items || []) gespByPid.set(String(it.pid), it)
+  }
+  const objByPid = new Map()
+  for (const op of gesp8Data?.objectivePapers || []) {
+    objByPid.set(String(op.pid), op)
+  }
+
+  const topAct = acts[0]
+  const enrichedProbs = []
+  for (const rawP of topAct.problems || []) {
+    const pid = String(rawP?.pid || '').trim()
+    if (!pid) continue
+    const recs = recsByPid.get(pid) || []
+    const gHit = gespByPid.get(pid) || null
+    const objHit = objByPid.get(pid) || null
+    const cached = !gHit && !objHit ? await readJsonFile(path.join(workspace, 'training', 'problem_cache', `oilibaitian_${pid}.json`)) : null
+    const isObjective = Boolean(objHit || GESP8_OBJ_PID_SET.has(pid) || cached?.is_objective)
+    const attempts = Math.max(recs.length, Number(rawP?.submissions || 0))
+    const rawBestNum =
+      recs.length > 0
+        ? Math.max(...recs.map((r) => Number(r?.score) || 0))
+        : rawP?.bestScore !== undefined && rawP?.bestScore !== null
+          ? Number(rawP.bestScore)
+          : null
+    const scaledBest = isObjective && rawBestNum !== null ? Math.round(rawBestNum * 5) / 10 : null
+    const rawStatusStr = String(rawP?.bestStatus ?? '').trim().toUpperCase()
+    const solved = isObjective
+      ? Boolean(attempts > 0 && rawBestNum !== null && rawBestNum >= 88)
+      : Boolean(
+          gHit?.solved ||
+            recs.some((r) => Number(r?.status) === 1 || Number(r?.score) >= 100) ||
+            Number(rawP?.bestStatus) === 1 ||
+            rawStatusStr === 'AC' ||
+            Number(rawP?.bestScore) >= 100,
+        )
+    const bestScore = solved && !isObjective ? 100 : rawBestNum
+    const cleanCachedTitle = String(cached?.title || rawP?.title || '')
+      .replace(new RegExp(`^${pid}\\s+`), '')
+      .trim()
+    const displayTitle = gHit
+      ? `[GESP${gHit.session} 八级] ${gHit.title}`
+      : objHit?.title || cleanCachedTitle || `李拜天 #${pid}`
+    enrichedProbs.push({
+      pid,
+      luoguPid: gHit?.luoguPid || '',
+      session: gHit?.session || objHit?.session || '',
+      title: gHit?.title || objHit?.title || cleanCachedTitle || `#${pid}`,
+      displayTitle,
+      isGesp8: Boolean(gHit),
+      isObjective,
+      scaledBest,
+      archetype: gHit?.archetype || '',
+      archBadge: isObjective
+        ? attempts > 0
+          ? `📝 客观卷错题待清零（${scaledBest ?? '--'}/50分）`
+          : '📝 客观真题卷 · 先去李拜天交卷'
+        : gHit?.archBadge || '📋 课堂作业',
+      archOrder: isObjective ? 0 : gHit?.archOrder ?? 2,
+      tag: isObjective
+        ? objHit?.focus || '客观题限时交卷 + 错题慢放复盘'
+        : gHit?.tag || (Array.isArray(rawP?.tags) && rawP.tags.length > 0 ? rawP.tags.join(' · ') : '老师布置作业'),
+      solved,
+      attempts,
+      bestScore,
+      url: `https://www.oilibaitian.cn/p/${pid}`,
+    })
+  }
+
+  const pending = enrichedProbs
+    .filter((p) => !p.solved)
+    .sort((a, b) => (a.archOrder || 2) - (b.archOrder || 2))
+  const solvedCount = enrichedProbs.filter((p) => p.solved).length
+  const hwUrl = topAct.tid ? `https://www.oilibaitian.cn/homework/${topAct.tid}` : ''
+
+  return {
+    assignedPidSet,
+    latestHomework: {
+      tid: topAct.tid || '',
+      title: String(topAct.title || '本期信奥李拜天作业'),
+      beginAt: topAct.beginAt || '',
+      endAt: topAct.endAt || '',
+      url: hwUrl,
+      total: enrichedProbs.length,
+      solvedCount,
+      allDone: pending.length === 0 && enrichedProbs.length > 0,
+      problems: enrichedProbs,
+      pendingProblems: pending,
+    },
   }
 }
 
@@ -1428,7 +1578,7 @@ export function apply(ctx, config) {
         '',
         '你是小学六年级学生麒麒（代码力 GESP 7~8 级、校内数学六年级）的私人 C++ 与信奥教练：',
         '1. **严禁直接输出完整可提交的 AC 代码**，也严禁首轮直接剧透算法结论；',
-        '2. **变速 + 3行数字表 + 挖空填下标 `[ ? ]`**：先拿 N=3~4 具体小数字/小例子破冰 → 引入新数组时画 3 行样例数字对齐表（禁长段大白话与公式双版并列喂懒）→ 关键转移式/计数式用 `[ ? ]` 挖掉核心下标让麒麒亲手填出来；',
+        '2. **变速 + 3行数字表 + 挖空填下标 `[ ? ]`**：先拿 N=3~4 具体小数字/小例子破冰 → 引入新数组时画 3 行样例数字对齐表（禁长段大白话与公式双版并列喂懒；数轴左右/网格方向移动题严禁用 L/R 给时间前后缀起名，统一用 pre/suf 防撞车）→ 关键转移式/计数式用 `[ ? ]` 挖掉核心下标让麒麒亲手填出来；',
         '3. 每次回复精炼聚焦（3~6 行），只抛 1 个有含金量的问题，严禁输出原始 LaTeX 源码（使用清晰 Unicode 数学符号），不设任何晚间作息劝睡限制。',
         '',
       ].join('\n')
@@ -2019,16 +2169,34 @@ export function apply(ctx, config) {
     }
   }
 
+  async function isAssignedInOiliHomework(pidStr) {
+    if (!pidStr) return false
+    const target = String(pidStr).trim()
+    try {
+      const acts = await readJsonFile(path.join(workspace, 'training', 'sync_logs', 'oilibaitian_uid79_activities.json'))
+      if (!Array.isArray(acts)) return false
+      return acts.some(
+        (a) =>
+          (a?.kind === 'homework' || a?.rule === 'homework') &&
+          Array.isArray(a?.problems) &&
+          a.problems.some((p) => String(p?.pid || '') === target),
+      )
+    } catch {
+      return false
+    }
+  }
+
   async function loadOverviewData(includeAgy = true) {
     if (isChildPlatform && includeAgy) {
       await syncNativeDshSessions()
       await syncLocalStudyCatalog(false)
     }
     const syncDir = path.join(workspace, 'training/sync_logs')
-    const [allSubs, solved, oiRecords, quizProg, localCatalog, solvedMd, unsolvedCleaned, mistakeCards, courseNotes, mOi, mLg, mHb, mAc, agyStatus] = await Promise.all([
+    const [allSubs, solved, oiRecords, oiActivities, quizProg, localCatalog, solvedMd, unsolvedCleaned, mistakeCards, courseNotes, mOi, mLg, mHb, mAc, agyStatus] = await Promise.all([
       readJsonFile(path.join(syncDir, 'all_submissions_timeline.json')),
       readJsonFile(path.join(syncDir, 'solved_timeline.json')),
       readJsonFile(path.join(syncDir, 'oilibaitian_uid79_records.json')),
+      readJsonFile(path.join(syncDir, 'oilibaitian_uid79_activities.json')),
       readJsonFile(path.join(workspace, 'training', 'quiz_progress.json')),
       readJsonFile(localCatalogPath),
       fs.readFile(path.join(workspace, 'profile', 'solved_timeline.md'), 'utf8').catch(() => ''),
@@ -2059,6 +2227,14 @@ export function apply(ctx, config) {
         return u
       }),
     )
+    const assignedHomeworkPids = new Set()
+    for (const a of Array.isArray(oiActivities) ? oiActivities : []) {
+      if (a && (a.kind === 'homework' || a.rule === 'homework') && Array.isArray(a.problems)) {
+        for (const p of a.problems) {
+          if (p?.pid) assignedHomeworkPids.add(String(p.pid))
+        }
+      }
+    }
     const data = buildOverviewStats(
       allSubs || [],
       solved || [],
@@ -2069,7 +2245,9 @@ export function apply(ctx, config) {
       solvedMd,
     )
     data.courseNotes = courseNotes
-    data.gesp8 = buildGesp8SprintStats(oiRecords || [], solved || [], mistakeCards || [])
+    data.gesp8 = buildGesp8SprintStats(oiRecords || [], solved || [], mistakeCards || [], assignedHomeworkPids)
+    const hwInfo = await buildLatestOiliHomework(workspace, oiActivities || [], oiRecords || [], data.gesp8)
+    data.latestHomework = hwInfo.latestHomework
     data.quizProgress = quizProg || null
     data.localCppCatalog = localCatalog || null
     if (includeAgy) data.agy = agyStatus
@@ -2390,8 +2568,8 @@ export function apply(ctx, config) {
       '3. 【双轨学情与「实战探索 + 数学搭桥 5 步法」（终点守住号家军 NOI 级高度，起点落回六年级数字直觉，每轮严格只推 1 步！）】',
       '   - 锁步 ①（手玩小数据破冰 + 揪题眼陷阱）：第 1 轮绝不提算法和复杂度，也**绝不一上来甩 i, j, Cᵢ 抽象字母式吓孩子**！先给 1 组 N = 3~4 的具体小数字/小图让孩子口算 1 步（构造/博弈/性质题鼓励画图打表抓现象），顺手排掉题眼陷阱（子串 vs 子序列、总和 vs 个数、最后一步退化）。',
       '   - 锁步 ②（手把手“数字译字母”，教什么叫建模）：抓着孩子刚口算的具体数字算式，扶着他把具体位置/数字换成字母代号，亲眼看见“数学式就是把口算写成字母规则”。',
-      '   - 锁步 ③（自诊“哪步白干了” + 国内赛制分流）：亮出 N 让孩子判朴素过不过得了 1 亿次红线；**先不抛十大抓手菜单**！让他在小例子上往前多算一步自己指出“哪步算重了/白干了”（卡壳再给支架再对接任氏抓手）；DP/图论难题先立 30~60 分朴素状态保底再降维，搜索看剪枝，大模拟拆小函数。',
-      '   - 锁步 ④（变速减半 + 3行样例数字对齐表锚定 + 挖空填下标 `[ ? ]`）：① 熟处（复杂度、`long long`）1 句快过不啰嗦，首次立新数组/新记号时精准踩刹，成对对称结构（如 max 与 min、左与右）先只带推一半（砍掉 50% 符号噪音），另一半留给孩子写码对称照搬；② 严禁在长句里混穿满屏下标，也严禁并列给出“完整大白话版 + 完整公式版”喂懒！立新记号一律画 2~3 行具体小样例对齐表（如 `k / S[k] / Lmax[k]`），难懂整除代 2 组整除/不整除边界数，结论唯一落回数学公式；③ 破除连选 5 轮 A/B/C 的假懂幻觉，核心合并/转移式用 `[ ? ]` 挖掉 1~2 个关键边界下标（如 `max(Lmax[ ? ], Rmax[ ? ] - 2×A[i])`）让孩子敲几个字符亲手填出来，并配直观微证明（相邻交换对比 / 又老又差淘汰 / 上下两行比余量 + 自造 N ≤ 3 反例）。',
+      '   - 锁步 ③（自诊“哪步白干了” + 国内赛制与八级 A/B/C 分流）：亮出 N 让孩子判朴素过不过得了 1 亿次红线；**先不抛十大抓手菜单**！让他在小例子上往前多算一步自己指出“哪步算重了/白干了”（卡壳再给支架再对接任氏抓手）；遇到 GESP8 真题严格按 A/B/C 分型省力推进（⚡ A型标准模板微变形看穿小图机关后直接套模板不写废暴力；🪜 B型先写稳 40~60% 子任务简短代码再原位换零件；🔍 C型计数题直接在 N=3~4 小图数方案填规律不写暴搜）。',
+      '   - 锁步 ④（变速减半 + 防撞车起名 + 3行样例数字对齐表锚定 + 挖空填下标 `[ ? ]`）：① 熟处（复杂度、`long long`）1 句快过不啰嗦，首次立新数组/新记号时精准踩刹，成对对称结构（如 max 与 min）先只带推一半（砍掉 50% 符号噪音），另一半留给孩子写码对称照搬；凡题面含数轴左右（L/R）或网格方向移动时，**严禁用 L / R 给时间前后缀数组起名**（一律改用 `pre` / `suf`，如 `preMax[k]`、`sufMax[k]` 防撞车）；② 严禁在长句里混穿满屏下标，也严禁并列给出“完整大白话版 + 完整公式版”喂懒！立新记号一律画 2~3 行具体小样例对齐表（如 `k / S[k] / preMax[k]`），难懂整除代 2 组整除/不整除边界数，结论唯一落回数学公式；③ 破除连选 5 轮 A/B/C 的假懂幻觉，核心合并/转移式用 `[ ? ]` 挖掉 1~2 个关键边界下标（如 `max(preMax[ ? ], sufMax[ ? ] - 2×A[i])`）让孩子敲几个字符亲手填出来，并配直观微证明（相邻交换对比 / 又老又差淘汰 / 上下两行比余量 + 自造 N ≤ 3 反例）。',
       '   - 锁步 ⑤（任氏验毒四件套 + 模块清单自译 C++ + 回看懂原讲义）：查 1LL 乘法前防溢出、整除取整与右倾中点、哨兵初值、正倒序与 BFS 入队即标；若多数组实现发怵，只给模块级步骤清单（①→②→③）+ 1 组 N ≤ 4 验毒小反例，严禁给逐行翻译 for 循环的大白话伪代码，逼孩子看着自己填好的公式敲 C++；复杂题提醒用 5 行笨暴力在 N ≤ 5 上本地对拍；收尾对译讲义原话并挂同门题名片。',
       '4. 【高含金量提问铁律】严禁出“一眼假”送分二选一（如“几百万次 vs 几百亿次”）；前序破冰可用含真实易错干扰项的 A/B/C（如 a/x vs (a-1)/x；初值选 0 vs 10⁹ vs INT_MAX），核心公式组装步优先用 `[ ? ]` 挖空填下标或演草纸算完报 1~2 个具体数字/简短式子。',
       '5. 【公式易读与口语防超载铁律】严禁输出原始 LaTeX 源码（不要写 `$...$`、`\\le`、`\\times`、`\\approx`、`^{10}` 等）！一律用清晰直观的常规数学 Unicode 符号与中文数量级（如 `N ≤ 30万（3×10⁵）`、`|i - j|`、`⌊(a - 1) / x⌋`）；**严禁对六年级直接甩“消元”等超前书面词或 `e₁ + ... + eₖ` 长串省略号下标**，一律先用大白话“算总账”表达，去括号化简后引导代 `k = 1` 极小特值验正负号，估复杂度引导按选择层数逐层相乘。',
@@ -2639,10 +2817,13 @@ export function apply(ctx, config) {
       const guardProb = await findCachedProblem(q)
       const guardPid = String(guardProb?.pid || '')
       const isOiliProb = String(guardProb?.platform || '').includes('李拜天')
-      if (isOiliProb && (GESP8_OBJ_PID_SET.has(guardPid) || GESP8_MOCK_PID_SET.has(guardPid))) {
+      const isObj = GESP8_OBJ_PID_SET.has(guardPid)
+      const isMockProg = !isObj && GESP8_MOCK_PID_SET.has(guardPid)
+      if (isOiliProb && (isObj || isMockProg)) {
+        if (isMockProg && (await isAssignedInOiliHomework(guardPid))) continue
         const liveAttempts = Math.max(Number(guardProb?.attempts || 0), await countLocalOiliAttempts(guardPid))
         if (liveAttempts === 0) {
-          const reply = GESP8_OBJ_PID_SET.has(guardPid)
+          const reply = isObj
             ? `🔒 这套 **${guardProb?.title || guardPid}** 你还没有在信奥李拜天上交过第一遍卷哦！\n\n为了稳稳冲刺 **GESP 八级 80+ 免初赛线（客观题目标 ≥ 44/50 分）**，请先去信奥李拜天独立完成交卷（\`https://www.oilibaitian.cn/p/${guardPid}\`），点顶栏同步抓回成绩后，再回来告诉我哪几道题选错了，我用具体小数字带你逐题慢放复盘！💪`
             : `🔒 这道 **${guardProb?.title || guardPid}** 属于你的 **【180 分钟全真黑盒模考卷】封存真题**！\n\n为了测出最真实的 **80+ 合卷实力**，平时我们先锁住不提前剧透。请在周末模考时前往信奥李拜天限时提交第一遍代码（哪怕先拿部分分），产生提交记录后即刻自动解锁一对一深度复盘！🎯`
           return { locked: true, pid: guardPid, title: guardProb?.title || '八级模考保护', reply }
@@ -2658,23 +2839,29 @@ export function apply(ctx, config) {
       if (!matched) return ''
 
       const mPid = String(matched.pid || '')
-      if (
-        String(matched.platform || '').includes('李拜天') &&
-        (GESP8_OBJ_PID_SET.has(mPid) || GESP8_MOCK_PID_SET.has(mPid))
-      ) {
-        const liveAttempts = Math.max(Number(matched.attempts || 0), await countLocalOiliAttempts(mPid))
-        if (liveAttempts === 0) return ''
+      const isOili = String(matched.platform || '').includes('李拜天')
+      const isObj = Boolean(matched.is_objective || (isOili && GESP8_OBJ_PID_SET.has(mPid)))
+      const isMockProg = !isObj && isOili && GESP8_MOCK_PID_SET.has(mPid)
+      if (isOili && (isObj || isMockProg)) {
+        if (!(isMockProg && (await isAssignedInOiliHomework(mPid)))) {
+          const liveAttempts = Math.max(Number(matched.attempts || 0), await countLocalOiliAttempts(mPid))
+          if (liveAttempts === 0) return ''
+        }
       }
 
-      const isObj = Boolean(matched.is_objective || GESP8_OBJ_PID_SET.has(String(matched.pid || '')))
       const maxStmtLen = isObj || subMode === 'gesp8-obj-review' ? 12000 : 2800
       const displayTitle = matched.title_zh
         ? `${matched.pid} · ${matched.title_zh}`
         : matched.title || matched.pid
+      const gCatalogItem = isOili ? GESP8_PROG_CATALOG.find((x) => x.pid === mPid) : null
+      const archMeta = gCatalogItem ? GESP8_ARCHETYPE_META[gCatalogItem.archetype] : null
       const lines = [
         '【系统已自动从本地题库加载原题面与孩子历史提交（无需再向孩子索要题面，也严禁调用读文件工具）】',
         `- 题目：${displayTitle}（平台：${matched.platform || '-'}，历史尝试：${matched.attempts ?? '-'} 次，轨迹：${matched.trajectory || '-'}）`,
       ]
+      if (archMeta) {
+        lines.push(`- 内部教学节奏指引（第 1 轮仍必须先拿 N=3~4 小数字破冰，严禁首轮向孩子剧透算法名）：${archMeta.guide}`)
+      }
       if (Array.isArray(matched.wrong_questions) && matched.wrong_questions.length > 0) {
         lines.push(`- 孩子最近一次交卷答错的小题题号：第 ${matched.wrong_questions.join('、')} 题`)
       }
@@ -2763,7 +2950,7 @@ export function apply(ctx, config) {
       const isGenericGreetingTitle = (rawTitle) => {
         const core = String(rawTitle || '')
           .replace(
-            /^(探索建模|代数建模|任氏建模|讲义慢放|讲义变式|八级冲刺|八级闯关|暗雷排毒|本地代码|八级客观复盘|全真模考|WA\s*排错|TLE\s*重拆|RE\/CE\s*排查|AC\s*存秘籍|OI\s*教练|建模|排错|复盘|旧题重斩|变形手算|建模快练)\s*·\s*/i,
+            /^(探索建模|课堂作业|代数建模|任氏建模|讲义慢放|讲义变式|八级冲刺|八级闯关|暗雷排毒|本地代码|八级客观复盘|全真模考|WA\s*排错|TLE\s*重拆|RE\/CE\s*排查|AC\s*存秘籍|OI\s*教练|建模|排错|复盘|旧题重斩|变形手算|建模快练)\s*·\s*/i,
             '',
           )
           .trim()
@@ -2865,9 +3052,9 @@ export function apply(ctx, config) {
                 ]
               : subMode === 'gesp8-coach'
                 ? [
-                    '【专项模式 · 12.26 GESP 八级冲刺 80+ 双保险教练（目标 ≥ 85 分直免 CSP-S 初赛）】',
-                    '- 第 1 轮依然严格停在锁步 ①：先拿 N = 3~4 的具体小数字或小图让孩子口算破冰并确认题意，严禁首轮提前说出最短路/最小生成树/倍增/逆元等算法名或完整思路，严禁给 AC 代码！',
-                    '- 当推进到锁步 ③ 看数据范围 N 时，必须贯彻【考场 80+ 双保险拿分法】：① 先问孩子在正式考场上怎么花 10 分钟写稳 50%~60% 的高档部分分（如 N ≤ 1000 次优做法、树退化成链或特殊边权子任务，保底拿稳 12.5~15 分托住 80 分安全线）；② 再引导他找重复劳动，一鼓作气推通 100% 满分（25 分）正解！',
+                    '【专项模式 · 12.26 GESP 八级冲刺 80+ 三分型低疲劳教练（目标 ≥ 85 分直免 CSP-S 初赛）】',
+                    '- 第 1 轮依然严格停在锁步 ①：先拿 N = 3~4 的具体小数字或小图让孩子口算破冰并确认题意，严禁首轮提前说出最短路/最小生成树/倍增/并查集/DP/逆元等算法名或完整思路，严禁给 AC 代码！',
+                    '- 当推进到锁步 ②~④ 时，严格按本题的【A / B / C 三分型】省力推进（严禁一刀切逼孩子先写一遍全删重来的废暴力）：① ⚡ A型（标准模板微变形）：看穿小图建图/起点机关后直接鼓励套最熟模板冲满分，收尾盯 long long 与重边；② 🪜 B型（子任务阶梯原位升级）：先引导花几分钟写稳 40%~60% 子任务简短代码跑通样例（练熟考场稳兜 15 分保底分），再指着慢循环原位换零件升级 100% 满分；③ 🔍 C型（小图找规律计数）：绝不先写暴搜代码，直接在 N = 3~4 小图数合法方案并用 `[ ? ]` 挖空填出乘法/组合数规律！',
                   ]
                 : subMode === 'gesp8-obj-review'
                   ? [
@@ -2902,7 +3089,7 @@ export function apply(ctx, config) {
             '- 锁步 ①（手玩小数据破冰 + 揪题眼陷阱）：若本轮是新开题或还没摸清题意（哪怕孩子历史上已吃过 TLE），**严格停在第 1 步**！本轮绝不提复杂度、绝不提 O(N)/O(N²)、绝不提优化方向，也**绝不一上来逼孩子用 i, j, Cᵢ 写抽象字母公式**！先给 1 组 N = 3~4 的具体小数字或小图让孩子口算 1 步（构造/博弈/性质题大胆鼓励画图打表抓现象），顺手排掉题眼陷阱（子串连续 vs 子序列保序禁排序、求总和 vs 个数、最后一步是否退化）。',
             '- 锁步 ②（手把手“数字译字母”，教什么叫建模）：抓着孩子在第 ① 步刚算出来的具体数字算式，**扶着他把具体位置/数字替换成字母代号**，帮他亲眼看见“数学式就是把口算动作写成字母规则”，亲手定下清晰目标。',
             '- 锁步 ③（自诊“哪步白干了” + 国内赛制分流）：亮出数据范围 N 让孩子自己判朴素做法过不过得了 1 亿次红线；**先不报十大抓手名词、不直接塞套路菜单**！让他在小例子上往前多算 1 步，用大白话指出“哪一块算重了 / 哪两个操作撞出了同一结果”（卡壳再给支架再对接任氏抓手）。注意题型分流：DP/图论难题可先立 30~60 分朴素状态保底再降维；搜索题看搜序与剪枝；大模拟拆独立小函数。',
-            '- 锁步 ④（变速减半 + 3行数字表锚定 + 挖空填下标 `[ ? ]`）：熟处 1 句快过不拖沓，首次立新数组时精准踩刹且成对对称结构（如 max/min）先只推一半减半符号量；严禁长句混穿下标，严禁并列给“完整大白话版 + 完整公式版”让孩子跳过公式！新记号用 2~3 行具体小样例对齐表（如 `k / S[k] / Lmax[k]`）锚定，核心合并/转移式用 `[ ? ]` 挖掉 1~2 个关键下标（如 `max(Lmax[ ? ], Rmax[ ? ] - 2×A[i])`）让孩子敲几个字符亲手补全（破除连选 A/B/C 的假懂幻觉）；保留 100% 号家军直观微证明（相邻交换对比 / 又老又差淘汰 / 上下两行比余量 + 自造 N ≤ 3 反例）。',
+            '- 锁步 ④（变速减半 + 防撞车起名 + 3行数字表锚定 + 挖空填下标 `[ ? ]`）：熟处 1 句快过不拖沓，首次立新数组时精准踩刹且成对对称结构（如 max/min）先只推一半减半符号量；凡题面含数轴左右（L/R）或网格方向移动时，**严禁用 L / R 给时间前后缀数组起名**（一律改用 `pre` / `suf`，如 `preMax[k]`、`sufMax[k]` 防撞车）；严禁长句混穿下标，严禁并列给“完整大白话版 + 完整公式版”让孩子跳过公式！新记号用 2~3 行具体小样例对齐表（如 `k / S[k] / preMax[k]`）锚定，核心合并/转移式用 `[ ? ]` 挖掉 1~2 个关键下标（如 `max(preMax[ ? ], sufMax[ ? ] - 2×A[i])`）让孩子敲几个字符亲手补全（破除连选 A/B/C 的假懂幻觉）；保留 100% 号家军直观微证明（相邻交换对比 / 又老又差淘汰 / 上下两行比余量 + 自造 N ≤ 3 反例）。',
             '- 锁步 ⑤（任氏验毒四件套 + 模块清单自译 C++ + 回看懂原讲义）：写码前查 1LL 防溢出、整除取整与右倾中点、哨兵初值、正倒序与 BFS 入队即标；若多数组实现发怵，只给模块级清单（①→②→③）+ 1 组 N ≤ 4 验毒反例，严禁逐行喂大白话伪代码，引导孩子看着自己填出的公式敲 C++；复杂题提醒 5 行暴力在 N ≤ 5 本地对拍；收尾对译讲义原话并贴 3 行内同门题名片。',
             '【高含金量提问 + 口语防超载 + 不设时间限制】① 严禁出“一眼假”送分二选一（如“几百万次 vs 几百亿次”），A/B/C 的干扰项必须是真实易掉坑的合理误区；② 严禁输出原始 LaTeX 源码（绝不写 `$...$`、`\\le`、`\\times`、`\\approx`、`^{10}` 等），一律用清晰 Unicode 符号与中文数量级（如 `N ≤ 30万（3×10⁵）`、`|i - j|`、`⌊(a - 1) / x⌋`），且**严禁对六年级甩“代数消元”等超前词或 `e₁ + ... + eₖ` 省略号下标**（改用大白话“算总账”，去括号后引导代 `k = 1` 验正负号，估复杂度按“选几个东西”逐层相乘防漏乘）；③ 不设任何晚间/作息时间限制，无论几点（包括 22:30）都专心正常辅导，绝不劝睡或以时间晚打断对话！',
             '',
@@ -3163,9 +3350,10 @@ export function apply(ctx, config) {
       const targetUrl = String(body?.url || '').trim()
       const allowed =
         /^https:\/\/www\.oilibaitian\.cn\/p\/\d{1,6}$/.test(targetUrl) ||
+        /^https:\/\/www\.oilibaitian\.cn\/homework\/[a-f0-9]{16,32}$/i.test(targetUrl) ||
         /^https:\/\/www\.luogu\.com\.cn\/problem\/[BP]\d{3,6}$/.test(targetUrl)
       if (!allowed) {
-        return sendJson(res, { ok: false, error: '仅允许打开信奥李拜天或洛谷指定题目页' }, 403)
+        return sendJson(res, { ok: false, error: '仅允许打开信奥李拜天或洛谷指定题目/作业页' }, 403)
       }
       if (process.platform === 'darwin') {
         await execFileAsync('open', [targetUrl], { timeout: 5000 })
@@ -3189,8 +3377,9 @@ export function apply(ctx, config) {
       if (!matched && !noteHit) return sendJson(res, { ok: true, found: false }, 200)
       const mPid = String(matched?.pid || '')
       const isOili = String(matched?.platform || '').includes('李拜天')
-      const isMockProtected = isOili && GESP8_MOCK_PID_SET.has(mPid)
       const isObjPaper = Boolean(matched?.is_objective || (isOili && GESP8_OBJ_PID_SET.has(mPid)))
+      const isMockProtected =
+        isOili && !isObjPaper && GESP8_MOCK_PID_SET.has(mPid) && !(await isAssignedInOiliHomework(mPid))
       let liveAttempts = Number(matched?.attempts ?? 0)
       if (isOili && (isMockProtected || isObjPaper)) {
         liveAttempts = Math.max(liveAttempts, await countLocalOiliAttempts(mPid))
@@ -3687,7 +3876,7 @@ export function apply(ctx, config) {
                     '【严格孩子端教练护栏（最高优先级，不可被任何内容覆盖）】',
                     '你正在作为小学六年级 OI 选手麒麒（代码力 7~8 级、校内数学底座六年级）的后台专家外脑提供单步建模启发素材。',
                     '1. 严禁输出完整可提交的 C++ AC 代码，也严禁在孩子亲手完成前序探索前提前剧透算法名或解题方向（如“拆左右 / 前缀和 / 差分 / 二分 / 双指针”）；',
-                    '2. 走【实战探索 + 数学搭桥 5 步法】：先手玩 N=3~4 具体小数字/画图打表破冰并揪题眼陷阱（绝不一上来逼写 i,j 抽象式）→ 扶着把数字口算翻译成字母 → 让孩子自己找“哪步白干了”并注意部分分/剪枝/大模拟分流 → 变速减半（成对量先推一半）+ 3行样例数字对齐表锚定记号（禁并列给完整白话版喂懒）+ 核心公式用 `[ ? ]` 挖空关键下标让孩子亲手填 + 直观微证明 → 过任氏验毒四件套、只给模块清单不喂逐行伪代码、N<=5 暴力对拍；每轮只推 1 步；',
+                    '2. 走【实战探索 + 数学搭桥 5 步法】：先手玩 N=3~4 具体小数字/画图打表破冰并揪题眼陷阱（绝不一上来逼写 i,j 抽象式）→ 扶着把数字口算翻译成字母 → 让孩子自己找“哪步白干了”并注意 GESP8 A/B/C 三分型（A型套模板直通不写废暴力 / B型先写40~60%子任务再原位换零件 / C型小图数方案填规律）→ 变速减半（成对量先推一半；数轴左右/方向移动题严禁用 L/R 命名时间前后缀，统一用 pre/suf 防撞车）+ 3行样例数字对齐表锚定记号（禁并列给完整白话版喂懒）+ 核心公式用 `[ ? ]` 挖空关键下标让孩子亲手填 + 直观微证明 → 过任氏验毒四件套、只给模块清单不喂逐行伪代码、N<=5 暴力对拍；每轮只推 1 步；',
                     '3. 低打字摩擦但绝不出“一眼假”送分题：前序破冰用含真实易错干扰项的 A/B/C，核心公式步用 `[ ? ]` 挖空填下标或报 1~2 个关键数/简短式子；若孩子猜错或 WA，喂 1 组 N<=4 极小反例；',
                     '4. 简明精炼（3~6 行内），严禁输出原始 LaTeX 源码（用清晰 Unicode 如 N ≤ 30万（3×10⁵）、⌊(a-1)/x⌋），严禁对六年级甩“消元”等超前词或 e₁+...+eₖ 省略号下标（改用“算总账”，去括号后引导代 k=1 验正负号）。',
                     '',
