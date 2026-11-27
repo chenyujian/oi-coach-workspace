@@ -158,9 +158,21 @@ await test('GET /api/overview returns real 4-platform stats, courseNotes & agy r
   assert.ok(Array.isArray(d.unsolvedRecent) && d.unsolvedRecent.length > 0, 'unsolvedRecent empty')
   assert.ok(Array.isArray(d.retentionQueue), 'retentionQueue missing')
   assert.ok(Array.isArray(d.mistakeCards), 'mistakeCards missing')
-  assert.ok(Array.isArray(d.courseNotes) && d.courseNotes.length >= 21, `Expected >=21 courseNotes (playbook + 20 lectures), got ${d.courseNotes?.length}`)
+  assert.ok(Array.isArray(d.courseNotes) && d.courseNotes.length >= 22, `Expected >=22 courseNotes (playbook + 21 lectures incl. ABC485), got ${d.courseNotes?.length}`)
+  assert.ok(d.courseNotes.some((n) => n.file === 'courses/notes/2026-11-26-abc485-modeling.md'), 'Missing newly ingested 2026-11-26-abc485-modeling.md')
   assert.equal(d.courseNotes[0].file, 'courses/notes/00-ren-teacher-modeling-playbook.md', 'Master modeling playbook must be pinned at index 0')
   assert.equal(d.courseNotes[0].pinned, true)
+  // Verify Mother-Method 0 ("神仙点菜" + "抄邻居作业") is synced across playbook, AGENTS.md, SKILL.md, cordis.patch.yml, and index.js
+  for (const relPath of [
+    'courses/notes/00-ren-teacher-modeling-playbook.md',
+    'AGENTS.md',
+    '.dsh/skills/socratic-hint/SKILL.md',
+    'plugins/dsh-oi-coach/cordis.patch.yml',
+    'plugins/dsh-oi-coach/index.js',
+  ]) {
+    const content = await fs.readFile(path.join(REPO_ROOT, relPath), 'utf8')
+    assert.ok(content.includes('神仙点菜') && content.includes('抄邻居作业'), `Mother-Method 0 guardrail missing in ${relPath}`)
+  }
   // Audit all courseNotes files: zero leaked full C++ programs, zero raw LaTeX, balanced <details> tags, & strict un-AC anti-spoiler guards
   const SPOILER_RE = /二分|单调栈|单调队列|前缀和|差分|背包|并查集|换根|容斥|斯特林|归并|树状数组|线段树|Dilworth|LIS|Kruskal|SCC|折半枚举/i
   for (const n of d.courseNotes) {
@@ -795,10 +807,26 @@ await test('Chat history APIs (list, get, delete, path traversal rejection) & PO
     const { res: rObjStillLock, json: jObjStillLock } = makeRes()
     await tmpRoutes.get('/dsh-oi-coach/api/problem-preview')(makeReq('GET', '/dsh-oi-coach/api/problem-preview?q=2269'), rObjStillLock)
     assert.ok(jObjStillLock().problem.statement.includes('尚未在信奥李拜天提交第一遍'), 'Unsubmitted objective paper must remain locked even if listed in activity')
+    // Deterministic test: unsolvedRecent AtCoder entry gets enriched with title_zh even after student solves live abc483_d / abc485_c
+    await fs.mkdir(path.join(tmpDir, 'profile'), { recursive: true })
+    await fs.writeFile(
+      path.join(tmpDir, 'profile', 'activity_timeline.md'),
+      '# Timeline\n## 二、真正尚未 AC 的待补错题\n| 最近尝试 | 平台 | 题目 | 尝试 | 最高分 | 轨迹 | 来源 |\n|---|---|---|---|---|---|---|\n| 2026-11-25 | AtCoder | `abc483_d` D - Glitchy Robot | 2 | 0 | WA→WA | ABC483 |\n',
+      'utf8',
+    )
+    await fs.writeFile(
+      path.join(tmpDir, 'training', 'problem_cache', 'atcoder_abc483_d.json'),
+      JSON.stringify({ platform: 'AtCoder', pid: 'abc483_d', title: 'abc483_d D - Glitchy Robot', title_zh: '故障机器人' }),
+      'utf8',
+    )
     const { res: rHwOv, json: jHwOv } = makeRes()
     await tmpRoutes.get('/dsh-oi-coach/api/overview')(makeReq('GET', '/dsh-oi-coach/api/overview'), rHwOv)
     const hwObjItem = jHwOv().data.latestHomework.problems.find((p) => p.pid === '2269')
     assert.equal(hwObjItem?.isObjective, true, 'Objective paper in latestHomework must be flagged isObjective=true so UI opens OJ instead of hitting lock')
+    assert.ok(
+      jHwOv().data.unsolvedRecent.some((u) => String(u.title).includes('故障机器人')),
+      'unsolvedRecent AtCoder entry in isolated fixture must be enriched with Chinese title_zh',
+    )
     const mock2Check = jHwOv().data.gesp8.mockSuites.find((m) => m.id === 'mock-202606')
     assert.equal(mock2Check?.t1?.archetype, 'A', 'mockSuites.t1 (#2322) must preserve A archetype')
     assert.equal(mock2Check?.t2?.archetype, 'C', 'mockSuites.t2 (#2321) must preserve C archetype')
@@ -821,10 +849,15 @@ await test('AtCoder bilingual preview + C++学习 native zstd session mirror + l
   assert.ok(biBody.problem.titleZh.includes('故障机器人'), `Missing titleZh on abc483_d: ${biBody.problem.titleZh}`)
   assert.ok(biBody.problem.statementZh.includes('题目大意') && biBody.problem.statement.includes('Problem Statement'), 'abc483_d must expose both statementZh and English statement')
   assert.ok(Array.isArray(biBody.problem.vocab) && biBody.problem.vocab.some((v) => v.includes('数轴')), 'abc483_d missing OI vocab')
-  assert.ok(
-    liveOverviewData.unsolvedRecent.some((u) => String(u.title).includes('故障机器人') || String(u.title).includes('异色')),
-    'unsolvedRecent AtCoder titles should be enriched with Chinese bilingual title',
-  )
+  for (const u of liveOverviewData.unsolvedRecent) {
+    if (String(u.platform || '').toLowerCase() !== 'atcoder') continue
+    const mPid = /\b(abc\d+_[a-h]|arc\d+_[a-h]|agc\d+_[a-h]|dp_[a-z])\b/i.exec(String(u.title || ''))
+    if (!mPid) continue
+    try {
+      const c = JSON.parse(await fs.readFile(path.join(REPO_ROOT, 'training', 'problem_cache', `atcoder_${mPid[1].toLowerCase()}.json`), 'utf8'))
+      if (c?.title_zh) assert.ok(String(u.title).includes(c.title_zh), `Expected AtCoder unsolved title to include ${c.title_zh}, got ${u.title}`)
+    } catch {}
+  }
   const mock2 = (liveOverviewData.gesp8?.mockSuites || []).find((m) => m.id === 'mock-202606')
   assert.ok(mock2 && mock2.hasEarlySolvedConflict && mock2.t1?.earlySolved && mock2.t1?.substitute?.pid, 'mock-202606 should detect 2322 early-solved conflict and recommend an unsolved substitute')
   assert.ok(
