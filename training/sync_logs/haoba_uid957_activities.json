@@ -1,6 +1,78 @@
 [
   {
     "domain": "cpptrain",
+    "tid": "6b043fd14522360b5b4251ee",
+    "kind": "course",
+    "rule": "course",
+    "title": "26秋PJ第12次模拟",
+    "beginAt": "2026-11-22T16:00:00.000Z",
+    "endAt": "2027-02-01T15:59:00.000Z",
+    "startAt": "2026-11-28T13:25:09.590Z",
+    "progress": 33,
+    "dateSort": "2026-11-28T14:03:31.550Z",
+    "problems": [
+      {
+        "pid": "5328",
+        "title": "共同空闲日",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "5329",
+        "title": "开关与灯泡",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "5330",
+        "title": "热水器供水",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5331",
+        "title": "递归函数求值",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5332",
+        "title": "带点权的最短路",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      },
+      {
+        "pid": "5333",
+        "title": "商人高桥",
+        "tags": [],
+        "submissions": 0,
+        "bestScore": null,
+        "bestStatus": null,
+        "verdicts": []
+      }
+    ]
+  },
+  {
+    "domain": "cpptrain",
     "tid": "6afabb40e725d44e22f640df",
     "kind": "course",
     "rule": "course",

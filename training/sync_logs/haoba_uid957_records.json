@@ -11167,5 +11167,41 @@
     "contest": "6aa4d0255ee0445aa3a2a894",
     "files": {},
     "_domain": "cpptrain"
+  },
+  {
+    "_id": "6b0ada03c549048a6a7021d9",
+    "statusVersion": 15,
+    "status": 1,
+    "uid": 957,
+    "lang": "cc.cc11o2",
+    "pid": 5328,
+    "domainId": "cpptrain",
+    "score": 100,
+    "time": 31.562,
+    "memory": 20404,
+    "judger": 1,
+    "judgeAt": "2026-11-28T13:41:25.116Z",
+    "rejudged": false,
+    "contest": "6b043fd14522360b5b4251ee",
+    "files": {},
+    "_domain": "cpptrain"
+  },
+  {
+    "_id": "6b0adf31c549048a6a70266b",
+    "statusVersion": 15,
+    "status": 1,
+    "uid": 957,
+    "lang": "cc.cc11o2",
+    "pid": 5329,
+    "domainId": "cpptrain",
+    "score": 100,
+    "time": 16.798,
+    "memory": 20404,
+    "judger": 1,
+    "judgeAt": "2026-11-28T14:03:31.550Z",
+    "rejudged": false,
+    "contest": "6b043fd14522360b5b4251ee",
+    "files": {},
+    "_domain": "cpptrain"
   }
 ]
