@@ -3,14 +3,14 @@
   "title": "探索建模 · 优先墙（priority） 题目描述",
   "mode": "coach",
   "subMode": "",
-  "model": "gemini-4-neon-high",
+  "model": "gemini-4-hydrogen-medium",
   "conversationId": "1ee869ac-b119-4d36-9168-f9c8235717e6",
   "previewQuery": "优先墙（priority）\n题目描述\n社交网站记录了若干用户之间的动态。每条动态属于以下三种形式之一：\n\nX posted on Y's wall，使 X,Y 之间的优先度增加 15；\nX commented on Y's post，使 X,Y 之间的优先度增加 10；\nX likes Y's post，使 X,Y 之间的优先度增加 5。\n优先度关于两名用户对称。给出你的名字和全部动态，输出动态中出现过的其他所有用户。\n按照他们与你的优先度从大到小排序；优先度相同时按名字的字典序从小到大排序。\n即使某名用户与你的优先度为 0，也必须输出。\n\n输入格式\n第一行输入你的名字。第二行输入动态条数 n。接下来 n 行输入严格符合上述格式的动态，\n每两个单词之间恰有一个空格。\n\n输出格式\n每行输出一个其他用户的名字。\n\n数据范围\n1\n<\n=\nn\n<\n=\n100\n1<=n<=100；\n每个名字由 1 到 10 个小写英文字母组成；\n每条动态中的 X,Y 互不相同。\n先不要说任何东西，只告诉我这题怎么输入。",
   "activeProbKey": "",
   "noteFullInjectedFor": {},
   "skipProblemContext": false,
   "createdAt": "2026-11-28T07:37:16.270Z",
-  "updatedAt": "2026-11-28T08:03:51.968Z",
+  "updatedAt": "2026-11-28T08:05:09.230Z",
   "messages": [
     {
       "role": "user",
@@ -59,6 +59,30 @@
       "model": "gemini-4-neon-high",
       "duration": 15.7,
       "ts": "2026-11-28T08:03:51.968Z"
+    },
+    {
+      "role": "user",
+      "text": "#include<bits/stdc++.h> #define int long long using namespace std; struct node{ \tstring s; \tint x; }; bool cmp(node x,node y){ \tif(x.x!=y.x){ \t\treturn x.x>y.x; \t}else{ \t\treturn x.s<y.s; \t} } map<string,int>m; signed main(){ \tstring s; \tcin>>s; \tint n; \tcin>>n; \tfor(int i=1;i<=n;i++){ \t\tvector<string>v; \t\tstring x,n; \t\tint t=0;  \t\twhile(cin>>x){ \t\t\tv.push_back(x); \t\t\tt++; \t\t\tif(t==1){ \t\t\t\tn=x; \t\t\t} \t\t\tif(t==2){ \t\t\t\tif(x==\"posted\"){ \t\t\t\t\tstring w,e,r; \t\t\t\t\tcin>>w>>e>>r; \t\t\t\t\te=e.substr(0,e.size()-2); //\t\t\t\t\tcout<<\"A \"<<e<<endl; \t\t\t\t\tif(n==s) \t\t\t\t\tm[e]+=15; \t\t\t\t\tif(s==e) \t\t\t\t\tm[n]+=15; \t\t\t\t\tm[e]+=0,m[n]+=0; //\t\t\t\t\tcout<<m[e]<<\" \"<<m[n]<<endl; \t\t\t\t\t \t\t\t\t} \t\t\t\tif(x==\"commented\"){ \t\t\t\t\tstring w,e,r; \t\t\t\t\tcin>>w>>e>>r; \t\t\t\t\te=e.substr(0,e.size()-2); //\t\t\t\t\tcout<<\"B \"<<e<<\" \"<<n<<endl; \t\t\t\t\tif(n==s) \t\t\t\t\tm[e]+=10; \t\t\t\t\tif(s==e) \t\t\t\t\tm[n]+=10; \t\t\t\t\tm[e]+=0,m[n]+=0; //\t\t\t\t\tcout<<m[e]<<\" \"<<m[n]<<endl; \t\t\t\t} \t\t\t\tif(x==\"likes\"){ \t\t\t\t\tstring e,r; \t\t\t\t\tcin>>e>>r; \t\t\t\t\te=e.substr(0,e.size()-2); //\t\t\t\t\tcout<<\"C \"<<e<<endl; \t\t\t\t\tif(n==s) \t\t\t\t\tm[e]+=5; \t\t\t\t\tif(s==e) \t\t\t\t\tm[n]+=5; \t\t\t\t\tm[e]+=0,m[n]+=0; //\t\t\t\t\tcout<<m[e]<<\" \"<<m[n]<<endl; \t\t\t\t} \t\t\t\tbreak; \t\t\t} \t\t} \t} \tvector<node>v; \tfor(auto &p:m){ \t\tv.push_back({p.first,p.second}); \t} //\tcout<<v.size()<<endl; \tsort(v.begin(),v.end(),cmp); \tfor(int i=0;i<v.size();i++){ \t\tif(v[i].s!=s) \t\tcout<<v[i].s<<endl; \t} \treturn 0; }",
+      "ts": "2026-11-28T08:04:55.550Z"
+    },
+    {
+      "role": "assistant",
+      "text": "这版全排干净了！输入切词、0 分路人入表、双关键字排序和最后过滤掉自己都稳了，可以直接去提交！\n\n这次踩过的 3 个实战小雷顺手记进错题本，以后刷同类模拟题（比如“消息/成绩统计 + `map` 计分 + 结构体多关键字排序”）一眼就能防住：\n1. **0 分路人别漏登记**：先入表再按条件加分，最后把主角自己过滤掉。\n2. **输出格式逐字核对**：题面没要输出人数，就千万别顺手打一行 `v.size()`。\n3. **小细节习惯**：循环里没用到的 `vector<string> v` 和跟外层重名的 `string n` 下次顺手避开，代码更干净不易坑自己。\n\n快去交一发，AC 了回来报个喜，或者还有新题直接丢过来！",
+      "model": "gemini-4-neon-high",
+      "duration": 21.7,
+      "ts": "2026-11-28T08:04:55.550Z"
+    },
+    {
+      "role": "user",
+      "text": "A",
+      "ts": "2026-11-28T08:05:09.230Z"
+    },
+    {
+      "role": "assistant",
+      "text": "漂亮，一发过！你自己抓出来的两个细节坑（0 分路人入表 + 过滤自己）改得非常果断。\n\n📌 **同门题名片（字符串模拟 + `map` 计分 + 多关键字排序）**\n- 洛谷 P1051 谁拿了最多奖学金 / P1093 奖学金（多关键字排序基本功）\n- Codeforces 4C Registration System / 847G 类似 `map` 统计打卡题\n\n还有新题要刷吗？直接发题面过来，咱们继续！",
+      "model": "gemini-4-hydrogen-medium",
+      "duration": 4.5,
+      "ts": "2026-11-28T08:05:09.230Z"
     }
   ]
 }
