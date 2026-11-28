@@ -1,0 +1,38 @@
+{
+  "id": "dsh-8818f528bc",
+  "title": "[c++学习] 翻译中文并格式化",
+  "mode": "coach",
+  "source": "dsh-native",
+  "workspaceLabel": "c++学习",
+  "subMode": "",
+  "model": "dsh-native",
+  "conversationId": null,
+  "previewQuery": "",
+  "skipProblemContext": false,
+  "createdAt": "2026-11-28T12:00:44.315Z",
+  "updatedAt": "2026-11-28T12:03:55.264Z",
+  "messages": [
+    {
+      "role": "user",
+      "text": "Problem Statement\r\nYou are given a string \r\nS of length \r\nN consisting of A, B, and C.\r\n\r\nDefine the string \r\nT \r\ni\r\n​\r\n  as Alpha if the \r\ni-th character of \r\nS is A, Bravo if it is B, and Charlie if it is C.\r\n\r\nPrint \r\nT \r\n1\r\n​\r\n ,…,T \r\nN\r\n​\r\n  in order.\r\n\r\nConstraints\r\nN is an integer between \r\n1 and \r\n100, inclusive.\r\nS is a string of length \r\nN consisting of A, B, and C.\r\nInput\r\nThe input is given from Standard Input in the following format:\r\n\r\nN\r\nS\r\nOutput\r\nPrint \r\nT \r\n1\r\n​\r\n ,…,T \r\nN\r\n​\r\n  in this order, separated by spaces.\r\n\r\n\n以后在这对话中，你只需要翻译我给你的中文，并且格式化，不要给我任何解释。",
+      "ts": "2026-11-28T12:01:04.970Z"
+    },
+    {
+      "role": "assistant",
+      "text": "## 题目描述\n\n给定一个长度为 N、由 A、B、C 组成的字符串 S。\n\n定义字符串 T_i：如果 S 的第 i 个字符是 A，那么 T_i 为 Alpha；如果它是 B，那么 T_i 为 Bravo；如果它是 C，那么 T_i 为 Charlie。\n\n请按顺序输出 T_1, …, T_N。\n\n## 约束条件\n\n- N 为 1 到 100 之间的整数。\n- S 是长度为 N、且仅由 A、B、C 组成的字符串。\n\n## 输入\n\n输入以以下格式从标准输入给出：\n\n```\nN\nS\n```\n\n## 输出\n\n请按顺序输出 T_1, …, T_N，各项之间以空格分隔。",
+      "model": "dsh-native",
+      "ts": "2026-11-28T12:01:11.570Z"
+    },
+    {
+      "role": "user",
+      "text": "A sports match is being played.\r\n\r\nAt the start of the match, \r\nN players are on the field, and their uniform numbers are \r\nA \r\n1\r\n\r\n ,…,A \r\nN\r\n\r\n .\r\n\r\nBetween the start and the end of the match, \r\nM substitutions were made. In the \r\ni-th substitution, the player with uniform number \r\nX \r\ni\r\n\r\n  on the field was replaced by the player with uniform number \r\nY \r\ni\r\n\r\n  on the bench.\r\n\r\nFind the uniform numbers of the players on the field at the end of the match.\r\n\r\nConstraints\r\n1≤N≤100\r\n1≤A \r\ni\r\n\r\n ≤100\r\nThe \r\nA \r\ni\r\n\r\n  are pairwise distinct.\r\n1≤M≤100\r\n1≤X \r\ni\r\n\r\n ,Y \r\ni\r\n\r\n ≤100\r\nAt the time of the \r\ni-th substitution, the player with uniform number \r\nX \r\ni\r\n\r\n  is on the field, and the player with uniform number \r\nY \r\ni\r\n\r\n  is not on the field.\r\nAll input values are integers.\r\nInput\r\nThe input is given from Standard Input in the following format:\r\n\r\nN \r\nM\r\nA \r\n1\r\n\r\n  \r\n… \r\nA \r\nN\r\n\r\n \r\nX \r\n1\r\n\r\n  \r\nY \r\n1\r\n\r\n \r\n⋮\r\nX \r\nM\r\n\r\n  \r\nY \r\nM\r\n\r\n \r\nOutput\r\nPrint the uniform numbers of the players on the field at the end of the match in ascending order, separated by spaces.翻译",
+      "ts": "2026-11-28T12:03:52.969Z"
+    },
+    {
+      "role": "assistant",
+      "text": "## 题目描述\n\n一场比赛正在进行中。\n\n比赛开始时，场上有 N 名球员，他们的球衣号码分别为 A_1, …, A_N。\n\n从比赛开始到结束，共进行了 M 次换人。在第 i 次换人中，场上球衣号码为 X_i 的球员被替补席上球衣号码为 Y_i 的球员替换。\n\n请求出比赛结束时场上球员的球衣号码。\n\n## 约束条件\n\n- 1 ≤ N ≤ 100\n- 1 ≤ A_i ≤ 100\n- 所有 A_i 互不相同。\n- 1 ≤ M ≤ 100\n- 1 ≤ X_i, Y_i ≤ 100\n- 在第 i 次换人时，球衣号码为 X_i 的球员在场上，球衣号码为 Y_i 的球员不在场上。\n- 所有输入值均为整数。\n\n## 输入\n\n输入以以下格式从标准输入给出：\n\n```\nN M\nA_1 … A_N\nX_1 Y_1\n⋮\nX_M Y_M\n```\n\n## 输出\n\n请按升序输出比赛结束时场上球员的球衣号码，号码之间以空格分隔。",
+      "model": "dsh-native",
+      "ts": "2026-11-28T12:03:55.264Z"
+    }
+  ]
+}
