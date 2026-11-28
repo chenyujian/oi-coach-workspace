@@ -11005,5 +11005,23 @@
     "contest": "6aa4d0255ee0445aa3a2a894",
     "files": {},
     "_domain": "cpptrain"
+  },
+  {
+    "_id": "6b0a67e1c549048a6a6f3a33",
+    "statusVersion": 15,
+    "status": 1,
+    "uid": 957,
+    "lang": "cc.cc11o2",
+    "pid": 5135,
+    "domainId": "cpptrain",
+    "score": 100,
+    "time": 16.83,
+    "memory": 20404,
+    "judger": 1,
+    "judgeAt": "2026-11-28T05:34:27.229Z",
+    "rejudged": false,
+    "contest": "6aa4d0255ee0445aa3a2a894",
+    "files": {},
+    "_domain": "cpptrain"
   }
 ]
