@@ -1,0 +1,32 @@
+{
+  "id": "dsh-9dde2c46d6",
+  "title": "[c++学习] 下个 GrokBot",
+  "mode": "coach",
+  "source": "dsh-native",
+  "workspaceLabel": "c++学习",
+  "subMode": "",
+  "model": "dsh-native",
+  "conversationId": null,
+  "previewQuery": "",
+  "skipProblemContext": false,
+  "createdAt": "2026-11-28T06:04:39.110Z",
+  "updatedAt": "2026-11-28T07:11:56.893Z",
+  "messages": [
+    {
+      "role": "user",
+      "text": "下个grokbot",
+      "ts": "2026-11-28T06:04:45.617Z"
+    },
+    {
+      "role": "user",
+      "text": "现在怎么样",
+      "ts": "2026-11-28T07:11:17.405Z"
+    },
+    {
+      "role": "assistant",
+      "text": "搞定了：**Grok Bot 1.3.0 已经装好，也已经能启动了** 🎉\n\n- 安装位置：`C:\\Users\\cheny\\AppData\\Local\\Programs\\Grok Bot\\Grok Bot.exe`，开始菜单里有快捷方式 `Grok Bot`\n- 来源：官方 CDN 上的 `downloads.cursor.com`（先是直接下载，后来用 winget 安装）；安装包的数字签名显示为 **Anysphere, Inc.**（Cursor 的开发公司），在微软 CA 下校验通过 ✅\n- 中途有点小问题：我直接双击那个 exe 安装时，提示“安装已中止”；改用 `winget install xAI.GrokBot` 之后就一次装好了。安装包我留在 `installers\\Grok_Bot_1.3.0_Setup.exe`，以后要重装可以继续用\n- 现在程序是开着的，但它的窗口被我按到后面去了，你可以从任务栏或开始菜单点开\n\n有一点需要提前提醒你⛔：它**没有单独的 Grok 账号**，第一次打开会走「Sign in with Cursor」；而且从免费版开始会一直卡在 “Setting up”（云端电脑需要付费席位或绑定 SuperGrok，官方文档里写明，每月大约 $30 起）。所以如果只是点开看看，停在登录页不用着急。\n\n要不我帮你把窗口拉到前面来，你直接看一眼登录页？",
+      "model": "dsh-native",
+      "ts": "2026-11-28T07:11:56.893Z"
+    }
+  ]
+}
