@@ -1,5 +1,51 @@
 [
   {
+    "timestamp": "2026-11-28T16:04:41.557000+08:00",
+    "date": "2026-11-28",
+    "time": "16:04",
+    "month": "2026-11",
+    "platform": "好吧(cpptrain)",
+    "pid": "5132",
+    "title": "优先墙",
+    "source": "【A】第二课",
+    "tags": [],
+    "attempts": 3,
+    "failsBeforeAc": [
+      "WA",
+      "WA"
+    ]
+  },
+  {
+    "timestamp": "2026-11-28T15:25:57.325000+08:00",
+    "date": "2026-11-28",
+    "time": "15:25",
+    "month": "2026-11",
+    "platform": "好吧(cpptrain)",
+    "pid": "5136",
+    "title": "方块投影",
+    "source": "【A】第二课",
+    "tags": [],
+    "attempts": 1,
+    "failsBeforeAc": []
+  },
+  {
+    "timestamp": "2026-11-28T15:01:12.597000+08:00",
+    "date": "2026-11-28",
+    "time": "15:01",
+    "month": "2026-11",
+    "platform": "好吧(cpptrain)",
+    "pid": "5134",
+    "title": "罗杰斯现象",
+    "source": "【A】第二课",
+    "tags": [],
+    "attempts": 4,
+    "failsBeforeAc": [
+      "WA",
+      "CE",
+      "WA"
+    ]
+  },
+  {
     "timestamp": "2026-11-28T13:34:27.229000+08:00",
     "date": "2026-11-28",
     "time": "13:34",

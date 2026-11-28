@@ -1119,8 +1119,8 @@
     "beginAt": "2026-09-12T05:00:00.000Z",
     "endAt": "2027-02-01T15:59:00.000Z",
     "startAt": "2026-09-12T14:11:30.475Z",
-    "progress": 23,
-    "dateSort": "2026-11-28T05:34:27.229Z",
+    "progress": 29,
+    "dateSort": "2026-11-28T08:04:41.557Z",
     "problems": [
       {
         "pid": "4995",
@@ -1512,10 +1512,39 @@
         "pid": "5134",
         "title": "罗杰斯现象",
         "tags": [],
-        "submissions": 0,
-        "bestScore": null,
-        "bestStatus": null,
-        "verdicts": []
+        "submissions": 4,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "CE",
+          "WA",
+          "AC"
+        ]
+      },
+      {
+        "pid": "5136",
+        "title": "方块投影",
+        "tags": [],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
+      },
+      {
+        "pid": "5132",
+        "title": "优先墙",
+        "tags": [],
+        "submissions": 3,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "WA",
+          "WA",
+          "AC"
+        ]
       }
     ]
   },
