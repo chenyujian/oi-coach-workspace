@@ -10,9 +10,9 @@
   ],
   "is_objective": false,
   "statement": "\n\n## 题目描述\n\n给定正整数 $p, q$ 以及常数 $N = 10^{18}$。现在构建一张包含 $N$ 个结点的带权无向图，结点依次以 $1, 2, \\ldots, N$ 编号。对于任意满足 $1 \\le u < v \\le N$ 的 $u, v$，向图中加入一条连接结点 $u$ 与结点 $v$ 的无向边，边权取决于 $u, v$ 是否互质：\n\n- 若 $u, v$ 互质（即 $u, v$ 的最大公因数为 $1$），则连接结点 $u$ 与结点 $v$ 的无向边长度为 $p$；\n- 否则连接结点 $u$ 与结点 $v$ 的无向边长度为 $q$。\n\n现在给定 $n$ 组询问，第 $i$（$1 \\le i \\le n$）组询问给定两个正整数 $a_i, b_i$，你需要回答结点 $a_i$ 与结点 $b_i$ 之间的最短距离。\n\n## 输入格式\n\n第一行，三个正整数 $n, p, q$，分别表示询问数量，结点编号互质时的边权，以及结点编号不互质时的边权。\n\n接下来 $n$ 行，每行两个正整数 $a_i, b_i$，表示一组询问。\n\n## 输出格式\n\n输出共 $n$ 行，每行一个整数，表示结点 $a_i$ 与结点 $b_i$ 之间的最短距离。\n\n## 输入输出样例 #1\n\n### 输入 #1\n\n```\n4 4 3\n1 2\n2 3\n4 2\n3 5\n```\n\n### 输出 #1\n\n```\n4\n4\n3\n4\n```\n\n## 输入输出样例 #2\n\n### 输入 #2\n\n```\n5 2 6\n1 2\n2 3\n4 2\n3 5\n6 6\n```\n\n### 输出 #2\n\n```\n2\n2\n4\n2\n0\n```\n\n## 说明/提示\n\n对于 $30\\%$ 的测试点，保证 $1 \\le n \\le 10$，$1 \\le a_i, b_i \\le 50$。\n\n对于另外 $30\\%$ 的测试点，保证 $1 \\le a_i, b_i \\le 250$。\n\n对于所有测试点，保证 $1 \\le n \\le 10^4$，$1 \\le a_i, b_i \\le 10^9$，$1 \\le p, q \\le 10^9$。",
-  "attempts": 2,
+  "attempts": 3,
   "best_score": 100,
-  "trajectory": "WA→AC",
+  "trajectory": "WA→AC→AC",
   "latest_verdict": "AC",
   "latest_score": 100,
   "latest_code": "#include<bits/stdc++.h>\r\n#define int long long\r\nusing namespace std;\r\n\r\nsigned main(){\r\n\tint n,q,p;\r\n\tcin>>n>>q>>p;\r\n\twhile(n--){\r\n\t\tint x,y;\r\n\t\tcin>>x>>y;\r\n\t\tint g=__gcd(x,y);\r\n\t\tif(x==y){\r\n\t\t\tcout<<0<<endl;\r\n\t\t\tcontinue;\r\n\t\t}\r\n\t\tif(x==1||y==1){\r\n\t\t\tcout<<q<<endl;\r\n\t\t\tcontinue;\r\n\t\t}\r\n\t\tif(g==1){\r\n\t\t\tcout<<min(q,p*2)<<endl;\r\n\t\t}else{\r\n\t\t\tcout<<min(q*2,p)<<endl;\r\n\t\t}\r\n\t}\r\n\treturn 0;\r\n}\r\n"

@@ -21,11 +21,17 @@
       {
         "pid": "1344",
         "title": "[GESP202509 八级] 最短距离",
-        "tags": [],
-        "submissions": 0,
-        "bestScore": null,
-        "bestStatus": null,
-        "verdicts": []
+        "tags": [
+          "数论",
+          "最大公约数",
+          "GESP八级"
+        ],
+        "submissions": 1,
+        "bestScore": 100,
+        "bestStatus": "AC",
+        "verdicts": [
+          "AC"
+        ]
       },
       {
         "pid": "790",
