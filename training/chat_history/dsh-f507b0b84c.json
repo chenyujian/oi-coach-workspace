@@ -1,0 +1,27 @@
+{
+  "id": "dsh-f507b0b84c",
+  "title": "[c++学习] AtCoder 提交页面 403 错误",
+  "mode": "coach",
+  "source": "dsh-native",
+  "workspaceLabel": "c++学习",
+  "subMode": "",
+  "model": "dsh-native",
+  "conversationId": null,
+  "previewQuery": "",
+  "skipProblemContext": false,
+  "createdAt": "2026-11-28T12:49:32.908Z",
+  "updatedAt": "2026-11-28T12:50:18.405Z",
+  "messages": [
+    {
+      "role": "user",
+      "text": "我在atcoder点开我的提交界面时候显示的是这个，怎么办？403 ERROR\r\nThe request could not be satisfied.\r\nRequest blocked. We can't connect to the server for this app or website at this time. There might be too much traffic or a configuration error. Try again later, or contact the app or website owner.\r\nIf you provide content to customers through CloudFront, you can find steps to troubleshoot and help prevent this error by reviewing the CloudFront documentation.",
+      "ts": "2026-11-28T12:49:51.190Z"
+    },
+    {
+      "role": "assistant",
+      "text": "这个报错跟题目没关系：它是 AtCoder 前面的 CloudFront（CDN 防护层）**在请求到达服务器之前就把你的 IP 或请求特征判成可疑流量了**，不是 AtCoder 挂了，也不是你账号出事。按下面顺序排查，不要一直点刷新（反复请求会让封禁时间变长）：\n\n1. **先测影响范围**：直接打开 https://atcoder.jp/ 主页，能打开吗？只有提交页 403，还是全站 403？\n2. **无痕窗口**再打开一次 → 排掉油猴脚本、翻译插件、广告拦截和损坏的缓存。\n3. **关掉 VPN、Clash、游戏加速器或校园代理**；如果本来就没开，反而要换一个网络试试。\n4. **用手机热点**（关掉 WiFi，让电脑连手机流量）再打开提交页，这一步能判断问题出在哪里：\n   - 能打开 → 你家宽带的 IP 被拦截了，等 1~2 小时，或先把 DNS 改成 223.5.5.5（阿里）或 8.8.8.8（Google）再试。\n   - 还是 403 → 问题在 cookie 或链接本身，清除 atcoder.jp 的 cookie 后重新登录。\n5. 顺便检查一下电脑的**系统时间**是否开启了“自动同步”，时间差太大会被 CDN 直接拒绝。\n\n**问一下**：你先试第 4 步，用手机热点能不能打开提交页？告诉我结果，我们再缩小范围。",
+      "model": "dsh-native",
+      "ts": "2026-11-28T12:50:18.405Z"
+    }
+  ]
+}
