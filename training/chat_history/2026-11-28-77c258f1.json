@@ -1,0 +1,40 @@
+{
+  "id": "2026-11-28-77c258f1",
+  "title": "探索建模 · 罗杰斯现象（rogers） 题目描述",
+  "mode": "coach",
+  "subMode": "",
+  "model": "gemini-4-hydrogen-medium",
+  "conversationId": "748d681a-3a1f-49fa-ba77-4c9103c130ce",
+  "previewQuery": "罗杰斯现象（rogers）\n题目描述\n给定两个非空整数序列 A 和 B。每次可以从其中一个序列取出一个元素放入另一个序列，\n但来源序列原本至少要有两个元素。若移动后两个序列的平均数都严格大于移动前的平均数，\n则称被移动的这个元素触发了罗杰斯现象。\n\n统计所有能够触发现象的元素。相同数值出现在不同位置时，按不同元素分别统计。\n\n输入格式\n第一行输入 n，第二行输入 n 个整数表示 A；第三行输入 m，\n第四行输入 m 个整数表示 B。\n\n输出格式\n输出能够触发罗杰斯现象的元素个数。\n\n数据范围\n1\n<\n=\nn\n,\nm\n<\n=\n50\n1<=n,m<=50；\n每个元素在 [-1000,1000] 内，允许重复。#include<bits/stdc++.h>\n#define int long long\nusing namespace std;\nstruct node{\n\tint x,y;\n};\nint a[55],b[55];\nsigned main(){\n\tint n;\n\tcin>>n;\n\tint sn=0,sm=0;\n\tfor(int i=1;i<=n;i++){\n\t\tcin>>a[i];\n\t\tsn+=a[i];\n\t}\n\tint m;\n\tcin>>m;\n\tfor(int i=1;i<=m;i++){\n\t\tcin>>b[i]; \n\t\tsm+=b[i];\n\t}\n\tint ans=0;\n\tfor(int i=1;i<=n;i++){\n\t\tif(sn*(n-1)<n*(sn-a[i])*n&&sn*(n-1)<n*(sn-a[i])&&sm*(m+1)<m*(sm+a[i])*m&&sm*(m+1)<m*(sm+a[i])&&n>=2){\n\t\t\tans++;\n\t\t}\n\t\tif(sn*(n+1)<n*(sn+b[i])*n&&sn*(n+1)<n*(sn+b[i])&&sm*(m+1)<m*(sm+b[i])*m&&sm*(m+1)<m*(sm+b[i])&&m>=2){\n\t\t\tans++;\n\t\t}\n\t}\n\tcout<<ans;\n\treturn 0;\n}\nWA80",
+  "activeProbKey": "",
+  "noteFullInjectedFor": {},
+  "skipProblemContext": false,
+  "createdAt": "2026-11-28T06:50:42.974Z",
+  "updatedAt": "2026-11-28T06:51:25.097Z",
+  "messages": [
+    {
+      "role": "user",
+      "text": "罗杰斯现象（rogers）\n题目描述\n给定两个非空整数序列 A 和 B。每次可以从其中一个序列取出一个元素放入另一个序列，\n但来源序列原本至少要有两个元素。若移动后两个序列的平均数都严格大于移动前的平均数，\n则称被移动的这个元素触发了罗杰斯现象。\n\n统计所有能够触发现象的元素。相同数值出现在不同位置时，按不同元素分别统计。\n\n输入格式\n第一行输入 n，第二行输入 n 个整数表示 A；第三行输入 m，\n第四行输入 m 个整数表示 B。\n\n输出格式\n输出能够触发罗杰斯现象的元素个数。\n\n数据范围\n1\n<\n=\nn\n,\nm\n<\n=\n50\n1<=n,m<=50；\n每个元素在 [-1000,1000] 内，允许重复。#include<bits/stdc++.h>\n#define int long long\nusing namespace std;\nstruct node{\n\tint x,y;\n};\nint a[55],b[55];\nsigned main(){\n\tint n;\n\tcin>>n;\n\tint sn=0,sm=0;\n\tfor(int i=1;i<=n;i++){\n\t\tcin>>a[i];\n\t\tsn+=a[i];\n\t}\n\tint m;\n\tcin>>m;\n\tfor(int i=1;i<=m;i++){\n\t\tcin>>b[i]; \n\t\tsm+=b[i];\n\t}\n\tint ans=0;\n\tfor(int i=1;i<=n;i++){\n\t\tif(sn*(n-1)<n*(sn-a[i])*n&&sn*(n-1)<n*(sn-a[i])&&sm*(m+1)<m*(sm+a[i])*m&&sm*(m+1)<m*(sm+a[i])&&n>=2){\n\t\t\tans++;\n\t\t}\n\t\tif(sn*(n+1)<n*(sn+b[i])*n&&sn*(n+1)<n*(sn+b[i])&&sm*(m+1)<m*(sm+b[i])*m&&sm*(m+1)<m*(sm+b[i])&&m>=2){\n\t\t\tans++;\n\t\t}\n\t}\n\tcout<<ans;\n\treturn 0;\n}\nWA80",
+      "ts": "2026-11-28T06:50:42.974Z"
+    },
+    {
+      "role": "assistant",
+      "text": "你已经拿到 80 分，离 AC 只差几个藏得很深的暗坑！我们先跳出代码里的长不等式，用一组极小数据手算破冰：\n\n假设 `A = [2, 2]`（平均 `2`），`B = [10, 10, 4]`（平均 `8`）。\n把这 5 个数逐个试着搬到对面，**哪个数**能让 A 和 B 的平均数**同时严格变大**？（顺便确认下：把 A 里的 `2` 搬去 B，算不算触发？）",
+      "model": "gemini-4-neon-high",
+      "duration": 34.8,
+      "ts": "2026-11-28T06:50:42.974Z"
+    },
+    {
+      "role": "user",
+      "text": "不算，把4搬到A",
+      "ts": "2026-11-28T06:51:25.097Z"
+    },
+    {
+      "role": "assistant",
+      "text": "完全正确！把 `B` 里的 `4` 搬到 `A` 后，A 平均从 `4/2` 变成 `8/3`，B 平均从 `24/3` 变成 `20/2`，两边都严格变大！\n\n现在我们把这组数字翻译成字母：A 有 `n` 个数、总和 `sn`；B 有 `m` 个数、总和 `sm`。\n如果把 B 里的数 `x` 搬到 A，除了 `m ≥ 2`，用交叉相乘把“两边平均数都严格变大”写成整数不等式，下面两个 `[ ? ]` 里分别填什么？\n1. A 变大：`(sn + x) × [ ? ] > sn × (n + 1)`\n2. B 变大：`(sm - x) × m > sm × [ ? ]`",
+      "model": "gemini-4-hydrogen-medium",
+      "duration": 6.7,
+      "ts": "2026-11-28T06:51:25.097Z"
+    }
+  ]
+}
