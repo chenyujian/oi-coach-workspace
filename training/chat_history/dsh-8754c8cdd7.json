@@ -1,0 +1,32 @@
+{
+  "id": "dsh-8754c8cdd7",
+  "title": "[c++学习] 反重力添加 agy-powertools 插件",
+  "mode": "coach",
+  "source": "dsh-native",
+  "workspaceLabel": "c++学习",
+  "subMode": "",
+  "model": "dsh-native",
+  "conversationId": null,
+  "previewQuery": "",
+  "skipProblemContext": false,
+  "createdAt": "2026-11-28T13:20:27.704Z",
+  "updatedAt": "2026-11-28T13:29:56.530Z",
+  "messages": [
+    {
+      "role": "user",
+      "text": "给我的反重力加上这个插件。agy-powertools",
+      "ts": "2026-11-28T13:20:37.118Z"
+    },
+    {
+      "role": "assistant",
+      "text": "装好了，而且是**装完就验证过真的接上了**，不是\"文件拷完就交差\"。\n\n**安装结果**\n- 版本：`agy-powertools v2.17.1`（今天 20:36 发布的正式 Release），从 GitHub 官方 ZIP 下载，SHA-256 `33F0CDDF…11F767`\n- 位置：`C:\\Users\\cheny\\.gemini\\config\\plugins\\agy-powertools\\`，88 个文件逐个校验通过（见 [.agy-install.json](C:/Users/cheny/.gemini/config/plugins/agy-powertools/.agy-install.json)）\n- 客户端已登记启用：`config.json` 里 `agy-powertools.enabled = true`，swarm 等其他插件、账号、聊天记录一个没动\n- 桌面 + 开始菜单快捷方式已自动加上 `--remote-debugging-port=0`（你重启时我确认过进程命令行带着这个参数）\n\n**接入验证**（你重启那次的实录）\n- 侧车日志最后一行：`[native-ui] 已接入原生输入框` — 见 [sidecar.log](C:/Users/cheny/.gemini/antigravity/sidecar_data/agy-powertools/inspector/logs/sidecar.log)\n- CDP 页面里出现了插件自己的面板：`plugin://agy-powertools--inspector-…`\n- 插件自己记下了 `lastClientVersion: 2.36.0`，检查更新返回 `status: current` —— 说明它在你的 2.36.0 里跑通了\n\n**两点注意**\n1. 现在 Antigravity 又关着了。下次请从**桌面或开始菜单**的快捷方式打开（这两个已打参数）；如果你平时点的是任务栏固定图标，那个图标没打参数，先取消固定、再从桌面重新固定一次。\n2. 项目 README 标注适配 2.35.x，你装的是 2.36.0。实测界面注入正常，但个别面板若没出现，去 `Powertools → 设置 → 关于 → 检查更新` 就好。\n\n**附带影响**：它同时作为 Antigravity 插件挂了一个 `branch-session` skill 和 538 字节的 rules（会话统计/分支的用语约定），只影响 agy 的这两类回答。\n\n**卸载**（保留设置加 `--keep-settings`）：\n```powershell\npowershell -NoProfile -ExecutionPolicy Bypass -File \"$env:USERPROFILE\\.gemini\\config\\plugins\\agy-powertools\\uninstall.ps1\"\n```\n临时下载目录 `%TEMP%\\agy-powertools-install` 已无用，可随手删掉。",
+      "model": "dsh-native",
+      "ts": "2026-11-28T13:29:56.421Z"
+    },
+    {
+      "role": "user",
+      "text": "agy-fast这个也装一下",
+      "ts": "2026-11-28T13:29:56.530Z"
+    }
+  ]
+}
