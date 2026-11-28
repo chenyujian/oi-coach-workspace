@@ -1,0 +1,49 @@
+{
+  "id": "dsh-38df42664c",
+  "title": "[c++学习] 如何搭建MC服务器",
+  "mode": "coach",
+  "source": "dsh-native",
+  "workspaceLabel": "c++学习",
+  "subMode": "",
+  "model": "dsh-native",
+  "conversationId": null,
+  "previewQuery": "",
+  "skipProblemContext": false,
+  "createdAt": "2026-11-28T13:06:16.597Z",
+  "updatedAt": "2026-11-28T13:10:33.101Z",
+  "messages": [
+    {
+      "role": "user",
+      "text": "怎么搞一个mc服务器",
+      "ts": "2026-11-28T13:06:39.662Z"
+    },
+    {
+      "role": "assistant",
+      "text": "## 先分叉：MC 服务器有 3 种情况\n\n| 情况 | 用什么开服 | 联机范围 |\n|---|---|---|\n| 电脑 **Java 版**（最主流） | 官方 `server.jar` 或 Paper | 同 WiFi 可以直接连接，异地需要内网穿透 |\n| **手机、平板** 基岩版 | 官方 Bedrock Dedicated Server | 同一局域网可以直接连接 |\n| 想长期在线、不关电脑 | 租用云服务器 | 朋友随时可以连接 |\n\n下面按最常见的情况（**Java 版、在 Windows 上开服、和朋友一起玩**）给出完整步骤。\n\n## 一、Java 版开服步骤（约 15 分钟）\n\n**1. 安装 Java 21**：打开 https://adoptium.net/ ，下载 Temurin 21 的 `.msi` 安装包，安装时勾选“Set JAVA_HOME”。1.20.5 之后的版本都要求 Java 21，如果启动时提示 `Unsupported class file major version`，就换成更新的 LTS 版本。\n\n**2. 建目录并下载服务端**：在 `桌面\\mc-server\\` 目录中，从 https://www.minecraft.net/en-us/download/server 下载 `server.jar`，并把它放进这个目录。\n\n**3. 同目录建 `start.bat`**（记事本另存为，编码选 ANSI）：\n```bat\n@echo off\njava -Xms2G -Xmx4G -jar server.jar nogui\npause\n```\n内存建议：2~4 人给 4G 就够，不要超过本机物理内存的一半；如果这台电脑同时开着游戏客户端，那么 16G 内存机器上的服务器给 2G 会更稳妥。\n\n**4. 首次启动，同意 EULA**：双击 `start.bat`，它会立刻报错退出并生成 `eula.txt`。打开 `eula.txt`，把 `eula=false` 改成 `eula=true`，再双击 `start.bat`。等到控制台出现 **`Done (12.345s)!`**，就表示服务器开好了。\n\n**5. 放行防火墙并查看 IP**：第一次运行时 Windows 会弹出提示，请点击“允许访问”。如果当时没点，就去 *Windows Defender 防火墙 → 允许应用通过防火墙* 里勾上 Java。然后在 `cmd` 里运行 `ipconfig`，找到**IPv4 地址**（如 `192.168.1.23`）。\n\n**6. 朋友进入服务器**：朋友在游戏里依次进入 **多人游戏 → 直接连接**，输入 `192.168.1.23:25565`。如果朋友也在同一个 WiFi 下，多人游戏列表里有时会自动扫描到，但手动输入 IP 最稳定。\n\n## 二、日常管理（在服务端控制台输命令）\n```\nop 你的ID           给管理员权限\nwhitelist on        开白名单\nwhitelist add 朋友ID  加白名单\nstop                关服（千万别直接关窗口，会坏档）\n```\n配置在 `server.properties` 里，常改动项：`max-players=10`、`difficulty=easy`、`view-distance=8`（省性能）、`online-mode=true`（正版验证；如果朋友用离线启动器启动游戏，需要改成 `false` 并开启白名单，否则任何人只要知道你的地址就能进来）。**备份方式：定期复制整个 `world` 文件夹**。\n\n## 三、异地朋友怎么连（家里宽带没公网 IP，端口映射基本行不通）\n- **Tailscale（推荐）**：各装一个，登录同一账号，朋友用 `100.x.x.x:25565` 连接，免费且稳。\n- **playit.gg**：给一个公网域名直连，不用改路由器。\n- **云服务器**：轻量应用 2核4G 约 ¥60~100/月，装 Ubuntu 后运行 `apt install openjdk-21-jre-headless`，用 `tmux` 挂起运行，安全组放行 25565。想长期 24 小时开服就选这个方案，比家里电脑一直开着更省电。\n\n## 四、两个高频问题\n- **手机版互连**：官方基岩版服务端解压后直接双击 `bedrock_server.exe`，端口是 **UDP 19132**，手机在“添加服务器”里填电脑 IP。注意 **网易版（中国版）和 Java 版、国际版基岩版不互通**。\n- **想装插件、模组**：改用 Paper（papermc.io），它支持 Bukkit、Spigot 插件；若想让基岩版连进 Java 服，就安装 Geyser 插件。\n\n---\n\n你和朋友是**电脑 Java 版**还是**手机基岩版**？是**同一个 WiFi** 还是**异地**？请告诉我，我可以直接给你对应的 `start.bat`、`server.properties` 逐行配置，或者帮你在这台电脑上把目录和脚本建好。",
+      "model": "dsh-native",
+      "ts": "2026-11-28T13:07:00.592Z"
+    },
+    {
+      "role": "user",
+      "text": "完全免费？我是Java",
+      "ts": "2026-11-28T13:08:23.776Z"
+    },
+    {
+      "role": "assistant",
+      "text": "## 分成四笔开销来看\n\n| 项目 | 价格 | 说明 |\n|---|---|---|\n| **服务端程序** | **¥0** | 官方 `server.jar` 免费下载，没有任何“付费版”。Paper/Spigot/Fabric/Forge 也都免费开源 |\n| **Java 21** | **¥0** | Temurin/Adoptium 永久免费 |\n| **内网穿透** | **¥0** | Tailscale 个人版免费（100 台设备），playit.gg 免费版够用 |\n| **游戏本体** | 要买 | Java 版约 ¥165/人，**你和朋友各自都得有账号** |\n\n所以答案是：**开服这件事一分钱不用花**。唯一跑不掉的是——\n\n## 两个“隐性成本”\n\n**1. 电费（自己电脑开服时）**\n整机 150W 跑 24 小时 ≈ 3.6 度电 ≈ **¥2/天 ≈ ¥60/月**。只玩的时候开（比如周末开 5 小时），电费几乎可以忽略。所以别为了“挂机”让电脑 24 小时开着。\n\n**2. 云服务器（想 24 小时在线才需要）**\n阿里云/腾讯云轻量 2核4G ≈ ¥60~100/月，学生机首年更便宜。\n\n## 想要“真的 0 元 + 24 小时在线”，两条路\n\n- **Aternos**（aternos.org）：网页上点几下就开服，完全免费，不用自己的电脑。缺点：没人玩时会休眠、开服要排队、性能一般，适合 2~3 人随便玩。\n- **Oracle Cloud 永久免费层**：ARM 4核24G 内存，跑 MC 绰绰有余，是真的永久免费。缺点：注册要信用卡验证（扣 $1 后退回）、ARM 实例经常要抢、有被回收风险。\n\n## 关于 `online-mode`\n\n- `online-mode=true`（默认）：只允许**正版**账号进，最安全。\n- 朋友没正版 → 改成 `false`（离线模式服）。**服务端依然免费**，但等于谁拿到你 IP 都能进，**必须同时开白名单**：控制台 `whitelist on` + `whitelist add 朋友ID`。\n\n---\n\n那我们就走**全免费方案**：你电脑开服 + Tailscale 给异地朋友连。要我现在在 `桌面\\mc-server\\` 里把目录、`start.bat`、调好的 `server.properties` 都建好吗？只差你手动下个 `server.jar` 和装 Java 21。",
+      "model": "dsh-native",
+      "ts": "2026-11-28T13:08:35.850Z"
+    },
+    {
+      "role": "user",
+      "text": "你看看我的电脑上还缺啥，先别动",
+      "ts": "2026-11-28T13:09:36.439Z"
+    },
+    {
+      "role": "assistant",
+      "text": "先只看不动。我跑几条**只读**检查命令：查看硬件、Java、端口、防火墙，以及是否已装过相关软件。\n\n查完了，**没有创建或修改任何东西**。配置比我预想的好很多，缺的只有两样。\n\n## ✅ 已经有的\n\n| 项目 | 情况 | 够不够 |\n|---|---|---|\n| 系统 | Windows 11 家庭版 · build 26200 | 够 |\n| CPU | Intel Core Ultra 5 336H · 12 核 | 开 4~10 人服绰绰有余 |\n| 内存 | 31.5 GB（当前空闲 20.3 GB） | **很富余**，能分 6~8G 给服务器 |\n| 磁盘 | C: 空闲 377 GB；D: 空闲 425 GB | 够 |\n| **Java** | **JDK 25.0.3 LTS（Microsoft）已在 PATH** | ✅ 不用装 |\n| 端口 | 25565（Java）、19132（基岩）都**空着** | ✅ 无冲突 |\n| 客户端 | `.minecraft` 存在，说明已装 Java 版 | ✅ |\n| 内网 IP | `192.168.3.209`（Wi-Fi） | 同 WiFi 可直接连 |\n\n## ❌ 真正缺的只有这几样\n\n1. **`server.jar`（服务端本体）**，这是唯一必须下载的文件（约 50~60 MB）。桌面和下载文件夹里翻了一遍，都没有；也没有任何 `mc-server` 目录。\n2. **异地联机工具**：Tailscale、playit.gg、ZeroTier、ngrok 都**一个没装**。\n3. **防火墙放行**：防火墙里没有任何 Java / Minecraft 规则。首次运行时会有弹窗，必须点“允许访问”；如果当时选错，朋友就连不进来。\n4. **`JAVA_HOME` 是空的**（不影响运行，所以只是小问题）。\n\n## ⚠️ 三个需要提前说的隐患\n\n**① 你的 Java 是 25，比 MC 官方要求的 21 还新**\nMC 1.21.x 官方推荐 Java 21。用 25 跑**大多数情况没问题**，但如果启动时报类文件版本或反射相关的错，我再给你装个 Temurin 21 与它共存（不卸载 25），在 `start.bat` 里写全路径即可，两分钟就能解决。\n\n**② 有一块 `198.18.0.1 [Meta]` 虚拟网卡，几乎肯定是 Clash/mihomo 的 TUN 代理**\n这个容易出问题：TUN 会把局域网流量也接管，导致朋友连不上你，或者 Tailscale 连不上。联机时需要给 `192.168.x.x` 加一条直连规则，或者临时关掉 TUN。\n\n**③ 你现在走 Wi-Fi，网线没插（以太网口是 169.254.x 无效地址）**\n开服用 Wi-Fi 也能玩，但延迟和丢包会差不少。能找到网线就插上，这是零成本的大幅提升。\n\n另外，家庭宽带 + 路由器 NAT 正常情况下**没有公网 IPv4**，所以“异地靠端口映射”这条路基本走不通，走 Tailscale 这个判断是对的。\n\n---\n\n**结论：只差一个 `server.jar` 和一个 Tailscale，其余全是现成的。** Java、内存、端口、磁盘、客户端全都不用动。\n\n下一步要我做什么？（现在仍然不动手，等你的确认）\n- **A**：我把 `桌面\\mc-server\\` 目录、`start.bat`、调好的 `server.properties`、以及防火墙规则命令都写好放你桌面上，你自己双看一遍再执行\n- **B**：你先手动下 `server.jar` 和 Tailscale，我等你下完再一起配",
+      "model": "dsh-native",
+      "ts": "2026-11-28T13:10:33.101Z"
+    }
+  ]
+}
