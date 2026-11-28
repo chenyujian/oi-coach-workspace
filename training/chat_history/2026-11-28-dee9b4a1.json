@@ -1,0 +1,40 @@
+{
+  "id": "2026-11-28-dee9b4a1",
+  "title": "探索建模 · 优先墙（priority） 题目描述",
+  "mode": "coach",
+  "subMode": "",
+  "model": "gemini-4-hydrogen-medium",
+  "conversationId": "1ee869ac-b119-4d36-9168-f9c8235717e6",
+  "previewQuery": "优先墙（priority）\n题目描述\n社交网站记录了若干用户之间的动态。每条动态属于以下三种形式之一：\n\nX posted on Y's wall，使 X,Y 之间的优先度增加 15；\nX commented on Y's post，使 X,Y 之间的优先度增加 10；\nX likes Y's post，使 X,Y 之间的优先度增加 5。\n优先度关于两名用户对称。给出你的名字和全部动态，输出动态中出现过的其他所有用户。\n按照他们与你的优先度从大到小排序；优先度相同时按名字的字典序从小到大排序。\n即使某名用户与你的优先度为 0，也必须输出。\n\n输入格式\n第一行输入你的名字。第二行输入动态条数 n。接下来 n 行输入严格符合上述格式的动态，\n每两个单词之间恰有一个空格。\n\n输出格式\n每行输出一个其他用户的名字。\n\n数据范围\n1\n<\n=\nn\n<\n=\n100\n1<=n<=100；\n每个名字由 1 到 10 个小写英文字母组成；\n每条动态中的 X,Y 互不相同。\n先不要说任何东西，只告诉我这题怎么输入。",
+  "activeProbKey": "",
+  "noteFullInjectedFor": {},
+  "skipProblemContext": false,
+  "createdAt": "2026-11-28T07:37:16.270Z",
+  "updatedAt": "2026-11-28T07:37:45.844Z",
+  "messages": [
+    {
+      "role": "user",
+      "text": "优先墙（priority）\n题目描述\n社交网站记录了若干用户之间的动态。每条动态属于以下三种形式之一：\n\nX posted on Y's wall，使 X,Y 之间的优先度增加 15；\nX commented on Y's post，使 X,Y 之间的优先度增加 10；\nX likes Y's post，使 X,Y 之间的优先度增加 5。\n优先度关于两名用户对称。给出你的名字和全部动态，输出动态中出现过的其他所有用户。\n按照他们与你的优先度从大到小排序；优先度相同时按名字的字典序从小到大排序。\n即使某名用户与你的优先度为 0，也必须输出。\n\n输入格式\n第一行输入你的名字。第二行输入动态条数 n。接下来 n 行输入严格符合上述格式的动态，\n每两个单词之间恰有一个空格。\n\n输出格式\n每行输出一个其他用户的名字。\n\n数据范围\n1\n<\n=\nn\n<\n=\n100\n1<=n<=100；\n每个名字由 1 到 10 个小写英文字母组成；\n每条动态中的 X,Y 互不相同。\n先不要说任何东西，只告诉我这题怎么输入。",
+      "ts": "2026-11-28T07:37:16.270Z"
+    },
+    {
+      "role": "assistant",
+      "text": "好，我们先只看输入！第一行用 `cin >> me` 读你的名字，第二行用 `cin >> n` 读条数。\n\n接下来每条动态有三种句式，注意看单词个数和标点：\n- `X posted on Y's wall`（5 个词）\n- `X commented on Y's post`（5 个词）\n- `X likes Y's post`（4 个词）\n\n如果直接用 `cin >>` 一个词一个词读，不用 `getline` 也没问题，但有两个小坑：**三种句式总词数不一样**，而且 `Y` 后面还粘着 `'s`（比如读进来是 `bob's`）。\n\n你先观察一下：读完第 1 个词 `X` 和第 2 个词（动作）之后，后面还要读几个词才能拿到 `Y's`？拿到 `bob's` 后怎么把末尾的 `'s` 剥掉只留 `bob`？",
+      "model": "gemini-4-hydrogen-medium",
+      "duration": 8.5,
+      "ts": "2026-11-28T07:37:16.270Z"
+    },
+    {
+      "role": "user",
+      "text": "把后两个字符去掉呗。",
+      "ts": "2026-11-28T07:37:45.844Z"
+    },
+    {
+      "role": "assistant",
+      "text": "对！直接把末尾 2 个字符去掉（比如用 `substr(0, len - 2)`），就能把 `bob's` 变成 `bob`；另外注意 `posted / commented` 后面多一个 `on`，而 `likes` 后面直接就是 `Y's`，别读错位就行。\n\n输入搞定，我们来手算一组 `n = 3` 的小样例排排雷。假如你的名字是 `me`，有这 3 条动态：\n1. `me posted on alice's wall`\n2. `bob likes me's post`\n3. `alice commented on carol's post`\n\n算完这 3 条后，最后要输出哪几个名字？按题目要求的顺序排好写出来看看！",
+      "model": "gemini-4-hydrogen-medium",
+      "duration": 7.2,
+      "ts": "2026-11-28T07:37:45.844Z"
+    }
+  ]
+}
