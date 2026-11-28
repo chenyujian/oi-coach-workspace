@@ -14161,5 +14161,21 @@
     "rejudged": false,
     "contest": "6b069e323a38b395692e97af",
     "files": {}
+  },
+  {
+    "_id": "6b0a38f53a38b395692ee1a9",
+    "status": 3,
+    "uid": 79,
+    "lang": "cc.cc14o2",
+    "pid": 790,
+    "domainId": "system",
+    "score": 60,
+    "time": 4255.736,
+    "memory": 21924,
+    "judger": 1,
+    "judgeAt": "2026-11-28T02:14:19.069Z",
+    "rejudged": false,
+    "contest": "6b069e323a38b395692e97af",
+    "files": {}
   }
 ]

@@ -35,10 +35,11 @@
           "枚举",
           "GESP八级"
         ],
-        "submissions": 1,
-        "bestScore": 0,
+        "submissions": 2,
+        "bestScore": 60,
         "bestStatus": "TLE",
         "verdicts": [
+          "TLE",
           "TLE"
         ]
       },

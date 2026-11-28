@@ -10,10 +10,10 @@
   ],
   "is_objective": false,
   "statement": "\n\n## 题目描述\n\n小 $A$ 写了一个 $N \\times M$ 的矩阵 $A$，我们看不到这个矩阵，但我们可以知道，其中第 $i$ 行第 $j$ 列的元素 $A_{i, j}$ 是 $i$ 和 $j$ 的\n公倍数（$i = 1, \\dots, N, j = 1, \\dots, M$）。现在有 $K$ 个小朋友，其中第 $k$ 个小朋友想知道，矩阵 $A$ 中最多有多少个元素可以是 $k$（$k = 1, 2, \\dots, K$）。请你帮助这些小朋友求解。\n\n注意：每位小朋友的答案互不相关，例如，有些位置既可能是 $x$，又可能是 $y$，则它同时可以满足 $x, y$ 两名小朋友的要求。\n\n方便起见，你只需要输出 $\\sum_{k = 1}^{K}k \\times ans_k$ 即可，其中 $ans_k$ 表示第 $k$ 名小朋友感兴趣的答案。\n\n## 输入格式\n\n一行三个正整数 $N, M, K$。\n\n## 输出格式\n\n输出一行，即  $\\sum_{k = 1}^{K}k \\times ans_k$。\n\n请注意，这个数可能很大，使用 C++ 语言的选手请酌情使用```long long``` 等数据类型存储答案。\n\n## 输入输出样例 #1\n\n### 输入 #1\n\n```\n2 5 2\n```\n\n### 输出 #1\n\n```\n9\n```\n\n## 输入输出样例 #2\n\n### 输入 #2\n\n```\n100 100 100\n```\n\n### 输出 #2\n\n```\n185233\n```\n\n## 说明/提示\n\n### 样例 1 解释\n\n只有 $A_{1, 1}$ 可以是 $1$，其余都不行。\n$A_{1, 1}, A_{1, 2}, A_{2, 1}, A_{2, 2}$ 都可以是 $2$，而其余不行。\n\n因此答案是 $1 \\times 1 + 2 \\times 4 = 9$。\n\n### 数据规模与约定\n\n- 对于 $30\\%$ 的测试点，保证 $N, M, K \\le 10$；\n- 对于 $60\\%$ 的测试点，保证 $N, M, K \\le 500$；\n- 对于 $100\\%$ 的测试点，保证 $1 \\leq N, M \\le 10^5$，$1 \\leq K \\le 10^6$。",
-  "attempts": 1,
-  "best_score": 0,
-  "trajectory": "TLE",
+  "attempts": 2,
+  "best_score": 60,
+  "trajectory": "TLE→TLE",
   "latest_verdict": "TLE",
-  "latest_score": 0,
-  "latest_code": "#include<bits/stdc++.h>\r\n#define int long long\r\nusing namespace std;\r\nstruct node{\r\n\tint x,y;\r\n};\r\n\r\nsigned main(){\r\n\tint n,m,k;\r\n\tcin>>n>>m>>k;\r\n\tint ans=0;\r\n\tfor(int i=1;i<=k;i++){\r\n\t\tint x=0;\r\n\t\tfor(int j=1;j*j<=i;j++){\r\n\t\t\tif(i%j==0){\r\n\t\t\t\tint a=i/j;\r\n\t\t\t\tcout<<j<<\" \"<<a<<endl;\r\n\t\t\t\tx+=j*2-1;\r\n\t\t\t\tif(j==a){\r\n\t\t\t\t\tcontinue;\r\n\t\t\t\t}\r\n\t\t\t\tx+=a*2-1;\r\n\t\t\t\t\r\n\t\t\t}\r\n\t\t}\r\n\t\tcout<<x<<endl;\r\n\t\tans+=x*i;\r\n\t\tcout<<endl;\r\n\t}\r\n\tcout<<ans;\r\n\treturn 0;\r\n}\r\n"
+  "latest_score": 60,
+  "latest_code": "#include<bits/stdc++.h>\r\n#define int long long\r\nusing namespace std;\r\nstruct node{\r\n\tint x,y;\r\n};\r\n\r\nsigned main(){\r\n\tint n,m,k;\r\n\tcin>>n>>m>>k;\r\n\tint ans=0;\r\n\tfor(int i=1;i<=k;i++){\r\n\t\tint x=0,y=0;\r\n\t\tfor(int j=1;j*j<=i;j++){\r\n\t\t\tif(i%j==0){\r\n\t\t\t\tint a=i/j,b=j;\r\n\t\t\t\tif(a<=n&&a>m){\r\n\t\t\t\t\tx++;\r\n\t\t\t\t}\r\n\t\t\t\tif(a>n&&a<=m){\r\n\t\t\t\t\ty++;\r\n\t\t\t\t}\r\n\t\t\t\tif(a<=n&&a<=m){\r\n\t\t\t\t\tx++,y++;\r\n\t\t\t\t}\r\n\t\t\t\tif(a==b){\r\n\t\t\t\t\tcontinue;\r\n\t\t\t\t}\r\n\t\t\t\tif(b<=n&&b>m){\r\n\t\t\t\t\tx++;\r\n\t\t\t\t}\r\n\t\t\t\tif(b>n&&b<=m){\r\n\t\t\t\t\ty++;\r\n\t\t\t\t}\r\n\t\t\t\tif(b<=n&&b<=m){\r\n\t\t\t\t\tx++,y++;\r\n\t\t\t\t}\r\n//\t\t\t\tx+=(a==b?1:2);\r\n//\t\t\t\tcout<<x<<endl;\r\n\t\t\t}\r\n\t\t}\r\n//\t\tcout<<x<<\" \"<<y<<endl;\r\n\t\tx*=y;\r\n\t\tans+=x*i;\r\n//\t\tcout<<endl;\r\n\t}\r\n\tcout<<ans;\r\n\treturn 0;\r\n}\r\n"
 }
