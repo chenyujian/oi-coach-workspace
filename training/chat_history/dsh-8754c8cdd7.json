@@ -10,7 +10,7 @@
   "previewQuery": "",
   "skipProblemContext": false,
   "createdAt": "2026-11-28T13:20:27.704Z",
-  "updatedAt": "2026-11-28T13:29:56.530Z",
+  "updatedAt": "2026-11-28T13:32:38.468Z",
   "messages": [
     {
       "role": "user",
@@ -27,6 +27,12 @@
       "role": "user",
       "text": "agy-fast这个也装一下",
       "ts": "2026-11-28T13:29:56.530Z"
+    },
+    {
+      "role": "assistant",
+      "text": "`agy-fast` 装好了，v0.3.2（[INK-Q/agy-fast](https://github.com/INK-Q/agy-fast)，MIT，2.2k star），健康检查全绿。\n\n**安装方式**：没走 README 首推的 `irm … | iex`（那等于直接执行没看过的远程脚本），而是下载 v0.3.2 tag 源码、审阅 `install.mjs` 的写入逻辑后，跑项目自带的 `node scripts/install.mjs install`——同一套安装器，效果一致。\n\n**验证结果**（`node …\\agy-fast\\scripts\\install.mjs doctor`）\n```\nVersion      v0.3.2        Node v22.23.5 (OK)\nMCP server   OK (5 tools: batch_search, apply_edits, read_slices, quick_outline, run_checks)\nSessionStart OK (174ms, 469 bytes)\nagy validate PASSED (--strict)\n```\n- `agy plugin list` 现在两个都在：`agy-fast (enabled, 0.3.2)`、`agy-powertools (enabled, 2.17.1)`\n- 是用 **agy 官方 CLI** 启用的（`agy plugin enable`），不是手改 config.json\n- `rg` 没装 → 走内置 Node 搜索回退，功能不缺，只是批量搜索稍慢；想更快可 `winget install BurntSushi.ripgrep.MSVC`\n\n**怎么生效（关键）**\n反重力现在没在运行。下次从桌面快捷方式打开后，**必须新建一个会话**才会加载它的 5 个 MCP 工具和开场快照钩子——已经开着的旧会话不会热加载。\n\n**两点要知道**\n1. 两个插件不冲突：agy-powertools 管界面/统计（hook 名不同），agy-fast 管工具批处理（MCP 名 `fast`）。代价是每个新会话固定多约 1.7k token 的规则+快照开销，换来回合数和额度下降（作者实测 -33.7% 回合 / -31.5% 额度）。\n2. 它默认每 4 小时后台查一次 GitHub release 自动更新。想稳一点改成只提醒：`node \"$env:USERPROFILE\\.gemini\\config\\plugins\\agy-fast\\scripts\\install.mjs\" config --auto-update notify --interval 24`\n\n**实测你自己的收益**（纯本地、不上传）：\n```powershell\nnode \"$env:USERPROFILE\\.gemini\\config\\plugins\\agy-fast\\dist\\benchmark.mjs\" analyze --local --recent 10\n```\n\n**卸载**：`node \"$env:USERPROFILE\\.gemini\\config\\plugins\\agy-fast\\scripts\\install.mjs\" uninstall`\n\n聊天记录、账号、swarm 和其他插件都没动；`%TEMP%\\agy-fast-install` 只是临时源码，可随手删。",
+      "model": "dsh-native",
+      "ts": "2026-11-28T13:32:38.468Z"
     }
   ]
 }
